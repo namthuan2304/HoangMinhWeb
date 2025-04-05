@@ -106,4 +106,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Tìm user theo khoảng thời gian đăng ký
      */
     List<User> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    /**
+     * Tìm user theo username và chưa bị xóa
+     */
+    Optional<User> findByUsernameAndDeletedAtIsNull(String username);
+
+    /**
+     * Tìm user theo ID và chưa bị xóa
+     */
+    Optional<User> findByIdAndDeletedAtIsNull(Long id);
 }

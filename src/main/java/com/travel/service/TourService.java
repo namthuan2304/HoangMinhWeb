@@ -310,4 +310,32 @@ public class TourService {
         tour.setRatingAverage(averageRating);
         tourRepository.save(tour);
     }
+
+    /**
+     * Lấy tổng số tours
+     */
+    public long getTotalTours() {
+        return tourRepository.countByDeletedAtIsNull();
+    }
+
+    /**
+     * Lấy danh sách tours đang hoạt động
+     */
+    public List<Tour> getActiveTours() {
+        return tourRepository.findByStatusAndDeletedAtIsNull(TourStatus.ACTIVE);
+    }
+
+    /**
+     * Thống kê tours theo loại
+     */
+    public List<Object[]> getTourStatsByType() {
+        return tourRepository.countToursByType();
+    }
+
+    /**
+     * Thống kê tours theo trạng thái
+     */
+    public List<Object[]> getTourStatsByStatus() {
+        return tourRepository.countToursByStatus();
+    }
 }

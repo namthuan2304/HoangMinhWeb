@@ -61,6 +61,47 @@ public interface BookingTourRepository extends JpaRepository<BookingTour, Long> 
     Optional<BookingTour> findByIdAndNotDeleted(@Param("id") Long id);
 
     /**
+     * Tìm booking theo ID và chưa bị xóa
+     */
+    Optional<BookingTour> findByIdAndDeletedAtIsNull(Long id);
+
+    /**
+     * Tìm booking theo user và chưa bị xóa
+     */
+    Page<BookingTour> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
+
+    /**
+     * Tìm booking theo trạng thái và chưa bị xóa
+     */
+    Page<BookingTour> findByStatusAndDeletedAtIsNull(BookingStatus status, Pageable pageable);
+
+    /**
+     * Tìm booking theo tên liên hệ và chưa bị xóa
+     */
+    Page<BookingTour> findByContactNameContainingIgnoreCaseAndDeletedAtIsNull(String contactName, Pageable pageable);
+
+    /**
+     * Tìm booking theo trạng thái và tên liên hệ
+     */
+    Page<BookingTour> findByStatusAndContactNameContainingIgnoreCaseAndDeletedAtIsNull(
+        BookingStatus status, String contactName, Pageable pageable);
+
+    /**
+     * Lấy tất cả booking chưa bị xóa
+     */
+    Page<BookingTour> findByDeletedAtIsNull(Pageable pageable);
+
+    /**
+     * Đếm booking chưa bị xóa
+     */
+    long countByDeletedAtIsNull();
+
+    /**
+     * Đếm booking mới sau thời gian và chưa bị xóa
+     */
+    long countByCreatedAtAfterAndDeletedAtIsNull(LocalDateTime dateTime);
+
+    /**
      * Đếm số booking theo trạng thái
      */
     @Query("SELECT COUNT(b) FROM BookingTour b WHERE b.deletedAt IS NULL AND b.status = :status")

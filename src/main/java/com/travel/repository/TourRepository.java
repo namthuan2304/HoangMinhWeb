@@ -126,13 +126,32 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
                              @Param("startDate") LocalDate startDate,
                              @Param("endDate") LocalDate endDate,
                              Pageable pageable);
-}
-    @Query("SELECT t FROM Tour t WHERE t.deletedAt IS NULL AND t.status = 'ACTIVE' AND t.currentParticipants < t.maxParticipants")
-    List<Tour> findAvailableTours();
 
     /**
      * Tìm tour theo ID và chưa bị xóa
      */
     @Query("SELECT t FROM Tour t WHERE t.id = :id AND t.deletedAt IS NULL")
     Optional<Tour> findByIdAndNotDeleted(@Param("id") Long id);
+
+    /**
+     * Tìm tours đang hoạt động
+     */
+    List<Tour> findByStatusAndDeletedAtIsNull(TourStatus status);
+
+    /**
+     * Thống kê số lượng tours theo loại
+     */
+    @Query("SELECT t.tourType, COUNT(t) FROM Tour t WHERE t.deletedAt IS NULL GROUP BY t.tourType")
+    List<Object[]> countToursByType();
+
+    /**
+     * Thống kê số lượng tours theo trạng thái
+     */
+    @Query("SELECT t.status, COUNT(t) FROM Tour t WHERE t.deletedAt IS NULL GROUP BY t.status")
+    List<Object[]> countToursByStatus();
+
+    /**
+     * Tìm tours theo danh sách IDs và chưa bị xóa
+     */
+    List<Tour> findByIdInAndDeletedAtIsNull(List<Long> ids);
 }
