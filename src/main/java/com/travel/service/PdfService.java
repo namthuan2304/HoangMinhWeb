@@ -3,8 +3,6 @@ package com.travel.service;
 import com.travel.entity.BookingTour;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -14,8 +12,8 @@ import java.util.Locale;
 @Service
 public class PdfService {
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("vi", "VN"));
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", new Locale("vi", "VN"));
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.of("vi", "VN"));
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.of("vi", "VN"));
 
     /**
      * Tạo PDF hóa đơn đặt tour

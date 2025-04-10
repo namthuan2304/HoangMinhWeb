@@ -2,6 +2,7 @@ package com.travel.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.io.Decoders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,10 +43,10 @@ public class JwtService {
      */
     public String generateTokenFromUsername(String username) {
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -54,10 +55,10 @@ public class JwtService {
      */
     public String generateRefreshToken(String username) {
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtRefreshExpirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date((new Date()).getTime() + jwtRefreshExpirationMs))
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -65,11 +66,11 @@ public class JwtService {
      * Lấy username từ JWT token
      */
     public String getUsernameFromJwtToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 
@@ -78,10 +79,10 @@ public class JwtService {
      */
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+            Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(authToken);
+                .parseSignedClaims(authToken);
             return true;
         } catch (SecurityException e) {
             logger.error("Chữ ký JWT không hợp lệ: {}", e.getMessage());
@@ -102,11 +103,11 @@ public class JwtService {
      */
     public boolean isTokenExpired(String token) {
         try {
-            Date expiration = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Date expiration = Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody()
+                    .parseSignedClaims(token)
+                    .getPayload()
                     .getExpiration();
             return expiration.before(new Date());
         } catch (Exception e) {
@@ -118,11 +119,11 @@ public class JwtService {
      * Lấy thời gian hết hạn từ token
      */
     public Date getExpirationDateFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getExpiration();
     }
 
@@ -130,7 +131,7 @@ public class JwtService {
      * Lấy signing key từ secret
      */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = jwtSecret.getBytes();
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

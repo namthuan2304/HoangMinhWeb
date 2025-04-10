@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -258,16 +257,31 @@ public class TourService {
     /**
      * Lấy thống kê tour
      */
-    public Object getTourStatistics() {
+    public TourStatistics getTourStatistics() {
         long totalTours = tourRepository.countByDeletedAtIsNull();
         long activeTours = tourRepository.countByStatusAndDeletedAtIsNull(TourStatus.ACTIVE);
         long domesticTours = tourRepository.countByDeletedAtIsNull(); // Cần thêm method cho TourType
         
-        return new Object() {
-            public final long total = totalTours;
-            public final long active = activeTours;
-            public final long domestic = domesticTours;
-        };
+        return new TourStatistics(totalTours, activeTours, domesticTours);
+    }
+
+    /**
+     * DTO cho thống kê tour
+     */
+    public static class TourStatistics {
+        private final long total;
+        private final long active;
+        private final long domestic;
+
+        public TourStatistics(long total, long active, long domestic) {
+            this.total = total;
+            this.active = active;
+            this.domestic = domestic;
+        }
+
+        public long getTotal() { return total; }
+        public long getActive() { return active; }
+        public long getDomestic() { return domestic; }
     }
 
     /**

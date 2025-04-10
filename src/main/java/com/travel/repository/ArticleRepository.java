@@ -99,4 +99,81 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
      */
     @Query("SELECT a FROM Article a WHERE a.id = :id AND a.deletedAt IS NULL")
     Optional<Article> findByIdAndNotDeleted(@Param("id") Long id);
+
+    /**
+     * Tìm article theo ID và chưa bị xóa
+     */
+    Optional<Article> findByIdAndDeletedAtIsNull(Long id);
+
+    /**
+     * Tìm article theo slug và đã xuất bản
+     */
+    Optional<Article> findBySlugAndIsPublishedTrueAndDeletedAtIsNull(String slug);
+
+    /**
+     * Lấy tất cả article chưa bị xóa
+     */
+    Page<Article> findByDeletedAtIsNull(Pageable pageable);
+
+    /**
+     * Tìm article theo trạng thái published
+     */
+    Page<Article> findByIsPublishedAndDeletedAtIsNull(Boolean isPublished, Pageable pageable);
+
+    /**
+     * Tìm article đã xuất bản
+     */
+    Page<Article> findByIsPublishedTrueAndDeletedAtIsNull(Pageable pageable);
+
+    /**
+     * Tìm kiếm article theo tiêu đề
+     */
+    Page<Article> findByTitleContainingIgnoreCaseAndDeletedAtIsNull(String title, Pageable pageable);
+
+    /**
+     * Tìm kiếm article theo tiêu đề và trạng thái
+     */
+    Page<Article> findByTitleContainingIgnoreCaseAndIsPublishedAndDeletedAtIsNull(
+        String title, Boolean isPublished, Pageable pageable);
+
+    /**
+     * Tìm kiếm article đã xuất bản theo tiêu đề
+     */
+    Page<Article> findByTitleContainingIgnoreCaseAndIsPublishedTrueAndDeletedAtIsNull(
+        String title, Pageable pageable);
+
+    /**
+     * Tìm article theo tác giả
+     */
+    Page<Article> findByAuthorAndDeletedAtIsNull(User author, Pageable pageable);
+
+    /**
+     * Tìm article theo tag
+     */
+    Page<Article> findByTagsContainingAndIsPublishedTrueAndDeletedAtIsNull(String tag, Pageable pageable);
+
+    /**
+     * Tìm article liên quan đến tour
+     */
+    List<Article> findByRelatedToursContainingAndIsPublishedTrueAndDeletedAtIsNull(Tour tour);    /**
+     * Lấy article phổ biến nhất
+     */
+    @Query(value = "SELECT a FROM Article a WHERE a.deletedAt IS NULL AND a.isPublished = true ORDER BY a.viewCount DESC")
+    List<Article> findTopByIsPublishedTrueAndDeletedAtIsNullOrderByViewCountDesc(Pageable pageable);
+
+    /**
+     * Lấy article mới nhất
+     */
+    @Query(value = "SELECT a FROM Article a WHERE a.deletedAt IS NULL AND a.isPublished = true ORDER BY a.createdAt DESC")
+    List<Article> findTopByIsPublishedTrueAndDeletedAtIsNullOrderByCreatedAtDesc(Pageable pageable);
+
+    /**
+     * Đếm tổng số article
+     */
+    long countByDeletedAtIsNull();
+
+    /**
+     * Đếm article đã xuất bản
+     */
+    long countByIsPublishedTrueAndDeletedAtIsNull();
 }

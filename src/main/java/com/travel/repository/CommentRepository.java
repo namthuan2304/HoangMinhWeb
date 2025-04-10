@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository cho entity Comment
@@ -65,4 +66,37 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      */
     @Query("SELECT COUNT(c) > 0 FROM Comment c WHERE c.deletedAt IS NULL AND c.user = :user AND c.tour = :tour")
     boolean hasUserCommentedOnTour(@Param("user") User user, @Param("tour") Tour tour);
+
+    /**
+     * Tìm comment theo ID và chưa bị xóa
+     */
+    Optional<Comment> findByIdAndDeletedAtIsNull(Long id);
+
+    /**
+     * Lấy tất cả comment chưa bị xóa
+     */
+    Page<Comment> findByDeletedAtIsNull(Pageable pageable);
+
+    /**
+     * Tìm comment theo trạng thái approved
+     */
+    Page<Comment> findByIsApprovedAndDeletedAtIsNull(Boolean isApproved, Pageable pageable);
+
+    /**
+     * Kiểm tra user đã comment tour chưa
+     */
+    boolean existsByUserAndTourAndDeletedAtIsNull(User user, Tour tour);    /**
+     * Đếm comment theo tour và approved
+     */
+    long countByTourAndIsApprovedTrueAndDeletedAtIsNull(Tour tour);
+
+    /**
+     * Tìm comment theo tour và approved với phân trang
+     */
+    Page<Comment> findByTourAndIsApprovedTrueAndDeletedAtIsNull(Tour tour, Pageable pageable);
+
+    /**
+     * Tìm comment theo user và chưa bị xóa với phân trang
+     */
+    Page<Comment> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
 }

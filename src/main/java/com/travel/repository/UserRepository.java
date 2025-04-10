@@ -110,10 +110,47 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Tìm user theo username và chưa bị xóa
      */
-    Optional<User> findByUsernameAndDeletedAtIsNull(String username);
-
-    /**
+    Optional<User> findByUsernameAndDeletedAtIsNull(String username);    /**
      * Tìm user theo ID và chưa bị xóa
      */
     Optional<User> findByIdAndDeletedAtIsNull(Long id);
+
+    /**
+     * Tìm user có phân trang và chưa bị xóa
+     */
+    Page<User> findByDeletedAtIsNull(Pageable pageable);
+
+    /**
+     * Tìm user theo role và chưa bị xóa
+     */
+    Page<User> findByRoleAndDeletedAtIsNull(UserRole role, Pageable pageable);
+
+    /**
+     * Tìm user theo username hoặc email chứa từ khóa và chưa bị xóa
+     */
+    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND " +
+           "(LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))") 
+    Page<User> findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseAndDeletedAtIsNull(
+            @Param("search") String username, @Param("search") String email, Pageable pageable);
+
+    /**
+     * Tìm user theo username hoặc email chứa từ khóa, role và chưa bị xóa
+     */
+    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND u.role = :role AND " +
+           "(LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))") 
+    Page<User> findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseAndRoleAndDeletedAtIsNull(
+            @Param("search") String username, @Param("search") String email, 
+            @Param("role") UserRole role, Pageable pageable);
+
+    /**
+     * Đếm user chưa bị xóa
+     */
+    long countByDeletedAtIsNull();
+
+    /**
+     * Đếm user được tạo sau thời điểm và chưa bị xóa
+     */
+    long countByCreatedAtAfterAndDeletedAtIsNull(LocalDateTime createdAt);
 }

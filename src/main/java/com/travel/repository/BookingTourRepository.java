@@ -105,37 +105,58 @@ public interface BookingTourRepository extends JpaRepository<BookingTour, Long> 
      * Đếm số booking theo trạng thái
      */
     @Query("SELECT COUNT(b) FROM BookingTour b WHERE b.deletedAt IS NULL AND b.status = :status")
-    long countByStatus(@Param("status") BookingStatus status);
-
-    /**
+    long countByStatus(@Param("status") BookingStatus status);    /**
      * Thống kê doanh thu theo tháng
      */
-    @Query("SELECT FUNCTION('MONTH', b.bookingDate) as month, " +
-           "FUNCTION('YEAR', b.bookingDate) as year, " +
-           "SUM(b.totalAmount) as revenue, " +
-           "COUNT(b) as count " +
-           "FROM BookingTour b " +
-           "WHERE b.deletedAt IS NULL AND b.status IN ('CONFIRMED', 'COMPLETED') " +
-           "AND b.bookingDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY FUNCTION('YEAR', b.bookingDate), FUNCTION('MONTH', b.bookingDate) " +
-           "ORDER BY year DESC, month DESC")
-    List<Object[]> getRevenueByMonth(@Param("startDate") LocalDateTime startDate, 
-                                     @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT MONTH(b.bookingDate) as month, SUM(b.totalAmount) as revenue " +
+           "FROM BookingTour b WHERE b.deletedAt IS NULL AND " +
+           "YEAR(b.bookingDate) = :year AND " +
+           "b.status = 'COMPLETED' " +
+           "GROUP BY MONTH(b.bookingDate) " +
+           "ORDER BY MONTH(b.bookingDate)")
+    List<Object[]> getRevenueByMonth(@Param("year") int year);
 
     /**
      * Thống kê doanh thu theo quý
      */
-    @Query("SELECT FUNCTION('QUARTER', b.bookingDate) as quarter, " +
-           "FUNCTION('YEAR', b.bookingDate) as year, " +
-           "SUM(b.totalAmount) as revenue, " +
-           "COUNT(b) as count " +
-           "FROM BookingTour b " +
-           "WHERE b.deletedAt IS NULL AND b.status IN ('CONFIRMED', 'COMPLETED') " +
-           "AND b.bookingDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY FUNCTION('YEAR', b.bookingDate), FUNCTION('QUARTER', b.bookingDate) " +
-           "ORDER BY year DESC, quarter DESC")
-    List<Object[]> getRevenueByQuarter(@Param("startDate") LocalDateTime startDate, 
-                                       @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT QUARTER(b.bookingDate) as quarter, SUM(b.totalAmount) as revenue " +
+           "FROM BookingTour b WHERE b.deletedAt IS NULL AND " +
+           "YEAR(b.bookingDate) = :year AND " +
+           "b.status = 'COMPLETED' " +
+           "GROUP BY QUARTER(b.bookingDate) " +
+           "ORDER BY QUARTER(b.bookingDate)")
+    List<Object[]> getRevenueByQuarter(@Param("year") int year);
+
+    /**
+     * Tổng doanh thu theo năm
+     */
+    @Query("SELECT SUM(b.totalAmount) FROM BookingTour b WHERE " +
+           "b.deletedAt IS NULL AND YEAR(b.bookingDate) = :year AND " +
+           "b.status = 'COMPLETED'")
+    BigDecimal getTotalRevenueByYear(@Param("year") int year);
+
+    /**
+     * Doanh thu theo tháng và năm cụ thể
+     */
+    @Query("SELECT SUM(b.totalAmount) FROM BookingTour b WHERE " +
+           "b.deletedAt IS NULL AND MONTH(b.bookingDate) = :month AND " +
+           "YEAR(b.bookingDate) = :year AND b.status = 'COMPLETED'")
+    BigDecimal getRevenueByMonthAndYear(@Param("month") int month, @Param("year") int year);
+
+    /**
+     * Top tours được đặt nhiều nhất
+     */
+    @Query("SELECT b.tour.name, COUNT(b) as bookingCount, SUM(b.totalAmount) as totalRevenue " +
+           "FROM BookingTour b WHERE b.deletedAt IS NULL " +
+           "GROUP BY b.tour.id, b.tour.name " +
+           "ORDER BY bookingCount DESC")
+    List<Object[]> findTopBookedTours(Pageable pageable);
+
+    /**
+     * Thống kê booking theo trạng thái
+     */
+    @Query("SELECT b.status, COUNT(b) FROM BookingTour b WHERE b.deletedAt IS NULL GROUP BY b.status")
+    List<Object[]> countBookingsByStatus();
 
     /**
      * Thống kê doanh thu theo năm

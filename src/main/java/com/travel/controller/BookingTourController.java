@@ -2,7 +2,6 @@ package com.travel.controller;
 
 import com.travel.dto.request.BookingTourRequest;
 import com.travel.dto.response.BookingTourResponse;
-import com.travel.dto.response.MessageResponse;
 import com.travel.enums.BookingStatus;
 import com.travel.service.BookingTourService;
 import io.swagger.v3.oas.annotations.Operation;

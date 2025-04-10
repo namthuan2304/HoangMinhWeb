@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service xử lý logic nghiệp vụ cho User
@@ -175,13 +174,13 @@ public class UserService {
         
         user.setPassword(passwordEncoder.encode("123456")); // Mật khẩu mặc định
         userRepository.save(user);
-    }
-
-    /**
+    }    /**
      * Thống kê số lượng users theo tháng
      */
     public List<Object[]> getUserStatsByMonth(int year) {
-        return userRepository.countUsersByMonth(year);
+        LocalDateTime startOfYear = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime endOfYear = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+        return userRepository.countUsersByMonth(startOfYear, endOfYear);
     }
 
     /**

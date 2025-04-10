@@ -12,12 +12,11 @@ import com.travel.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -278,13 +277,12 @@ public class ArticleService {
             response.setContent(null);
             return response;
         });
-    }
-
-    /**
+    }    /**
      * Lấy bài viết phổ biến (view nhiều nhất)
      */
     public List<ArticleResponse> getPopularArticles(int limit) {
-        List<Article> articles = articleRepository.findTopByIsPublishedTrueAndDeletedAtIsNullOrderByViewCountDesc(limit);
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Article> articles = articleRepository.findTopByIsPublishedTrueAndDeletedAtIsNullOrderByViewCountDesc(pageable);
         return articles.stream()
             .map(article -> {
                 ArticleResponse response = modelMapper.map(article, ArticleResponse.class);
@@ -299,7 +297,8 @@ public class ArticleService {
      * Lấy bài viết mới nhất
      */
     public List<ArticleResponse> getLatestArticles(int limit) {
-        List<Article> articles = articleRepository.findTopByIsPublishedTrueAndDeletedAtIsNullOrderByCreatedAtDesc(limit);
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Article> articles = articleRepository.findTopByIsPublishedTrueAndDeletedAtIsNullOrderByCreatedAtDesc(pageable);
         return articles.stream()
             .map(article -> {
                 ArticleResponse response = modelMapper.map(article, ArticleResponse.class);

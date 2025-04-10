@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -140,7 +139,6 @@ public class BookingTourService {
         BookingTour booking = bookingTourRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn đặt tour"));
 
-        BookingStatus oldStatus = booking.getStatus();
         booking.setStatus(status);
         booking.setNotes(notes);
 
@@ -160,6 +158,8 @@ public class BookingTourService {
                 break;
             case COMPLETED:
                 booking.complete();
+                break;
+            default:
                 break;
         }
 
