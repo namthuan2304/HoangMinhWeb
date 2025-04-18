@@ -2,6 +2,7 @@ package com.travel.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,21 +11,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Cấu hình Web MVC
  */
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
-
-    @Value("${app.upload.dir:uploads}")
+public class WebMvcConfig implements WebMvcConfigurer {    @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
     /**
      * Cấu hình CORS
      */
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 
@@ -32,7 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * Cấu hình static resources
      */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         // Serve uploaded files
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/");
