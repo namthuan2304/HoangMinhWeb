@@ -351,6 +351,157 @@ body { background: var(--white); }
 
 .navbar-link:is(:hover, :focus) { color: var(--bright-navy-blue); }
 
+/*-----------------------------------*\
+ * #AUTH SECTION
+\*-----------------------------------*/
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-buttons .btn {
+  --padding: 8px 16px;
+  font-size: var(--fs-6);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid hsla(0, 0%, 100%, 0.3);
+}
+
+.btn-outline:is(:hover, :focus) {
+  background: hsla(0, 0%, 100%, 0.1);
+  border-color: var(--white);
+}
+
+/* User Menu */
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 25px;
+  transition: var(--transition);
+}
+
+.user-trigger:hover {
+  background: hsla(0, 0%, 100%, 0.1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--bright-navy-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.user-name {
+  font-size: var(--fs-6);
+  font-weight: var(--fw-500);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-icon {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.user-dropdown.active .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.15);
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.user-dropdown.active .user-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--jet);
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: var(--fs-6);
+}
+
+.dropdown-item:hover {
+  background: var(--cultured);
+}
+
+.dropdown-item ion-icon {
+  font-size: 18px;
+  color: var(--spanish-gray);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--gainsboro);
+  margin: 8px 0;
+}
+
+.logout-btn {
+  color: #e74c3c;
+}
+
+.logout-btn:hover {
+  background: hsla(0, 75%, 60%, 0.1);
+}
+
+.logout-btn ion-icon {
+  color: #e74c3c;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -851,8 +1002,154 @@ address {
 
 
 /*-----------------------------------*\
+ * #LANGUAGE SELECTOR
+\*-----------------------------------*/
+
+.language-selector {
+  position: relative;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.language-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 2px solid var(--white);
+  color: var(--white);
+  padding: 8px 12px;
+  border-radius: var(--radius-15);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: var(--fs-6);
+  font-weight: var(--fw-500);
+}
+
+.language-btn:hover {
+  background: var(--white);
+  color: var(--oxford-blue);
+}
+
+.language-btn span {
+  font-size: var(--fs-7);
+  font-weight: var(--fw-600);
+}
+
+.language-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--white);
+  border-radius: var(--radius-15);
+  box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: var(--transition);
+  z-index: 10;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.language-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.language-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  color: var(--black-coral);
+  text-decoration: none;
+  transition: var(--transition);
+  font-size: var(--fs-6);
+}
+
+.language-dropdown a:hover {
+  background: var(--cultured);
+}
+
+.language-dropdown a.active {
+  background: var(--united-nations-blue);
+  color: var(--white);
+}
+
+.language-dropdown img {
+  width: 20px;
+  height: auto;
+  border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .language-selector {
+    margin-right: 10px;
+  }
+  
+  .language-btn {
+    padding: 6px 10px;
+    font-size: var(--fs-7);
+  }
+  
+  .language-dropdown {
+    right: -50px;
+  }
+}
+
+/*-----------------------------------*\
  * #MEDIA QUERIES
 \*-----------------------------------*/
+
+/**
+ * responsive for mobile devices
+ */
+
+@media (max-width: 767px) {
+
+  /**
+   * AUTH SECTION
+   */
+
+  .auth-section {
+    gap: 8px;
+  }
+
+  .auth-buttons {
+    gap: 8px;
+  }
+
+  .auth-buttons .btn {
+    --padding: 6px 12px;
+    font-size: var(--fs-7);
+  }
+
+  .btn-outline {
+    display: none; /* Hide login button on mobile to save space */
+  }
+
+  .user-trigger {
+    padding: 6px 8px;
+  }
+
+  .user-name {
+    display: none; /* Hide username on mobile */
+  }
+
+  .user-dropdown-menu {
+    right: -20px;
+    min-width: 160px;
+  }
+
+  .dropdown-item {
+    padding: 10px 12px;
+    font-size: var(--fs-7);
+  }
+
+}
 
 /**
  * responsive for larger than 580px screen
@@ -883,12 +1180,27 @@ address {
   .card-text { --fs-5: 15px; }
 
 
-
   /**
    * HEADER
    */
 
   .header { padding-top: 83px; }
+
+  /**
+   * AUTH SECTION
+   */
+
+  .auth-buttons {
+    gap: 12px;
+  }
+
+  .auth-buttons .btn {
+    --padding: 10px 18px;
+  }
+
+  .user-dropdown-menu {
+    min-width: 180px;
+  }
 
   .helpline-box .icon-box { padding: 14px; }
 
@@ -1288,11 +1600,31 @@ address {
   }
 
 
-
   /**
    * REUSED STYLE
    */
 
   .container { max-width: 1180px; }
+
+  /**
+   * AUTH SECTION RESPONSIVE
+   */
+
+  .auth-section {
+    gap: 20px;
+  }
+
+  .auth-buttons .btn {
+    --padding: 10px 20px;
+    font-size: var(--fs-5);
+  }
+
+  .user-name {
+    max-width: 120px;
+  }
+
+  .user-dropdown-menu {
+    min-width: 220px;
+  }
 
 }

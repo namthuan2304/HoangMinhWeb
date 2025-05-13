@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Du Lịch Hoàng Minh</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+
+    <!-- custom css link -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/auth.css">
+
+    <!-- google font link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-wrapper">                    <div class="auth-card">
+                        <div class="auth-card-logo">
+                            <a href="index.html">
+                                <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+                            </a>
+                        </div>
+                        
+                        <div class="auth-header">
+                            <h1 class="auth-title" data-translate="signin">Đăng nhập</h1>
+                            <p class="auth-subtitle">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
+                        </div>
+
+                        <form id="loginForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="username" class="form-label" data-translate="username">Tên đăng nhập</label>
+                                <input type="text" id="username" name="username" class="form-control" 
+                                       data-translate-placeholder="username" placeholder="Nhập tên đăng nhập" required>
+                                <div class="error-message" id="usernameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label" data-translate="password">Mật khẩu</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" name="password" class="form-control" 
+                                           data-translate-placeholder="password" placeholder="Nhập mật khẩu" required>
+                                    <button type="button" class="password-toggle" id="passwordToggle">
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="passwordError"></div>
+                            </div>
+
+                            <div class="form-options">
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                                    <span class="checkmark"></span>
+                                    <span data-translate="remember_me">Ghi nhớ đăng nhập</span>
+                                </label>
+
+                                <a href="forgot-password.html" class="forgot-link" data-translate="forgot_password">Quên mật khẩu?</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                                <span class="btn-text" data-translate="signin">Đăng nhập</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="spinner"></div>
+                                </div>
+                            </button>
+
+                            <div class="form-divider">
+                                <span>hoặc</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="btn btn-social btn-google">
+                                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                                    Đăng nhập với Google
+                                </button>
+                            </div>
+
+                            <div class="auth-footer">
+                                <p data-translate="dont_have_account">Chưa có tài khoản?</p>
+                                <a href="register.html" class="auth-link" data-translate="register">Đăng ký ngay</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="auth-image">
+                        <img src="./assets/images/hero-banner.jpg" alt="Du lịch">
+                        <div class="image-overlay">
+                            <h2>Khám phá thế giới cùng chúng tôi</h2>
+                            <p>Những chuyến đi đáng nhớ đang chờ đón bạn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="./assets/js/language.js"></script>
+    <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/auth.js"></script>
+
+    <!-- ionicon link -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>

@@ -225,4 +225,12 @@ public class AuthController {
                     .body(MessageResponse.error("Lỗi làm mới token: " + e.getMessage()));
         }
     }
+
+    @PostMapping("/signout")
+    @Operation(summary = "Đăng xuất", description = "Đăng xuất và hủy token")
+    public ResponseEntity<?> logoutUser() {
+        // Với JWT stateless, chúng ta chỉ cần clear token ở client
+        // Nhưng ở đây chúng ta có thể thêm logic để blacklist token nếu cần
+        return ResponseEntity.ok(MessageResponse.success("Đăng xuất thành công!"));
+    }
 }

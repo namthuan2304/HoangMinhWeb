@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tourly - Travel agancy</title>
+  <title>Du Lịch Hoàng Minh - Khám phá thế giới</title>
 
   <!-- 
     - favicon
@@ -44,27 +44,23 @@
 
           <div class="icon-box">
             <ion-icon name="call-outline"></ion-icon>
+          </div>          <div class="wrapper">
+            <p class="helpline-title" data-translate="helpline_title">Để biết thêm thông tin:</p>
+
+            <p class="helpline-number">+84 (123) 456 789</p>
           </div>
 
-          <div class="wrapper">
-            <p class="helpline-title">For Further Inquires :</p>
-
-            <p class="helpline-number">+01 (123) 4567 90</p>
-          </div>
-
-        </a>
-
-        <a href="#" class="logo">
-          <img src="./assets/images/logo.svg" alt="Tourly logo">
+        </a>        <a href="#" class="logo">
+          <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
         </a>
 
         <div class="header-btn-group">
 
-          <button class="search-btn" aria-label="Search">
+          <button class="search-btn" aria-label="Tìm kiếm" data-translate-title="search">
             <ion-icon name="search"></ion-icon>
           </button>
 
-          <button class="nav-open-btn" aria-label="Open Menu" data-nav-open-btn>
+          <button class="nav-open-btn" aria-label="Mở menu" data-nav-open-btn data-translate-title="open_menu">
             <ion-icon name="menu-outline"></ion-icon>
           </button>
 
@@ -100,13 +96,11 @@
 
         <nav class="navbar" data-navbar>
 
-          <div class="navbar-top">
-
-            <a href="#" class="logo">
-              <img src="./assets/images/logo-blue.svg" alt="Tourly logo">
+          <div class="navbar-top">            <a href="#" class="logo">
+              <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
             </a>
 
-            <button class="nav-close-btn" aria-label="Close Menu" data-nav-close-btn>
+            <button class="nav-close-btn" aria-label="Đóng menu" data-nav-close-btn data-translate-title="close_menu">
               <ion-icon name="close-outline"></ion-icon>
             </button>
 
@@ -115,34 +109,72 @@
           <ul class="navbar-list">
 
             <li>
-              <a href="#home" class="navbar-link" data-nav-link>home</a>
+              <a href="#home" class="navbar-link" data-nav-link data-translate="home">Trang chủ</a>
             </li>
 
             <li>
-              <a href="#" class="navbar-link" data-nav-link>about us</a>
+              <a href="#about" class="navbar-link" data-nav-link data-translate="about_us">Về chúng tôi</a>
             </li>
 
             <li>
-              <a href="#destination" class="navbar-link" data-nav-link>destination</a>
+              <a href="#destination" class="navbar-link" data-nav-link data-translate="destination">Điểm đến</a>
             </li>
 
             <li>
-              <a href="#package" class="navbar-link" data-nav-link>packages</a>
+              <a href="#package" class="navbar-link" data-nav-link data-translate="packages">Gói tour</a>
             </li>
 
             <li>
-              <a href="#gallery" class="navbar-link" data-nav-link>gallery</a>
+              <a href="#gallery" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a>
             </li>
 
             <li>
-              <a href="#contact" class="navbar-link" data-nav-link>contact us</a>
+              <a href="#contact" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a>
             </li>
 
-          </ul>
+          </ul>        </nav>
 
-        </nav>
+        <!-- Auth Section -->
+        <div class="auth-section">
+          <!-- Authentication buttons (shown when not logged in) -->
+          <div class="auth-buttons" id="authButtons">
+            <a href="login.html" class="btn btn-outline" data-translate="login">Đăng nhập</a>
+            <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
+          </div>
 
-        <button class="btn btn-primary">Book Now</button>
+          <!-- User menu (shown when logged in) -->
+          <div class="user-menu" id="userMenu" style="display: none;">
+            <div class="user-dropdown">
+              <button class="user-trigger" id="userTrigger">
+                <div class="user-avatar">
+                  <ion-icon name="person-outline"></ion-icon>
+                </div>
+                <span class="user-name" id="userName">User</span>
+                <ion-icon name="chevron-down-outline" class="dropdown-icon"></ion-icon>
+              </button>
+              
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <a href="profile.html" class="dropdown-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span data-translate="profile">Hồ sơ</span>
+                </a>
+                <a href="bookings.html" class="dropdown-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span data-translate="my_bookings">Đặt chỗ của tôi</span>
+                </a>
+                <a href="favorites.html" class="dropdown-item">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  <span data-translate="favorites">Yêu thích</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item logout-btn" id="logoutBtn">
+                  <ion-icon name="log-out-outline"></ion-icon>
+                  <span data-translate="logout">Đăng xuất</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -158,23 +190,20 @@
 
       <!-- 
         - #HERO
-      -->
-
-      <section class="hero" id="home">
+      -->      <section class="hero" id="home">
         <div class="container">
 
-          <h2 class="h1 hero-title">Journey to explore world</h2>
+          <h2 class="h1 hero-title" data-translate="hero_title">Khám phá thế giới cùng chúng tôi</h2>
 
-          <p class="hero-text">
-            Ac mi duis mollis. Sapiente? Scelerisque quae, penatibus? Suscipit class corporis nostra rem quos
-            voluptatibus habitant?
-            Fames, vivamus minim nemo enim, gravida lobortis quasi, eum.
+          <p class="hero-text" data-translate="hero_subtitle">
+            Trải nghiệm những chuyến du lịch tuyệt vời với dịch vụ chuyên nghiệp. 
+            Chúng tôi mang đến cho bạn những kỷ niệm đáng nhớ nhất trong cuộc đời.
           </p>
 
           <div class="btn-group">
-            <button class="btn btn-primary">Learn more</button>
+            <button class="btn btn-primary" data-translate="learn_more">Tìm hiểu thêm</button>
 
-            <button class="btn btn-secondary">Book now</button>
+            <button class="btn btn-secondary" data-translate="book_now">Đặt ngay</button>
           </div>
 
         </div>
@@ -189,36 +218,35 @@
       -->
 
       <section class="tour-search">
-        <div class="container">
-
-          <form action="" class="tour-search-form">
+        <div class="container">          <form action="" class="tour-search-form">
 
             <div class="input-wrapper">
-              <label for="destination" class="input-label">Search Destination*</label>
+              <label for="destination" class="input-label" data-translate="destination">Điểm đến*</label>
 
-              <input type="text" name="destination" id="destination" required placeholder="Enter Destination"
-                class="input-field">
+              <input type="text" name="destination" id="destination" required 
+                     data-translate-placeholder="search_placeholder" placeholder="Nhập điểm đến..."
+                     class="input-field">
             </div>
 
             <div class="input-wrapper">
-              <label for="people" class="input-label">Pax Number*</label>
+              <label for="people" class="input-label" data-translate="number_of_people">Số người*</label>
 
-              <input type="number" name="people" id="people" required placeholder="No.of People" class="input-field">
+              <input type="number" name="people" id="people" required placeholder="Số người" class="input-field">
             </div>
 
             <div class="input-wrapper">
-              <label for="checkin" class="input-label">Checkin Date**</label>
+              <label for="checkin" class="input-label" data-translate="departure_date">Ngày khởi hành*</label>
 
               <input type="date" name="checkin" id="checkin" required class="input-field">
             </div>
 
             <div class="input-wrapper">
-              <label for="checkout" class="input-label">Checkout Date*</label>
+              <label for="checkout" class="input-label">Ngày kết thúc*</label>
 
               <input type="date" name="checkout" id="checkout" required class="input-field">
             </div>
 
-            <button type="submit" class="btn btn-secondary">Inquire now</button>
+            <button type="submit" class="btn btn-secondary" data-translate="search">Tìm kiếm</button>
 
           </form>
 
@@ -231,28 +259,23 @@
 
       <!-- 
         - #POPULAR
-      -->
-
-      <section class="popular" id="destination">
+      -->      <section class="popular" id="destination">
         <div class="container">
 
-          <p class="section-subtitle">Uncover place</p>
+          <p class="section-subtitle">Khám phá địa điểm</p>
 
-          <h2 class="h2 section-title">Popular destination</h2>
+          <h2 class="h2 section-title" data-translate="popular_destinations">Điểm đến phổ biến</h2>
 
-          <p class="section-text">
-            Fusce hic augue velit wisi quibusdam pariatur, iusto primis, nec nemo, rutrum. Vestibulum cumque laudantium.
-            Sit ornare
-            mollitia tenetur, aptent.
+          <p class="section-text" data-translate="popular_subtitle">
+            Những điểm đến được yêu thích nhất với cảnh đẹp hùng vĩ và văn hóa đặc sắc. 
+            Hãy cùng chúng tôi khám phá những nơi tuyệt vời này.
           </p>
 
           <ul class="popular-list">
 
             <li>
-              <div class="popular-card">
-
-                <figure class="card-img">
-                  <img src="./assets/images/popular-1.jpg" alt="San miguel, italy" loading="lazy">
+              <div class="popular-card">                <figure class="card-img">
+                  <img src="./assets/images/popular-1.jpg" alt="San Miguel, Ý" loading="lazy">
                 </figure>
 
                 <div class="card-content">
@@ -266,15 +289,15 @@
                   </div>
 
                   <p class="card-subtitle">
-                    <a href="#">Italy</a>
+                    <a href="#">Ý</a>
                   </p>
 
                   <h3 class="h3 card-title">
-                    <a href="#">San miguel</a>
+                    <a href="#">San Miguel</a>
                   </h3>
 
                   <p class="card-text">
-                    Fusce hic augue velit wisi ips quibusdam pariatur, iusto.
+                    Thành phố cổ kính với kiến trúc Renaissance tuyệt đẹp và ẩm thực hấp dẫn.
                   </p>
 
                 </div>
@@ -286,7 +309,7 @@
               <div class="popular-card">
 
                 <figure class="card-img">
-                  <img src="./assets/images/popular-2.jpg" alt="Burj khalifa, dubai" loading="lazy">
+                  <img src="./assets/images/popular-2.jpg" alt="Burj Khalifa, Dubai" loading="lazy">
                 </figure>
 
                 <div class="card-content">
@@ -304,11 +327,11 @@
                   </p>
 
                   <h3 class="h3 card-title">
-                    <a href="#">Burj khalifa</a>
+                    <a href="#">Burj Khalifa</a>
                   </h3>
 
                   <p class="card-text">
-                    Fusce hic augue velit wisi ips quibusdam pariatur, iusto.
+                    Tòa nhà cao nhất thế giới với tầm nhìn panorama tuyệt vời của thành phố hiện đại.
                   </p>
 
                 </div>
@@ -320,7 +343,7 @@
               <div class="popular-card">
 
                 <figure class="card-img">
-                  <img src="./assets/images/popular-3.jpg" alt="Kyoto temple, japan" loading="lazy">
+                  <img src="./assets/images/popular-3.jpg" alt="Đền Kyoto, Nhật Bản" loading="lazy">
                 </figure>
 
                 <div class="card-content">
@@ -334,15 +357,15 @@
                   </div>
 
                   <p class="card-subtitle">
-                    <a href="#">Japan</a>
+                    <a href="#">Nhật Bản</a>
                   </p>
 
                   <h3 class="h3 card-title">
-                    <a href="#">Kyoto temple</a>
+                    <a href="#">Đền Kyoto</a>
                   </h3>
 
                   <p class="card-text">
-                    Fusce hic augue velit wisi ips quibusdam pariatur, iusto.
+                    Khám phá văn hóa truyền thống Nhật Bản qua những ngôi đền cổ kính và vườn zen tuyệt đẹp.
                   </p>
 
                 </div>
@@ -352,7 +375,7 @@
 
           </ul>
 
-          <button class="btn btn-primary">More destintion</button>
+          <button class="btn btn-primary" data-translate="view_all">Xem tất cả</button>
 
         </div>
       </section>
@@ -363,37 +386,32 @@
 
       <!-- 
         - #PACKAGE
-      -->
-
-      <section class="package" id="package">
+      -->      <section class="package" id="package">
         <div class="container">
 
-          <p class="section-subtitle">Popular Packeges</p>
+          <p class="section-subtitle">Gói tour phổ biến</p>
 
-          <h2 class="h2 section-title">Checkout Our Packeges</h2>
+          <h2 class="h2 section-title" data-translate="tour_packages_title">Gói tour du lịch</h2>
 
-          <p class="section-text">
-            Fusce hic augue velit wisi quibusdam pariatur, iusto primis, nec nemo, rutrum. Vestibulum cumque laudantium.
-            Sit ornare
-            mollitia tenetur, aptent.
+          <p class="section-text" data-translate="tour_packages_subtitle">
+            Chọn gói tour phù hợp với bạn từ những chuyến đi trong nước đến quốc tế. 
+            Tất cả đều được thiết kế với dịch vụ chuyên nghiệp và giá cả hợp lý.
           </p>
 
           <ul class="package-list">
 
             <li>
-              <div class="package-card">
-
-                <figure class="card-banner">
-                  <img src="./assets/images/packege-1.jpg" alt="Experience The Great Holiday On Beach" loading="lazy">
+              <div class="package-card">                <figure class="card-banner">
+                  <img src="./assets/images/packege-1.jpg" alt="Trải nghiệm kỳ nghỉ tuyệt vời trên bãi biển" loading="lazy">
                 </figure>
 
                 <div class="card-content">
 
-                  <h3 class="h3 card-title">Experience The Great Holiday On Beach</h3>
+                  <h3 class="h3 card-title">Trải nghiệm kỳ nghỉ tuyệt vời trên bãi biển</h3>
 
                   <p class="card-text">
-                    Laoreet, voluptatum nihil dolor esse quaerat mattis explicabo maiores, est aliquet porttitor! Eaque,
-                    cras, aspernatur.
+                    Thư giãn trên những bãi biển tuyệt đẹp với cát trắng mịn và nước biển trong xanh. 
+                    Trải nghiệm không thể quên với dịch vụ 5 sao.
                   </p>
 
                   <ul class="card-meta-list">
@@ -402,7 +420,7 @@
                       <div class="meta-box">
                         <ion-icon name="time"></ion-icon>
 
-                        <p class="text">7D/6N</p>
+                        <p class="text">7 <span data-translate="days">ngày</span>/6 <span data-translate="nights">đêm</span></p>
                       </div>
                     </li>
 
@@ -410,7 +428,7 @@
                       <div class="meta-box">
                         <ion-icon name="people"></ion-icon>
 
-                        <p class="text">pax: 10</p>
+                        <p class="text">Số người: 10</p>
                       </div>
                     </li>
 
@@ -430,7 +448,7 @@
 
                   <div class="wrapper">
 
-                    <p class="reviews">(25 reviews)</p>
+                    <p class="reviews">(25 đánh giá)</p>
 
                     <div class="card-rating">
                       <ion-icon name="star"></ion-icon>
@@ -443,11 +461,11 @@
                   </div>
 
                   <p class="price">
-                    $750
-                    <span>/ per person</span>
+                    18.000.000₫
+                    <span data-translate="per_person">/ người</span>
                   </p>
 
-                  <button class="btn btn-secondary">Book Now</button>
+                  <button class="btn btn-secondary" data-translate="book_now">Đặt ngay</button>
 
                 </div>
 
@@ -455,19 +473,17 @@
             </li>
 
             <li>
-              <div class="package-card">
-
-                <figure class="card-banner">
-                  <img src="./assets/images/packege-2.jpg" alt="Summer Holiday To The Oxolotan River" loading="lazy">
+              <div class="package-card">                <figure class="card-banner">
+                  <img src="./assets/images/packege-2.jpg" alt="Kỳ nghỉ hè bên sông Oxolotan" loading="lazy">
                 </figure>
 
                 <div class="card-content">
 
-                  <h3 class="h3 card-title">Summer Holiday To The Oxolotan River</h3>
+                  <h3 class="h3 card-title">Kỳ nghỉ hè bên sông Oxolotan</h3>
 
                   <p class="card-text">
-                    Laoreet, voluptatum nihil dolor esse quaerat mattis explicabo maiores, est aliquet porttitor! Eaque,
-                    cras, aspernatur.
+                    Khám phá vẻ đẹp hoang sơ của thiên nhiên với những dòng sông trong xanh và rừng nhiệt đới tươi mát. 
+                    Trải nghiệm phiêu lưu đáng nhớ.
                   </p>
 
                   <ul class="card-meta-list">
@@ -476,7 +492,7 @@
                       <div class="meta-box">
                         <ion-icon name="time"></ion-icon>
 
-                        <p class="text">7D/6N</p>
+                        <p class="text">7 <span data-translate="days">ngày</span>/6 <span data-translate="nights">đêm</span></p>
                       </div>
                     </li>
 
@@ -484,7 +500,7 @@
                       <div class="meta-box">
                         <ion-icon name="people"></ion-icon>
 
-                        <p class="text">pax: 10</p>
+                        <p class="text">Số người: 10</p>
                       </div>
                     </li>
 
@@ -492,7 +508,7 @@
                       <div class="meta-box">
                         <ion-icon name="location"></ion-icon>
 
-                        <p class="text">Malaysia</p>
+                        <p class="text">Mexico</p>
                       </div>
                     </li>
 
@@ -504,7 +520,7 @@
 
                   <div class="wrapper">
 
-                    <p class="reviews">(20 reviews)</p>
+                    <p class="reviews">(20 đánh giá)</p>
 
                     <div class="card-rating">
                       <ion-icon name="star"></ion-icon>
@@ -517,11 +533,11 @@
                   </div>
 
                   <p class="price">
-                    $520
-                    <span>/ per person</span>
+                    12.500.000₫
+                    <span data-translate="per_person">/ người</span>
                   </p>
 
-                  <button class="btn btn-secondary">Book Now</button>
+                  <button class="btn btn-secondary" data-translate="book_now">Đặt ngay</button>
 
                 </div>
 
@@ -535,13 +551,11 @@
                   <img src="./assets/images/packege-3.jpg" alt="Santorini Island's Weekend Vacation" loading="lazy">
                 </figure>
 
-                <div class="card-content">
-
-                  <h3 class="h3 card-title">Santorini Island's Weekend Vacation</h3>
+                <div class="card-content">                  <h3 class="h3 card-title">Kỳ nghỉ cuối tuần tại đảo Santorini</h3>
 
                   <p class="card-text">
-                    Laoreet, voluptatum nihil dolor esse quaerat mattis explicabo maiores, est aliquet porttitor! Eaque,
-                    cras, aspernatur.
+                    Khám phá vẻ đẹp huyền ảo của đảo Santorini với những ngôi nhà trắng xanh đặc trưng và hoàng hôn tuyệt đẹp. 
+                    Trải nghiệm lãng mạn không thể quên.
                   </p>
 
                   <ul class="card-meta-list">
@@ -550,7 +564,7 @@
                       <div class="meta-box">
                         <ion-icon name="time"></ion-icon>
 
-                        <p class="text">7D/6N</p>
+                        <p class="text">7 <span data-translate="days">ngày</span>/6 <span data-translate="nights">đêm</span></p>
                       </div>
                     </li>
 
@@ -558,7 +572,7 @@
                       <div class="meta-box">
                         <ion-icon name="people"></ion-icon>
 
-                        <p class="text">pax: 10</p>
+                        <p class="text">Số người: 10</p>
                       </div>
                     </li>
 
@@ -566,7 +580,7 @@
                       <div class="meta-box">
                         <ion-icon name="location"></ion-icon>
 
-                        <p class="text">Malaysia</p>
+                        <p class="text">Hy Lạp</p>
                       </div>
                     </li>
 
@@ -578,7 +592,7 @@
 
                   <div class="wrapper">
 
-                    <p class="reviews">(40 reviews)</p>
+                    <p class="reviews">(40 đánh giá)</p>
 
                     <div class="card-rating">
                       <ion-icon name="star"></ion-icon>
@@ -591,20 +605,18 @@
                   </div>
 
                   <p class="price">
-                    $660
-                    <span>/ per person</span>
+                    15.800.000₫
+                    <span data-translate="per_person">/ người</span>
                   </p>
 
-                  <button class="btn btn-secondary">Book Now</button>
+                  <button class="btn btn-secondary" data-translate="book_now">Đặt ngay</button>
 
                 </div>
 
               </div>
             </li>
 
-          </ul>
-
-          <button class="btn btn-primary">View All Packages</button>
+          </ul>          <button class="btn btn-primary" data-translate="view_all">Xem tất cả gói tour</button>
 
         </div>
       </section>
@@ -620,45 +632,42 @@
       <section class="gallery" id="gallery">
         <div class="container">
 
-          <p class="section-subtitle">Photo Gallery</p>
+          <p class="section-subtitle">Thư viện ảnh</p>
 
-          <h2 class="h2 section-title">Photo's From Travellers</h2>
+          <h2 class="h2 section-title" data-translate="gallery_title">Hình ảnh từ các chuyến đi</h2>
 
-          <p class="section-text">
-            Fusce hic augue velit wisi quibusdam pariatur, iusto primis, nec nemo, rutrum. Vestibulum cumque laudantium.
-            Sit ornare
-            mollitia tenetur, aptent.
+          <p class="section-text" data-translate="gallery_subtitle">
+            Những khoảnh khắc đẹp nhất được ghi lại từ các chuyến du lịch của khách hàng. 
+            Hãy cùng ngắm nhìn những trải nghiệm tuyệt vời này.
           </p>
 
-          <ul class="gallery-list">
-
-            <li class="gallery-item">
+          <ul class="gallery-list">            <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-1.jpg" alt="Gallery image">
+                <img src="./assets/images/gallery-1.jpg" alt="Hình ảnh du lịch">
               </figure>
             </li>
 
             <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-2.jpg" alt="Gallery image">
+                <img src="./assets/images/gallery-2.jpg" alt="Hình ảnh du lịch">
               </figure>
             </li>
 
             <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-3.jpg" alt="Gallery image">
+                <img src="./assets/images/gallery-3.jpg" alt="Hình ảnh du lịch">
               </figure>
             </li>
 
             <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-4.jpg" alt="Gallery image">
+                <img src="./assets/images/gallery-4.jpg" alt="Hình ảnh du lịch">
               </figure>
             </li>
 
             <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-5.jpg" alt="Gallery image">
+                <img src="./assets/images/gallery-5.jpg" alt="Hình ảnh du lịch">
               </figure>
             </li>
 
@@ -676,21 +685,18 @@
       -->
 
       <section class="cta" id="contact">
-        <div class="container">
+        <div class="container">          <div class="cta-content">
+            <p class="section-subtitle">Kêu gọi hành động</p>
 
-          <div class="cta-content">
-            <p class="section-subtitle">Call To Action</p>
-
-            <h2 class="h2 section-title">Ready For Unforgatable Travel. Remember Us!</h2>
+            <h2 class="h2 section-title">Sẵn sàng cho chuyến du lịch khó quên. Hãy nhớ đến chúng tôi!</h2>
 
             <p class="section-text">
-              Fusce hic augue velit wisi quibusdam pariatur, iusto primis, nec nemo, rutrum. Vestibulum cumque
-              laudantium. Sit ornare
-              mollitia tenetur, aptent.
+              Chúng tôi cam kết mang đến cho bạn những trải nghiệm du lịch tuyệt vời nhất. 
+              Hãy liên hệ với chúng tôi để bắt đầu hành trình khám phá thế giới.
             </p>
           </div>
 
-          <button class="btn btn-secondary">Contact Us !</button>
+          <button class="btn btn-secondary" data-translate="contact_us">Liên hệ chúng tôi!</button>
 
         </div>
       </section>
@@ -709,28 +715,25 @@
   <footer class="footer">
 
     <div class="footer-top">
-      <div class="container">
-
-        <div class="footer-brand">
+      <div class="container">        <div class="footer-brand">
 
           <a href="#" class="logo">
-            <img src="./assets/images/logo.svg" alt="Tourly logo">
+            <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
           </a>
 
           <p class="footer-text">
-            Urna ratione ante harum provident, eleifend, vulputate molestiae proin fringilla, praesentium magna conubia
-            at
-            perferendis, pretium, aenean aut ultrices.
+            Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
+            trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
           </p>
 
         </div>
 
         <div class="footer-contact">
 
-          <h4 class="contact-title">Contact Us</h4>
+          <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
 
           <p class="contact-text">
-            Feel free to contact and reach us !!
+            Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!
           </p>
 
           <ul>
@@ -738,19 +741,19 @@
             <li class="contact-item">
               <ion-icon name="call-outline"></ion-icon>
 
-              <a href="tel:+01123456790" class="contact-link">+01 (123) 4567 90</a>
+              <a href="tel:+84123456789" class="contact-link">+84 (123) 456 789</a>
             </li>
 
             <li class="contact-item">
               <ion-icon name="mail-outline"></ion-icon>
 
-              <a href="mailto:info.tourly.com" class="contact-link">info.tourly.com</a>
+              <a href="mailto:info@hoangminhtravel.com" class="contact-link">info@hoangminhtravel.com</a>
             </li>
 
             <li class="contact-item">
               <ion-icon name="location-outline"></ion-icon>
 
-              <address>3146 Koontz, California</address>
+              <address>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</address>
             </li>
 
           </ul>
@@ -759,14 +762,15 @@
 
         <div class="footer-form">
 
-          <p class="form-text">
-            Subscribe our newsletter for more update & news !!
+          <p class="form-text" data-translate="newsletter_text">
+            Đăng ký nhận bản tin để cập nhật thông tin tour mới nhất!
           </p>
 
           <form action="" class="form-wrapper">
-            <input type="email" name="email" class="input-field" placeholder="Enter Your Email" required>
+            <input type="email" name="email" class="input-field" 
+                   data-translate-placeholder="email_address" placeholder="Nhập email của bạn" required>
 
-            <button type="submit" class="btn btn-secondary">Subscribe</button>
+            <button type="submit" class="btn btn-secondary" data-translate="subscribe">Đăng ký</button>
           </form>
 
         </div>
@@ -775,20 +779,18 @@
     </div>
 
     <div class="footer-bottom">
-      <div class="container">
-
-        <p class="copyright">
-          &copy; 2022 <a href="">codewithsadee</a>. All rights reserved
+      <div class="container">        <p class="copyright">
+          &copy; 2024 <a href="">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
         </p>
 
         <ul class="footer-bottom-list">
 
           <li>
-            <a href="#" class="footer-bottom-link">Privacy Policy</a>
+            <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
           </li>
 
           <li>
-            <a href="#" class="footer-bottom-link">Term & Condition</a>
+            <a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a>
           </li>
 
           <li>
@@ -815,12 +817,12 @@
   </a>
 
 
-
-
-
   <!-- 
     - custom js link
   -->
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/language.js"></script>
+  <script src="./assets/js/header.js"></script>
   <script src="./assets/js/script.js"></script>
 
   <!-- 

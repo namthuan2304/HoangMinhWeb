@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Header Authentication</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>Test Header Authentication</h1>
+        
+        <!-- Header Test Section -->
+        <div style="background: var(--gunmetal); padding: 20px; margin: 20px 0;">
+            <div class="auth-section">
+                <!-- Authentication buttons (shown when not logged in) -->
+                <div class="auth-buttons" id="authButtons">
+                    <a href="login.html" class="btn btn-outline">Đăng nhập</a>
+                    <a href="register.html" class="btn btn-primary">Đăng ký</a>
+                </div>
+
+                <!-- User menu (shown when logged in) -->
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-dropdown">
+                        <button class="user-trigger" id="userTrigger">
+                            <div class="user-avatar">
+                                <ion-icon name="person-outline"></ion-icon>
+                            </div>
+                            <span class="user-name" id="userName">User</span>
+                            <ion-icon name="chevron-down-outline" class="dropdown-icon"></ion-icon>
+                        </button>
+                        
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <a href="profile.html" class="dropdown-item">
+                                <ion-icon name="person-outline"></ion-icon>
+                                <span>Hồ sơ</span>
+                            </a>
+                            <a href="bookings.html" class="dropdown-item">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                <span>Đặt chỗ của tôi</span>
+                            </a>
+                            <a href="favorites.html" class="dropdown-item">
+                                <ion-icon name="heart-outline"></ion-icon>
+                                <span>Yêu thích</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item logout-btn" id="logoutBtn">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>Đăng xuất</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Controls -->
+        <div style="margin: 20px 0; padding: 20px; border: 1px solid #ccc;">
+            <h3>Debug Controls</h3>
+            <button onclick="testLogin()" class="btn btn-primary" style="margin: 5px;">Simulate Login</button>
+            <button onclick="testLogout()" class="btn btn-secondary" style="margin: 5px;">Simulate Logout</button>
+            <button onclick="checkAuthState()" class="btn btn-outline" style="margin: 5px;">Check Auth State</button>
+            <button onclick="triggerAuthChange()" class="btn btn-outline" style="margin: 5px;">Trigger Auth Change</button>
+            
+            <div id="debugOutput" style="margin-top: 10px; padding: 10px; background: #f5f5f5; white-space: pre-wrap;"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/header.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const output = document.getElementById('debugOutput');
+            output.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        function testLogin() {
+            log('Simulating login...');
+            
+            // Mock login data
+            const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsImV4cCI6OTk5OTk5OTk5OX0.test';
+            const mockUser = {
+                id: 1,
+                username: 'testuser',
+                email: 'test@example.com',
+                fullName: 'Test User',
+                role: 'USER'
+            };
+
+            // Set auth data
+            localStorage.setItem('authToken', mockToken);
+            localStorage.setItem('user', JSON.stringify(mockUser));
+            
+            // Update API client
+            if (window.apiClient) {
+                window.apiClient.token = mockToken;
+            }
+
+            // Trigger auth state change
+            if (window.HeaderManager) {
+                HeaderManager.triggerAuthStateChange();
+            }
+
+            log('Login simulated successfully');
+        }
+
+        function testLogout() {
+            log('Simulating logout...');
+            
+            // Clear auth data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            
+            // Update API client
+            if (window.apiClient) {
+                window.apiClient.token = null;
+            }
+
+            // Trigger auth state change
+            if (window.HeaderManager) {
+                HeaderManager.triggerAuthStateChange();
+            }
+
+            log('Logout simulated successfully');
+        }
+
+        function checkAuthState() {
+            log('Checking auth state...');
+            
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('user');
+            const isAuth = window.apiClient ? window.apiClient.isAuthenticated() : false;
+            
+            log(`Token: ${token ? 'exists' : 'null'}`);
+            log(`User: ${user ? 'exists' : 'null'}`);
+            log(`Is Authenticated: ${isAuth}`);
+            log(`API Client exists: ${!!window.apiClient}`);
+            log(`Header Manager exists: ${!!window.headerManager}`);
+        }
+
+        function triggerAuthChange() {
+            log('Manually triggering auth state change...');
+            if (window.HeaderManager) {
+                HeaderManager.triggerAuthStateChange();
+            } else {
+                window.dispatchEvent(new CustomEvent('authStateChanged'));
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('Page loaded, checking initial state...');
+                checkAuthState();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

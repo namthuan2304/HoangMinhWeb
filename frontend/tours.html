@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Tour - Du Lịch Hoàng Minh</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+
+    <!-- custom css link -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/tours.css">
+
+    <!-- google font link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body id="top">
+
+    <!-- Header -->
+    <header class="header" data-header>
+        <div class="overlay" data-overlay></div>
+
+        <div class="header-top">
+            <div class="container">
+                <a href="tel:+84123456789" class="helpline-box">
+                    <div class="icon-box">
+                        <ion-icon name="call-outline"></ion-icon>
+                    </div>
+                    <div class="wrapper">
+                        <p class="helpline-title" data-translate="helpline_title">Để biết thêm thông tin:</p>
+                        <p class="helpline-number">+84 (123) 456 789</p>
+                    </div>
+                </a>
+
+                <a href="index.html" class="logo">
+                    <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+                </a>
+
+                <div class="header-btn-group">
+                    <button class="search-btn" aria-label="Tìm kiếm" data-translate-title="search">
+                        <ion-icon name="search"></ion-icon>
+                    </button>
+
+                    <button class="nav-open-btn" aria-label="Mở menu" data-nav-open-btn data-translate-title="open_menu">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-bottom">
+            <div class="container">
+                <ul class="social-list">
+                    <li><a href="#" class="social-link"><ion-icon name="logo-facebook"></ion-icon></a></li>
+                    <li><a href="#" class="social-link"><ion-icon name="logo-twitter"></ion-icon></a></li>
+                    <li><a href="#" class="social-link"><ion-icon name="logo-youtube"></ion-icon></a></li>
+                </ul>
+
+                <nav class="navbar" data-navbar>
+                    <div class="navbar-top">
+                        <a href="index.html" class="logo">
+                            <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
+                        </a>
+                        <button class="nav-close-btn" aria-label="Đóng menu" data-nav-close-btn data-translate-title="close_menu">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+
+                    <ul class="navbar-list">
+                        <li><a href="index.html" class="navbar-link" data-nav-link data-translate="home">Trang chủ</a></li>
+                        <li><a href="about.html" class="navbar-link" data-nav-link data-translate="about_us">Về chúng tôi</a></li>
+                        <li><a href="tours.html" class="navbar-link active" data-nav-link data-translate="packages">Gói tour</a></li>
+                        <li><a href="gallery.html" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a></li>
+                        <li><a href="contact.html" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a></li>
+                    </ul>
+                </nav>
+
+                <div class="auth-buttons" id="authButtons">
+                    <a href="login.html" class="btn btn-outline" data-translate="signin">Đăng nhập</a>
+                    <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
+                </div>
+
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="user-btn" id="userBtn">
+                        <img src="./assets/images/default-avatar.png" alt="User" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">User</span>
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="profile.html" class="dropdown-link">
+                            <ion-icon name="person-outline"></ion-icon>
+                            <span data-translate="profile">Hồ sơ</span>
+                        </a>
+                        <a href="bookings.html" class="dropdown-link">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span data-translate="booking_history">Lịch sử đặt tour</span>
+                        </a>
+                        <a href="#" class="dropdown-link" id="logoutBtn">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                            <span data-translate="logout">Đăng xuất</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1 class="page-title" data-translate="tour_packages_title">Gói tour du lịch</h1>
+                <nav class="breadcrumb">
+                    <a href="index.html" data-translate="home">Trang chủ</a>
+                    <span>/</span>
+                    <span data-translate="packages">Gói tour</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Tour Search & Filter -->
+        <section class="tour-filter">
+            <div class="container">
+                <div class="filter-card">
+                    <form class="filter-form" id="tourFilterForm">
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label for="destination" data-translate="destination">Điểm đến</label>
+                                <input type="text" id="destination" name="destination" 
+                                       data-translate-placeholder="search_placeholder" 
+                                       placeholder="Tìm kiếm điểm đến...">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="tourType" data-translate="tour_type">Loại tour</label>
+                                <select id="tourType" name="tourType">
+                                    <option value="" data-translate="select_option">Chọn loại tour...</option>
+                                    <option value="DOMESTIC">Tour trong nước</option>
+                                    <option value="INTERNATIONAL">Tour quốc tế</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="priceRange" data-translate="price">Khoảng giá</label>
+                                <select id="priceRange" name="priceRange">
+                                    <option value="">Tất cả</option>
+                                    <option value="0-5000000">Dưới 5 triệu</option>
+                                    <option value="5000000-10000000">5 - 10 triệu</option>
+                                    <option value="10000000-20000000">10 - 20 triệu</option>
+                                    <option value="20000000-50000000">20 - 50 triệu</option>
+                                    <option value="50000000-999999999">Trên 50 triệu</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="duration" data-translate="duration">Thời gian</label>
+                                <select id="duration" name="duration">
+                                    <option value="">Tất cả</option>
+                                    <option value="1-3">1-3 ngày</option>
+                                    <option value="4-7">4-7 ngày</option>
+                                    <option value="8-14">8-14 ngày</option>
+                                    <option value="15-30">15-30 ngày</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="sortBy">Sắp xếp theo</label>
+                                <select id="sortBy" name="sortBy">
+                                    <option value="newest">Mới nhất</option>
+                                    <option value="price-asc">Giá thấp đến cao</option>
+                                    <option value="price-desc">Giá cao đến thấp</option>
+                                    <option value="rating">Đánh giá cao nhất</option>
+                                    <option value="popular">Phổ biến nhất</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <ion-icon name="search-outline"></ion-icon>
+                                    <span data-translate="search">Tìm kiếm</span>
+                                </button>
+                                <button type="reset" class="btn btn-outline">
+                                    <ion-icon name="refresh-outline"></ion-icon>
+                                    <span>Xóa bộ lọc</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tour List -->
+        <section class="tours-section">
+            <div class="container">
+                <div class="tours-header">
+                    <div class="tours-count">
+                        <span id="toursCount">Đang tải...</span>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">
+                            <ion-icon name="grid-outline"></ion-icon>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <ion-icon name="list-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tours-grid" id="toursGrid">
+                    <!-- Tours will be loaded here -->
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p data-translate="loading">Đang tải...</p>
+                    </div>
+                </div>
+
+                <div class="pagination-wrapper">
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+                    </a>
+                    <p class="footer-text">
+                        Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
+                        trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
+                    </p>
+                </div>
+
+                <div class="footer-contact">
+                    <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
+                    <p class="contact-text">Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!</p>
+                    <ul>
+                        <li class="contact-item">
+                            <ion-icon name="call-outline"></ion-icon>
+                            <a href="tel:+84123456789" class="contact-link">+84 (123) 456 789</a>
+                        </li>
+                        <li class="contact-item">
+                            <ion-icon name="mail-outline"></ion-icon>
+                            <a href="mailto:info@hoangminhtravel.com" class="contact-link">info@hoangminhtravel.com</a>
+                        </li>
+                        <li class="contact-item">
+                            <ion-icon name="location-outline"></ion-icon>
+                            <address>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</address>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-form">
+                    <p class="form-text" data-translate="newsletter_text">
+                        Đăng ký nhận bản tin để cập nhật thông tin tour mới nhất!
+                    </p>
+                    <form action="" class="form-wrapper">
+                        <input type="email" name="email" class="input-field" 
+                               data-translate-placeholder="email_address" placeholder="Nhập email của bạn" required>
+                        <button type="submit" class="btn btn-secondary" data-translate="subscribe">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p class="copyright">
+                    &copy; 2024 <a href="">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
+                </p>
+                <ul class="footer-bottom-list">
+                    <li><a href="#" class="footer-bottom-link">Chính sách bảo mật</a></li>
+                    <li><a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a></li>
+                    <li><a href="#" class="footer-bottom-link">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Go to top -->
+    <a href="#top" class="go-top" data-go-top>
+        <ion-icon name="chevron-up-outline"></ion-icon>
+    </a>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/language.js"></script>
+    <script src="./assets/js/auth.js"></script>
+    <script src="./assets/js/tours.js"></script>
+    <script src="./assets/js/script.js"></script>
+
+    <!-- ionicon link -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>

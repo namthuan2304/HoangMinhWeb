@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Du Lịch Hoàng Minh</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+
+    <!-- custom css link -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/auth.css">
+
+    <!-- google font link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-wrapper">                    <div class="auth-card">
+                        <div class="auth-card-logo">
+                            <a href="index.html">
+                                <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+                            </a>
+                        </div>
+                        
+                        <div class="auth-header">
+                            <h1 class="auth-title" data-translate="signup">Đăng ký</h1>
+                            <p class="auth-subtitle">Tạo tài khoản mới để bắt đầu hành trình khám phá thế giới cùng chúng tôi.</p>
+                        </div>
+
+                        <form id="registerForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="fullName" class="form-label">Họ và tên</label>
+                                <input type="text" id="fullName" name="fullName" class="form-control" 
+                                       placeholder="Nhập họ và tên đầy đủ" required>
+                                <div class="error-message" id="fullNameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username" class="form-label" data-translate="username">Tên đăng nhập</label>
+                                <input type="text" id="username" name="username" class="form-control" 
+                                       data-translate-placeholder="username" placeholder="Nhập tên đăng nhập" required>
+                                <div class="error-message" id="usernameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="form-label" data-translate="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" 
+                                       data-translate-placeholder="email_address" placeholder="Nhập địa chỉ email" required>
+                                <div class="error-message" id="emailError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phoneNumber" class="form-label" data-translate="phone_number">Số điện thoại</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" 
+                                       placeholder="Nhập số điện thoại" required>
+                                <div class="error-message" id="phoneNumberError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label" data-translate="password">Mật khẩu</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" name="password" class="form-control" 
+                                           data-translate-placeholder="password" placeholder="Nhập mật khẩu" required>
+                                    <button type="button" class="password-toggle">
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="passwordError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label" data-translate="confirm_password">Xác nhận mật khẩu</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" 
+                                           placeholder="Nhập lại mật khẩu" required>
+                                    <button type="button" class="password-toggle">
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="confirmPasswordError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                                    <span class="checkmark"></span>
+                                    <span>Tôi đồng ý với <a href="#" class="auth-link">Điều khoản dịch vụ</a> và <a href="#" class="auth-link">Chính sách bảo mật</a></span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+                                <span class="btn-text" data-translate="signup">Đăng ký</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="spinner"></div>
+                                </div>
+                            </button>
+
+                            <div class="form-divider">
+                                <span>hoặc</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="btn btn-social btn-google">
+                                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                                    Đăng ký với Google
+                                </button>
+                            </div>
+
+                            <div class="auth-footer">
+                                <p data-translate="already_have_account">Đã có tài khoản?</p>
+                                <a href="login.html" class="auth-link" data-translate="signin">Đăng nhập ngay</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="auth-image">
+                        <img src="./assets/images/gallery-2.jpg" alt="Du lịch">
+                        <div class="image-overlay">
+                            <h2>Bắt đầu hành trình mới</h2>
+                            <p>Tham gia cộng đồng những người yêu du lịch và khám phá thế giới cùng chúng tôi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="./assets/js/language.js"></script>
+    <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/auth.js"></script>
+
+    <!-- ionicon link -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>

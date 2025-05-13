@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hồ sơ cá nhân - Du Lịch Hoàng Minh</title>
+
+  <!-- favicon -->
+  <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+  <!-- custom css link -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/auth.css">
+  <link rel="stylesheet" href="./assets/css/profile.css">
+
+  <!-- google font link -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header" data-header>
+    <div class="overlay" data-overlay></div>
+
+    <div class="header-top">
+      <div class="container">
+
+        <div class="helpline-box">
+          <div class="icon-box">
+            <ion-icon name="call-outline"></ion-icon>
+          </div>
+          <div class="wrapper">
+            <p class="helpline-title" data-translate="need_help">Cần hỗ trợ?</p>
+            <p class="helpline-number">+84 123 456 789</p>
+          </div>
+        </div>
+
+        <a href="index.html" class="logo">
+          <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+        </a>
+
+        <div class="header-btn-group">
+          <!-- Language Selector -->
+          <div class="language-selector">
+            <button class="language-btn" id="languageBtn">
+              <img src="https://flagcdn.com/w20/vn.png" alt="Tiếng Việt" id="currentFlag">
+              <span id="currentLang">VI</span>
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+              <a href="#" data-lang="vi" class="active">
+                <img src="https://flagcdn.com/w20/vn.png" alt="Tiếng Việt">
+                <span>Tiếng Việt</span>
+              </a>
+              <a href="#" data-lang="en">
+                <img src="https://flagcdn.com/w20/us.png" alt="English">
+                <span>English</span>
+              </a>
+            </div>
+          </div>
+
+          <button class="search-btn" aria-label="Tìm kiếm">
+            <ion-icon name="search-outline"></ion-icon>
+          </button>
+
+          <button class="nav-open-btn" aria-label="Mở menu" data-nav-open-btn>
+            <ion-icon name="menu-outline"></ion-icon>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="header-bottom">
+      <div class="container">
+
+        <ul class="social-list">
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-facebook"></ion-icon>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-twitter"></ion-icon>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-youtube"></ion-icon>
+            </a>
+          </li>
+        </ul>
+
+        <nav class="navbar" data-navbar>
+          <div class="navbar-top">
+            <a href="index.html" class="logo">
+              <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
+            </a>
+            <button class="nav-close-btn" aria-label="Đóng menu" data-nav-close-btn>
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+
+          <ul class="navbar-list">
+            <li>
+              <a href="index.html" class="navbar-link" data-nav-link data-translate="home">Trang chủ</a>
+            </li>
+            <li>
+              <a href="tours.html" class="navbar-link" data-nav-link data-translate="tours">Tours</a>
+            </li>
+            <li>
+              <a href="#" class="navbar-link" data-nav-link data-translate="about_us">Về chúng tôi</a>
+            </li>
+            <li>
+              <a href="#" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Auth Section -->
+        <div class="auth-section">
+          <!-- Authentication buttons (shown when not logged in) -->
+          <div class="auth-buttons" id="authButtons">
+            <a href="login.html" class="btn btn-outline" data-translate="login">Đăng nhập</a>
+            <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
+          </div>
+
+          <!-- User menu (shown when logged in) -->
+          <div class="user-menu" id="userMenu" style="display: none;">
+            <div class="user-dropdown">
+              <button class="user-trigger" id="userTrigger">
+                <div class="user-avatar">
+                  <ion-icon name="person-outline"></ion-icon>
+                </div>
+                <span class="user-name" id="userName">User</span>
+                <ion-icon name="chevron-down-outline" class="dropdown-icon"></ion-icon>
+              </button>
+              
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <a href="profile.html" class="dropdown-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span data-translate="profile">Hồ sơ</span>
+                </a>
+                <a href="bookings.html" class="dropdown-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span data-translate="my_bookings">Đặt chỗ của tôi</span>
+                </a>
+                <a href="favorites.html" class="dropdown-item">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  <span data-translate="favorites">Yêu thích</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item logout-btn" id="logoutBtn">
+                  <ion-icon name="log-out-outline"></ion-icon>
+                  <span data-translate="logout">Đăng xuất</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </header>
+
+  <main>
+    <!-- PROFILE SECTION -->
+    <section class="profile-section">
+      <div class="container">
+        <div class="profile-header">
+          <h1 class="h2" data-translate="my_profile">Hồ sơ của tôi</h1>
+          <p class="section-text" data-translate="profile_description">Quản lý thông tin cá nhân và cài đặt tài khoản của bạn</p>
+        </div>
+
+        <div class="profile-content">
+          <!-- Profile Card -->
+          <div class="profile-card">
+            <div class="profile-avatar">
+              <div class="avatar-circle">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <button class="btn btn-outline change-avatar-btn" data-translate="change_avatar">Đổi ảnh đại diện</button>
+            </div>
+
+            <div class="profile-info">
+              <form class="profile-form" id="profileForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="fullName" class="form-label" data-translate="full_name">Họ và tên</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Nhập họ và tên">
+                    <span class="error-message" id="fullNameError"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="username" class="form-label" data-translate="username">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Tên đăng nhập" readonly>
+                    <span class="error-message" id="usernameError"></span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="email@example.com">
+                    <span class="error-message" id="emailError"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="phoneNumber" class="form-label" data-translate="phone_number">Số điện thoại</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="0123 456 789">
+                    <span class="error-message" id="phoneNumberError"></span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="address" class="form-label" data-translate="address">Địa chỉ</label>
+                  <textarea id="address" name="address" class="form-control" rows="3" placeholder="Nhập địa chỉ của bạn"></textarea>
+                  <span class="error-message" id="addressError"></span>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" id="cancelBtn" data-translate="cancel">Hủy</button>
+                  <button type="submit" class="btn btn-primary" id="saveBtn">
+                    <span class="btn-text" data-translate="save_changes">Lưu thay đổi</span>
+                    <div class="btn-loading" style="display: none;">
+                      <ion-icon name="loading-outline" class="rotating"></ion-icon>
+                    </div>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Password Change Card -->
+          <div class="profile-card">
+            <h3 class="card-title" data-translate="change_password">Đổi mật khẩu</h3>
+            
+            <form class="password-form" id="passwordForm">
+              <div class="form-group">
+                <label for="currentPassword" class="form-label" data-translate="current_password">Mật khẩu hiện tại</label>
+                <div class="password-field">
+                  <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+                  <button type="button" class="password-toggle">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </button>
+                </div>
+                <span class="error-message" id="currentPasswordError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="newPassword" class="form-label" data-translate="new_password">Mật khẩu mới</label>
+                <div class="password-field">
+                  <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Nhập mật khẩu mới">
+                  <button type="button" class="password-toggle">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </button>
+                </div>
+                <span class="error-message" id="newPasswordError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmNewPassword" class="form-label" data-translate="confirm_new_password">Xác nhận mật khẩu mới</label>
+                <div class="password-field">
+                  <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" placeholder="Xác nhận mật khẩu mới">
+                  <button type="button" class="password-toggle">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </button>
+                </div>
+                <span class="error-message" id="confirmNewPasswordError"></span>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                  <span class="btn-text" data-translate="change_password">Đổi mật khẩu</span>
+                  <div class="btn-loading" style="display: none;">
+                    <ion-icon name="loading-outline" class="rotating"></ion-icon>
+                  </div>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Account Settings Card -->
+          <div class="profile-card">
+            <h3 class="card-title" data-translate="account_settings">Cài đặt tài khoản</h3>
+            
+            <div class="settings-list">
+              <div class="setting-item">
+                <div class="setting-info">
+                  <h4 data-translate="email_notifications">Thông báo email</h4>
+                  <p data-translate="email_notifications_desc">Nhận thông báo về tour và ưu đãi qua email</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="emailNotifications" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <h4 data-translate="sms_notifications">Thông báo SMS</h4>
+                  <p data-translate="sms_notifications_desc">Nhận thông báo quan trọng qua SMS</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="smsNotifications">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <h4 data-translate="marketing_emails">Email marketing</h4>
+                  <p data-translate="marketing_emails_desc">Nhận email về chương trình khuyến mãi và ưu đãi</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="marketingEmails" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- GO TO TOP -->
+  <a href="#top" class="go-top" data-go-top>
+    <ion-icon name="chevron-up-outline"></ion-icon>
+  </a>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- custom js link -->
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/language.js"></script>
+  <script src="./assets/js/header.js"></script>
+  <script src="./assets/js/profile.js"></script>
+  <script src="./assets/js/script.js"></script>
+
+  <!-- ionicon link -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>
