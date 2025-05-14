@@ -22,7 +22,7 @@ class AuthManager {
         
         if (authPages.some(page => currentPage.includes(page))) {
             const user = apiClient.getCurrentUser();
-            if (user && user.roles && user.roles.includes('ROLE_ADMIN')) {
+            if (user && user.role === 'ADMIN') {
                 window.location.href = 'admin/dashboard.html';
             } else {
                 window.location.href = 'index.html';
@@ -133,11 +133,12 @@ class AuthManager {
                 HeaderManager.triggerAuthStateChange();
             } else {
                 window.dispatchEvent(new CustomEvent('authStateChanged'));
-            }            // Redirect based on user role
+            }
+
+            // Redirect based on user role
             setTimeout(() => {
                 const user = apiClient.getCurrentUser();
-                console.log('Current user:', user); // Debug log
-                if (user && user.roles && user.roles.includes('ROLE_ADMIN')) {
+                if (user && user.role === 'ADMIN') {
                     window.location.href = 'admin/dashboard.html';
                 } else {
                     window.location.href = 'index.html';

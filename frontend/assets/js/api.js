@@ -56,7 +56,9 @@ class APIClient {
             console.error('API Request Error:', error);
             throw error;
         }
-    }    // Authentication Methods
+    }
+
+    // Authentication Methods
     async login(credentials) {
         try {
             const response = await this.request('/auth/signin', {
@@ -65,26 +67,12 @@ class APIClient {
                 auth: false,
             });
 
-            console.log('Login response:', response); // Debug log
-
-            if (response.token) {
-                this.token = response.token;
+            if (response.accessToken) {
+                this.token = response.accessToken;
                 this.refreshToken = response.refreshToken;
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('refreshToken', this.refreshToken);
-                
-                // Tạo user object từ response
-                const user = {
-                    id: response.id,
-                    username: response.username,
-                    email: response.email,
-                    fullName: response.fullName,
-                    roles: response.roles
-                };
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                // Trigger auth state change
-                window.dispatchEvent(new CustomEvent('authStateChanged'));
+                localStorage.setItem('user', JSON.stringify(response.user));
             }
 
             return response;
@@ -103,7 +91,9 @@ class APIClient {
         } catch (error) {
             throw new Error('Đăng ký thất bại: ' + error.message);
         }
-    }    async refreshAuthToken() {
+    }
+
+    async refreshAuthToken() {
         if (!this.refreshToken) return false;
 
         try {
@@ -113,8 +103,8 @@ class APIClient {
                 auth: false,
             });
 
-            if (response.token) {
-                this.token = response.token;
+            if (response.accessToken) {
+                this.token = response.accessToken;
                 localStorage.setItem('authToken', this.token);
                 return true;
             }
@@ -123,7 +113,9 @@ class APIClient {
         }
 
         return false;
-    }async logout() {
+    }
+
+    async logout() {
         try {
             await this.request('/auth/signout', { method: 'POST' });
         } catch (error) {
@@ -134,9 +126,7 @@ class APIClient {
             localStorage.removeItem('authToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
-            
-            // Trigger auth state change
-            window.dispatchEvent(new CustomEvent('authStateChanged'));
+            window.location.href = '/';
         }
     }
 
@@ -153,95 +143,6 @@ class APIClient {
             method: 'POST',
             body: JSON.stringify({ token, newPassword }),
             auth: false,
-        });
-    }
-
-    // Tours Methods
-    async getTours(params = {}) {
-        const queryString = new URLSearchParams(params).toString();
-        const endpoint = queryString ? `/tours?${queryString}` : '/tours';
-        return await this.request(endpoint, { auth: false });
-    }
-
-    async getTour(id) {
-        return await this.request(`/tours/${id}`, { auth: false });
-    }
-
-    async searchTours(searchParams) {
-        const queryString = new URLSearchParams(searchParams).toString();
-        return await this.request(`/tours/search?${queryString}`, { auth: false });
-    }
-
-    async getFeaturedTours() {
-        return await this.request('/tours/featured', { auth: false });
-    }
-
-    async createTour(tourData) {
-        return await this.request('/tours', {
-            method: 'POST',
-            body: JSON.stringify(tourData),
-        });
-    }
-
-    async updateTour(id, tourData) {
-        return await this.request(`/tours/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(tourData),
-        });
-    }
-
-    async deleteTour(id) {
-        return await this.request(`/tours/${id}`, {
-            method: 'DELETE',
-        });
-    }
-
-    async uploadTourImages(tourId, images) {
-        const formData = new FormData();
-        images.forEach(image => formData.append('images', image));
-
-        return await this.request(`/tours/${tourId}/upload-images`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Authorization': `Bearer ${this.token}`,
-                // Don't set Content-Type for FormData
-            },
-        });
-    }
-
-    // Bookings Methods
-    async createBooking(bookingData) {
-        return await this.request('/bookings', {
-            method: 'POST',
-            body: JSON.stringify(bookingData),
-        });
-    }
-
-    async getBookings(params = {}) {
-        const queryString = new URLSearchParams(params).toString();
-        const endpoint = queryString ? `/bookings?${queryString}` : '/bookings';
-        return await this.request(endpoint);
-    }
-
-    async getBooking(id) {
-        return await this.request(`/bookings/${id}`);
-    }
-
-    async getUserBookings() {
-        return await this.request('/bookings/user');
-    }
-
-    async updateBookingStatus(id, status) {
-        return await this.request(`/bookings/${id}/status`, {
-            method: 'PUT',
-            body: JSON.stringify({ status }),
-        });
-    }
-
-    async cancelBooking(id) {
-        return await this.request(`/bookings/${id}/cancel`, {
-            method: 'POST',
         });
     }
 
@@ -289,7 +190,7 @@ class APIClient {
 
     async uploadAvatar(avatarFile) {
         const formData = new FormData();
-        formData.append('avatar', avatarFile);
+        formData.append('file', avatarFile);
 
         return await this.request('/users/upload-avatar', {
             method: 'POST',
@@ -365,21 +266,110 @@ class APIClient {
         });
     }
 
+    // Bookings Methods
+    async createBooking(bookingData) {
+        return await this.request('/bookings', {
+            method: 'POST',
+            body: JSON.stringify(bookingData),
+        });
+    }
+
+    async getBookings(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/bookings/admin?${queryString}` : '/bookings/admin';
+        return await this.request(endpoint);
+    }
+
+    async getBooking(id) {
+        return await this.request(`/bookings/${id}`);
+    }
+
+    async getUserBookings() {
+        return await this.request('/bookings/my-bookings');
+    }
+
+    async updateBookingStatus(id, status) {
+        return await this.request(`/bookings/${id}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
+        });
+    }
+
+    async cancelBooking(id) {
+        return await this.request(`/bookings/${id}/cancel`, {
+            method: 'POST',
+        });
+    }
+
+    // Tours Methods
+    async getTours(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/tours?${queryString}` : '/tours';
+        return await this.request(endpoint, { auth: false });
+    }
+
+    async getTour(id) {
+        return await this.request(`/tours/${id}`, { auth: false });
+    }
+
+    async searchTours(searchParams) {
+        const queryString = new URLSearchParams(searchParams).toString();
+        return await this.request(`/tours/search?${queryString}`, { auth: false });
+    }
+
+    async getFeaturedTours() {
+        return await this.request('/tours/featured', { auth: false });
+    }
+
+    async createTour(tourData) {
+        return await this.request('/tours', {
+            method: 'POST',
+            body: JSON.stringify(tourData),
+        });
+    }
+
+    async updateTour(id, tourData) {
+        return await this.request(`/tours/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(tourData),
+        });
+    }
+
+    async deleteTour(id) {
+        return await this.request(`/tours/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    async uploadTourImages(tourId, images) {
+        const formData = new FormData();
+        images.forEach(image => formData.append('files', image));
+
+        return await this.request(`/tours/${tourId}/upload-images`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+                // Don't set Content-Type for FormData
+            },
+        });
+    }
+
     // Statistics Methods
     async getDashboard() {
         return await this.request('/statistics/dashboard');
     }
 
     async getMonthlyRevenue() {
-        return await this.request('/statistics/revenue/monthly');
+        return await this.request('/statistics/revenue/monthly?year=' + new Date().getFullYear());
     }
 
     async getQuarterlyRevenue() {
-        return await this.request('/statistics/revenue/quarterly');
+        return await this.request('/statistics/revenue/quarterly?year=' + new Date().getFullYear());
     }
 
     async getTopBookedTours() {
-        return await this.request('/statistics/tours/top-booked');
+        return await this.request('/bookings/statistics/top-tours');
     }
 
     // PDF Methods
@@ -412,7 +402,8 @@ class APIClient {
     }
 
     async getMonthlyRevenuePDF() {
-        const response = await fetch(`${this.baseURL}/statistics/revenue/monthly/pdf`, {
+        const currentDate = new Date();
+        const response = await fetch(`${this.baseURL}/statistics/revenue/monthly/pdf?year=${currentDate.getFullYear()}&month=${currentDate.getMonth() + 1}`, {
             headers: {
                 'Authorization': `Bearer ${this.token}`,
             },
@@ -423,7 +414,9 @@ class APIClient {
         }
 
         return response.blob();
-    }    // Utility Methods
+    }
+
+    // Utility Methods
     isAuthenticated() {
         if (!this.token) {
             return false;
@@ -451,38 +444,20 @@ class APIClient {
     getCurrentUser() {
         const userStr = localStorage.getItem('user');
         return userStr ? JSON.parse(userStr) : null;
-    }    hasRole(role) {
-        const user = this.getCurrentUser();
-        return user && user.roles && user.roles.includes(role);
     }
 
-    isAdmin() {
-        return this.hasRole('ROLE_ADMIN');
+    hasRole(role) {
+        const user = this.getCurrentUser();
+        return user && user.role === role;
+    }    isAdmin() {
+        return this.hasRole('ADMIN');
     }
 
     // Profile Management Methods
-    async getUserProfile() {
-        return await this.request('/users/profile');
-    }
-
     async updateProfile(userData) {
         return await this.request('/users/profile', {
             method: 'PUT',
             body: JSON.stringify(userData)
-        });
-    }
-
-    async changePassword(passwordData) {
-        return await this.request('/users/change-password', {
-            method: 'POST',
-            body: JSON.stringify(passwordData)
-        });
-    }
-
-    async updateUserSettings(settings) {
-        return await this.request('/users/settings', {
-            method: 'PUT',
-            body: JSON.stringify(settings)
         });
     }
 
