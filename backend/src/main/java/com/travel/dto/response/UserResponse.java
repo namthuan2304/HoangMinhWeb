@@ -14,9 +14,9 @@ public class UserResponse {
     private String username;
     private String email;
     private String fullName;
-    private String phone;
-    private String address;
+    private String phone;    private String address;
     private LocalDate birthDate;
+    private String gender;
     private String avatarUrl;
     private UserRole role;
     private Boolean isActive;
@@ -74,14 +74,20 @@ public class UserResponse {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public LocalDate getBirthDate() {
+    }    public LocalDate getBirthDate() {
         return birthDate;
     }
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getAvatarUrl() {

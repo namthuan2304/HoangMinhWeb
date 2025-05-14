@@ -18,19 +18,19 @@ public class UpdateProfileRequest {
     private String phone;
 
     @Size(max = 255, message = "Địa chỉ không được vượt quá 255 ký tự")
-    private String address;
-
-    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
+    private String address;    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
     private LocalDate birthDate;
 
-    // Constructors
-    public UpdateProfileRequest() {}
+    @Size(max = 10, message = "Giới tính không được vượt quá 10 ký tự")
+    private String gender;
 
-    public UpdateProfileRequest(String fullName, String phone, String address, LocalDate birthDate) {
+    // Constructors
+    public UpdateProfileRequest() {}    public UpdateProfileRequest(String fullName, String phone, String address, LocalDate birthDate, String gender) {
         this.fullName = fullName;
         this.phone = phone;
         this.address = address;
         this.birthDate = birthDate;
+        this.gender = gender;
     }
 
     // Getters and Setters
@@ -56,13 +56,19 @@ public class UpdateProfileRequest {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public LocalDate getBirthDate() {
+    }    public LocalDate getBirthDate() {
         return birthDate;
     }
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

@@ -459,6 +459,81 @@ body { background: var(--white); }
   transform: translateY(0);
 }
 
+.user-dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Loading states for dynamic content */
+.popular-list.loading,
+.package-list.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gainsboro);
+  border-radius: 50%;
+  border-top-color: var(--bright-navy-blue);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dynamic content styles */
+.dynamic-content {
+  transition: opacity 0.3s ease;
+}
+
+.tour-card.featured {
+  position: relative;
+}
+
+.tour-card.featured::before {
+  content: "Nổi bật";
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #e74c3c;
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: var(--fs-7);
+  font-weight: var(--fw-600);
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* Error states */
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+  padding: 2rem;
+  font-size: var(--fs-5);
+}
+
+.retry-btn {
+  background: var(--bright-navy-blue);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: var(--fs-6);
+  margin-top: 1rem;
+  transition: var(--transition);
+}
+
+.retry-btn:hover {
+  background: var(--yale-blue);
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -1627,4 +1702,84 @@ address {
     min-width: 220px;
   }
 
+}
+
+/*-----------------------------------*\
+ * #TOAST NOTIFICATIONS
+\*-----------------------------------*/
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.15);
+  padding: 1rem;
+  z-index: 1000;
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+  min-width: 300px;
+  max-width: 400px;
+  border-left: 4px solid var(--bright-navy-blue);
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toast-success {
+  border-left-color: #27ae60;
+}
+
+.toast-error {
+  border-left-color: #e74c3c;
+}
+
+.toast-warning {
+  border-left-color: #f39c12;
+}
+
+.toast-info {
+  border-left-color: var(--bright-navy-blue);
+}
+
+.toast ion-icon {
+  font-size: 1.25rem;
+}
+
+.toast-success ion-icon {
+  color: #27ae60;
+}
+
+.toast-error ion-icon {
+  color: #e74c3c;
+}
+
+.toast-warning ion-icon {
+  color: #f39c12;
+}
+
+.toast-info ion-icon {
+  color: var(--bright-navy-blue);
+}
+
+@media (max-width: 768px) {
+  .toast {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    transform: translateY(-100px);
+    min-width: auto;
+  }
+  
+  .toast.show {
+    transform: translateY(0);
+  }
 }

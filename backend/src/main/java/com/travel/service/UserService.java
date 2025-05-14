@@ -79,8 +79,7 @@ public class UserService {
 
     /**
      * Cập nhật thông tin user (Admin)
-     */
-    public UserResponse updateUser(Long id, UpdateProfileRequest request) {
+     */    public UserResponse updateUser(Long id, UpdateProfileRequest request) {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với ID: " + id));
 
@@ -96,6 +95,9 @@ public class UserService {
         if (request.getBirthDate() != null) {
             user.setBirthDate(request.getBirthDate());
         }
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
+        }
 
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponse.class);
@@ -103,8 +105,7 @@ public class UserService {
 
     /**
      * Cập nhật thông tin cá nhân
-     */
-    public UserResponse updateProfile(String username, UpdateProfileRequest request) {
+     */    public UserResponse updateProfile(String username, UpdateProfileRequest request) {
         User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
 
@@ -119,6 +120,9 @@ public class UserService {
         }
         if (request.getBirthDate() != null) {
             user.setBirthDate(request.getBirthDate());
+        }
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
         }
 
         User savedUser = userRepository.save(user);

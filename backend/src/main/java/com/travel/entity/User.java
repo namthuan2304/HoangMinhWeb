@@ -43,10 +43,11 @@ public class User extends BaseEntity implements UserDetails {
     private String phone;
 
     @Column(name = "address")
-    private String address;
-
-    @Column(name = "birth_date")
+    private String address;    @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @Column(name = "gender")
+    private String gender;
 
     @Column(name = "avatar_url")
     private String avatarUrl;
@@ -160,14 +161,20 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public LocalDate getBirthDate() {
+    }    public LocalDate getBirthDate() {
         return birthDate;
     }
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getAvatarUrl() {

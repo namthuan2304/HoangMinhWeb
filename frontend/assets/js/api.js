@@ -56,9 +56,7 @@ class APIClient {
             console.error('API Request Error:', error);
             throw error;
         }
-    }
-
-    // Authentication Methods
+    }    // Authentication Methods
     async login(credentials) {
         try {
             const response = await this.request('/auth/signin', {
@@ -67,12 +65,22 @@ class APIClient {
                 auth: false,
             });
 
-            if (response.accessToken) {
-                this.token = response.accessToken;
+            if (response.token) {
+                this.token = response.token;
                 this.refreshToken = response.refreshToken;
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('refreshToken', this.refreshToken);
-                localStorage.setItem('user', JSON.stringify(response.user));
+                
+                // Tạo user object từ response
+                const user = {
+                    id: response.id,
+                    username: response.username,
+                    email: response.email,
+                    fullName: response.fullName,
+                    roles: response.roles,
+                    role: response.roles && response.roles.length > 0 ? response.roles[0].replace('ROLE_', '') : 'USER'
+                };
+                localStorage.setItem('user', JSON.stringify(user));
             }
 
             return response;
@@ -91,21 +99,20 @@ class APIClient {
         } catch (error) {
             throw new Error('Đăng ký thất bại: ' + error.message);
         }
-    }
-
-    async refreshAuthToken() {
+    }    async refreshAuthToken() {
         if (!this.refreshToken) return false;
 
         try {
-            const response = await this.request('/auth/refresh-token', {
+            const response = await this.request(`/auth/refresh-token?refreshToken=${this.refreshToken}`, {
                 method: 'POST',
-                body: JSON.stringify({ refreshToken: this.refreshToken }),
                 auth: false,
             });
 
-            if (response.accessToken) {
-                this.token = response.accessToken;
+            if (response.success && response.data && response.data.token) {
+                this.token = response.data.token;
+                this.refreshToken = response.data.refreshToken;
                 localStorage.setItem('authToken', this.token);
+                localStorage.setItem('refreshToken', this.refreshToken);
                 return true;
             }
         } catch (error) {
@@ -282,10 +289,10 @@ class APIClient {
 
     async getBooking(id) {
         return await this.request(`/bookings/${id}`);
-    }
-
-    async getUserBookings() {
-        return await this.request('/bookings/my-bookings');
+    }    async getUserBookings(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';
+        return await this.request(endpoint);
     }
 
     async updateBookingStatus(id, status) {
