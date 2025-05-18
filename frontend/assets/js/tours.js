@@ -256,14 +256,12 @@ class ToursManager {
         if (window.languageManager) {
             window.languageManager.translatePage();
         }
-    }
-
-    renderTourCard(tour) {
-        const rating = tour.averageRating || 0;
-        const reviewCount = tour.reviewCount || 0;
+    }    renderTourCard(tour) {
+        const rating = tour.ratingAverage || 0;
+        const reviewCount = tour.totalBookings || 0;
         const price = this.formatPrice(tour.price);
-        const duration = tour.duration || 0;
-        const maxGroupSize = tour.maxGroupSize || 0;
+        const duration = tour.durationDays || 0;
+        const maxGroupSize = tour.maxParticipants || 0;
         
         // Generate star rating
         const stars = Array.from({length: 5}, (_, i) => {
@@ -279,15 +277,13 @@ class ToursManager {
             { icon: 'time-outline', text: `${duration} ngày` },
             { icon: 'people-outline', text: `${maxGroupSize} người` },
             { icon: 'location-outline', text: tour.destination || 'Đang cập nhật' }
-        ];
-
-        return `
+        ];        return `
             <div class="tour-card">
                 <div class="tour-card-banner">
-                    <img src="${tour.imageUrl || './assets/images/packege-1.jpg'}" 
-                         alt="${tour.tourName}" loading="lazy">
+                    <img src="${tour.mainImageUrl || tour.imageUrls?.[0] || './assets/images/packege-1.jpg'}" 
+                         alt="${tour.name}" loading="lazy">
                     
-                    ${tour.featured ? '<div class="tour-badge featured">Nổi bật</div>' : ''}
+                    ${tour.isFeatured ? '<div class="tour-badge featured">Nổi bật</div>' : ''}
                     ${tour.isNew ? '<div class="tour-badge new">Mới</div>' : ''}
                     
                     <button class="tour-wishlist" data-tour-id="${tour.id}" aria-label="Thêm vào yêu thích">
@@ -305,7 +301,7 @@ class ToursManager {
                     </div>
 
                     <h3 class="tour-title">
-                        <a href="tour-detail.html?id=${tour.id}">${tour.tourName}</a>
+                        <a href="tour-detail.html?id=${tour.id}">${tour.name}</a>
                     </h3>
 
                     <p class="tour-description">

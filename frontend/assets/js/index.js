@@ -262,13 +262,10 @@ function updateFeaturedTours(tours) {
             : (tour.mainImageUrl || './assets/images/packege-1.jpg');
         const description = IndexUtils 
             ? IndexUtils.truncateText(tour.description || '', 150)
-            : (tour.description || 'Trải nghiệm du lịch tuyệt vời.');
-            
-        // Debug rating data
+            : (tour.description || 'Trải nghiệm du lịch tuyệt vời.');        // Debug rating data
         console.log('Tour rating data:', {
             ratingAverage: tour.ratingAverage,
-            totalBookings: tour.totalBookings,
-            reviewCount: tour.reviewCount
+            totalBookings: tour.totalBookings
         });
           
         listItem.innerHTML = `
@@ -309,13 +306,11 @@ function updateFeaturedTours(tours) {
                         </li>
                     </ul>
                 </div>
-                
-                <div class="card-price">
-                    <div class="wrapper">
-                        <p class="reviews">(${tour.totalBookings || 0} lượt đặt)</p>
+                  <div class="card-price">
+                    <div class="wrapper">                        <p class="reviews">(${tour.totalBookings || 0} đánh giá)</p>
                         
                         <div class="card-rating">
-                            ${generateStarRating(tour.ratingAverage || 5)}
+                            ${generateStarRating(tour.ratingAverage || 0)}
                         </div>
                     </div>
                     
