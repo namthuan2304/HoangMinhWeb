@@ -1,8 +1,43 @@
 /* Tour Detail Page Styles */
 
+/* Header override for tour detail page */
+.header {
+  position: relative;
+  background: var(--gunmetal);
+  padding-top: 0;
+}
+
+.header-top {
+  position: relative;
+  background: var(--gunmetal);
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+.header-bottom {
+  background: var(--gunmetal);
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+.header .helpline-box,
+.header .logo,
+.header .header-btn-group,
+.header .social-link,
+.header .navbar-link,
+.header .user-trigger {
+  color: var(--white);
+}
+
+.header .navbar-link:is(:hover, :focus) {
+  color: var(--bright-navy-blue);
+}
+
+.header .social-link:is(:hover, :focus) {
+  background: hsla(0, 0%, 100%, 0.2);
+}
+
 /* Breadcrumb */
 .breadcrumb-section {
-  padding: 2rem 0 1rem;
+  padding: 1rem 0;
   background-color: var(--cultured-1);
 }
 
@@ -23,8 +58,14 @@
   color: var(--oxford-blue);
 }
 
-.breadcrumb span {
+.breadcrumb ion-icon {
   color: var(--spanish-gray);
+  font-size: 1rem;
+}
+
+.breadcrumb span {
+  color: var(--oxford-blue);
+  font-weight: var(--fw-500);
 }
 
 /* Tour Detail Section */
@@ -101,21 +142,38 @@
 }
 
 .badge {
+  display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-15);
-  font-size: var(--fs-7);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-8);
   font-weight: var(--fw-600);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .badge.featured {
-  background-color: #f39c12;
+  background-color: var(--red-salsa);
   color: var(--white);
 }
 
 .badge.type {
   background-color: var(--united-nations-blue);
   color: var(--white);
+}
+
+.badge.active {
+  background: #10b981;
+  color: white;
+}
+
+.badge.inactive {
+  background: #f59e0b;
+  color: white;
+}
+
+.badge.completed {
+  background: #6b7280;
+  color: white;
 }
 
 .tour-title {
@@ -190,6 +248,37 @@
 .price-unit {
   font-size: var(--fs-6);
   color: var(--spanish-gray);
+}
+
+.availability {
+  margin-top: 0.5rem;
+}
+
+.availability span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.available-slots {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.limited-slots {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.sold-out {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.unavailable {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
 }
 
 .availability {
@@ -428,26 +517,185 @@
   color: var(--oxford-blue);
 }
 
-/* Error State */
-.error-state {
-  text-align: center;
+/* Loading and Error States */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 4rem 2rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--cultured-1);
+  border-top: 4px solid var(--united-nations-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
 }
 
 .error-state ion-icon {
   font-size: 4rem;
-  color: var(--spanish-gray);
+  color: var(--red-salsa);
   margin-bottom: 1rem;
 }
 
 .error-state h3 {
-  margin-bottom: 1rem;
   color: var(--oxford-blue);
+  margin-bottom: 0.5rem;
 }
 
 .error-state p {
-  margin-bottom: 2rem;
   color: var(--spanish-gray);
+  margin-bottom: 2rem;
+}
+
+/* Availability states */
+.availability span {
+  font-weight: var(--fw-600);
+  font-size: var(--fs-7);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-4);
+}
+
+.available-slots {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.limited-slots {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.sold-out {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.unavailable {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+}
+
+/* Button states */
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: none;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Header overrides for tour-detail page */
+.header {
+  background: var(--white);
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-top {
+  background: var(--white);
+}
+
+.header-bottom {
+  background: var(--white);
+}
+
+/* Fix text colors for white background */
+.header .helpline-title,
+.header .helpline-number {
+  color: var(--oxford-blue);
+}
+
+.header .user-trigger {
+  color: var(--oxford-blue);
+}
+
+.header .user-trigger:hover {
+  background: var(--cultured-1);
+}
+
+.header .user-name {
+  color: var(--oxford-blue);
+}
+
+.header .dropdown-icon {
+  color: var(--oxford-blue);
+}
+
+.header .user-avatar {
+  background: var(--united-nations-blue);
+  color: var(--white);
+}
+
+.header .search-btn,
+.header .nav-open-btn {
+  color: var(--oxford-blue);
+}
+
+.header .search-btn:hover,
+.header .nav-open-btn:hover {
+  background: var(--cultured-1);
+}
+
+/* Fix navbar text colors */
+.header .navbar-link {
+  color: var(--oxford-blue);
+}
+
+.header .navbar-link:hover {
+  color: var(--united-nations-blue);
+}
+
+/* Fix social links */
+.header .social-link {
+  color: var(--oxford-blue);
+}
+
+.header .social-link:hover {
+  color: var(--united-nations-blue);
+}
+
+/* Fix auth buttons for white background */
+.header .btn-outline {
+  background: transparent;
+  color: var(--oxford-blue);
+  border: 1px solid var(--oxford-blue);
+}
+
+.header .btn-outline:hover {
+  background: var(--oxford-blue);
+  color: var(--white);
+}
+
+.header .btn-primary {
+  background: var(--united-nations-blue);
+  color: var(--white);
+}
+
+.header .btn-primary:hover {
+  background: var(--oxford-blue);
 }
 
 /* Responsive Design */

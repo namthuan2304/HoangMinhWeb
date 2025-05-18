@@ -328,6 +328,10 @@ class APIClient {
         return await this.request('/tours/featured', { auth: false });
     }
 
+    async getRelatedTours(tourId, limit = 5) {
+        return await this.request(`/tours/${tourId}/related?limit=${limit}`, { auth: false });
+    }
+
     async createTour(tourData) {
         return await this.request('/tours', {
             method: 'POST',

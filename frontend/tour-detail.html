@@ -8,11 +8,11 @@
     <title>Chi tiết Tour - Du Lịch Hoàng Minh</title>
 
     <!-- favicon -->
-    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
-
-    <!-- custom css link -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">    <!-- custom css link -->
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/tour-detail.css">
+    <link rel="stylesheet" href="./assets/css/toast.css">
+    <link rel="stylesheet" href="./assets/css/toast.css">
 
     <!-- google font link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,47 +79,59 @@
                         <li><a href="gallery.html" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a></li>
                         <li><a href="contact.html" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a></li>
                     </ul>
-                </nav>
+                </nav>                <!-- Auth Section -->
+                <div class="auth-section">
+                    <!-- Authentication buttons (shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="login.html" class="btn btn-outline" data-translate="login">Đăng nhập</a>
+                        <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
+                    </div>
 
-                <div class="auth-buttons" id="authButtons">
-                    <a href="login.html" class="btn btn-outline" data-translate="signin">Đăng nhập</a>
-                    <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
-                </div>
-
-                <div class="user-menu" id="userMenu" style="display: none;">
-                    <button class="user-btn" id="userBtn">
-                        <img src="./assets/images/default-avatar.png" alt="User" class="user-avatar" id="userAvatar">
-                        <span class="user-name" id="userName">User</span>
-                        <ion-icon name="chevron-down-outline"></ion-icon>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="profile.html" class="dropdown-link">
-                            <ion-icon name="person-outline"></ion-icon>
-                            <span data-translate="profile">Hồ sơ</span>
-                        </a>
-                        <a href="bookings.html" class="dropdown-link">
-                            <ion-icon name="calendar-outline"></ion-icon>
-                            <span data-translate="booking_history">Lịch sử đặt tour</span>
-                        </a>
-                        <a href="#" class="dropdown-link" id="logoutBtn">
-                            <ion-icon name="log-out-outline"></ion-icon>
-                            <span data-translate="logout">Đăng xuất</span>
-                        </a>
+                    <!-- User menu (shown when logged in) -->
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-dropdown">
+                            <button class="user-trigger" id="userTrigger">
+                                <div class="user-avatar">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                </div>
+                                <span class="user-name" id="userName">User</span>
+                                <ion-icon name="chevron-down-outline" class="dropdown-icon"></ion-icon>
+                            </button>
+                            
+                            <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <a href="profile.html" class="dropdown-item">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                    <span data-translate="profile">Hồ sơ</span>
+                                </a>
+                                <a href="bookings.html" class="dropdown-item">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                    <span data-translate="my_bookings">Đặt chỗ của tôi</span>
+                                </a>
+                                <a href="favorites.html" class="dropdown-item">
+                                    <ion-icon name="heart-outline"></ion-icon>
+                                    <span data-translate="favorites">Yêu thích</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item logout-btn" id="logoutBtn">
+                                    <ion-icon name="log-out-outline"></ion-icon>
+                                    <span data-translate="logout">Đăng xuất</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main>
-        <!-- Breadcrumb -->
+    <main>        <!-- Breadcrumb -->
         <section class="breadcrumb-section">
             <div class="container">
                 <nav class="breadcrumb">
                     <a href="index.html" data-translate="home">Trang chủ</a>
-                    <span>/</span>
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
                     <a href="tours.html" data-translate="packages">Gói tour</a>
-                    <span>/</span>
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
                     <span id="tourNameBreadcrumb">Chi tiết tour</span>
                 </nav>
             </div>

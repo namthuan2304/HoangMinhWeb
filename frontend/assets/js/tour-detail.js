@@ -33,33 +33,29 @@ class TourDetailManager {
                 userMenu.style.display = 'block';
                 
                 const userNameElement = document.getElementById('userName');
-                const userAvatarElement = document.getElementById('userAvatar');
                 
                 if (userNameElement) {
                     userNameElement.textContent = user.fullName || user.username;
-                }
-                
-                if (userAvatarElement && user.avatar) {
-                    userAvatarElement.src = user.avatar;
                 }
             }
         }
 
         // User menu toggle
-        const userBtn = document.getElementById('userBtn');
-        const userDropdown = document.getElementById('userDropdown');
+        const userTrigger = document.getElementById('userTrigger');
+        const userDropdown = document.querySelector('.user-dropdown');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
         
-        if (userBtn && userDropdown) {
-            userBtn.addEventListener('click', (e) => {
+        if (userTrigger && userDropdown) {
+            userTrigger.addEventListener('click', (e) => {
                 e.stopPropagation();
-                userDropdown.classList.toggle('show');
+                userDropdown.classList.toggle('active');
             });
         }
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            if (userDropdown) {
-                userDropdown.classList.remove('show');
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('active');
             }
         });
 
@@ -67,7 +63,13 @@ class TourDetailManager {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                await authManager.logout();
+                try {
+                    await authManager.logout();
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    this.showToast('Có lỗi xảy ra khi đăng xuất', 'error');
+                }
             });
         }
     }
@@ -89,6 +91,10 @@ class TourDetailManager {
             const tour = await apiClient.getTour(this.tourId);
             this.currentTour = tour;
 
+            // Debug log to check tour data
+            console.log('Tour data received:', tour);
+            console.log('Terms conditions:', tour.termsConditions);
+
             // Update breadcrumb
             const breadcrumb = document.getElementById('tourNameBreadcrumb');
             if (breadcrumb) {
@@ -103,7 +109,15 @@ class TourDetailManager {
 
         } catch (error) {
             console.error('Error loading tour detail:', error);
-            this.showError('Không thể tải thông tin tour');
+            let errorMessage = 'Không thể tải thông tin tour';
+            
+            if (error.response?.status === 404) {
+                errorMessage = 'Tour không tồn tại hoặc đã bị xóa';
+            } else if (error.response?.status >= 500) {
+                errorMessage = 'Lỗi server, vui lòng thử lại sau';
+            }
+            
+            this.showError(errorMessage);
         }
     }
 
@@ -142,32 +156,45 @@ class TourDetailManager {
                         <div class="tour-badges">
                             ${tour.isFeatured ? '<span class="badge featured">Nổi bật</span>' : ''}
                             <span class="badge type">${tour.tourType === 'INTERNATIONAL' ? 'Tour quốc tế' : 'Tour trong nước'}</span>
+                            ${tour.status === 'ACTIVE' ? '<span class="badge active">Đang mở</span>' : 
+                              tour.status === 'INACTIVE' ? '<span class="badge inactive">Tạm dừng</span>' :
+                              tour.status === 'COMPLETED' ? '<span class="badge completed">Đã hoàn thành</span>' : ''}
                         </div>
 
                         <h1 class="tour-title">${tour.name}</h1>
 
                         <div class="tour-rating">
                             <div class="stars">${stars}</div>
-                            <span class="rating-text">${rating.toFixed(1)} (${reviewCount} đánh giá)</span>
+                            <span class="rating-text">${rating > 0 ? rating.toFixed(1) : '0.0'} (${reviewCount} đánh giá)</span>
                         </div>
 
                         <div class="tour-meta">
                             <div class="meta-item">
                                 <ion-icon name="time-outline"></ion-icon>
-                                <span>${tour.durationDays || 1} ngày</span>
+                                <span>${tour.durationDays ? tour.durationDays + ' ngày' : 'Chưa xác định'}</span>
                             </div>
                             <div class="meta-item">
                                 <ion-icon name="location-outline"></ion-icon>
-                                <span>${tour.destination}</span>
+                                <span>${tour.destination || 'Chưa xác định'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <ion-icon name="airplane-outline"></ion-icon>
+                                <span>Từ: ${tour.departureLocation || 'Chưa xác định'}</span>
                             </div>
                             <div class="meta-item">
                                 <ion-icon name="people-outline"></ion-icon>
-                                <span>Tối đa ${tour.maxParticipants} người</span>
+                                <span>Tối đa ${tour.maxParticipants || 0} người</span>
                             </div>
                             <div class="meta-item">
                                 <ion-icon name="calendar-outline"></ion-icon>
                                 <span>Khởi hành: ${this.formatDate(tour.departureDate)}</span>
                             </div>
+                            ${tour.returnDate ? `
+                            <div class="meta-item">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                <span>Kết thúc: ${this.formatDate(tour.returnDate)}</span>
+                            </div>
+                            ` : ''}
                         </div>
 
                         <div class="tour-price-section">
@@ -176,15 +203,12 @@ class TourDetailManager {
                                 <span class="price-unit">/ người</span>
                             </div>
                             <div class="availability">
-                                <span class="available-slots">Còn ${tour.maxParticipants - (tour.currentParticipants || 0)} chỗ</span>
+                                ${this.getAvailabilityInfo(tour)}
                             </div>
                         </div>
 
                         <div class="tour-actions">
-                            <button class="btn btn-primary btn-large" onclick="tourDetailManager.showBookingModal()">
-                                <ion-icon name="calendar-outline"></ion-icon>
-                                <span data-translate="book_now">Đặt ngay</span>
-                            </button>
+                            ${this.renderBookingButton(tour)}
                             <button class="btn btn-outline wishlist-btn" onclick="tourDetailManager.toggleWishlist()">
                                 <ion-icon name="heart-outline"></ion-icon>
                                 <span>Yêu thích</span>
@@ -231,7 +255,7 @@ class TourDetailManager {
                         <div class="tab-pane" id="terms">
                             <h3>Điều khoản & Điều kiện</h3>
                             <div class="terms-content">
-                                ${tour.termsConditions ? tour.termsConditions.split('\n').map(line => `<p>${line}</p>`).join('') : '<p>Điều khoản sẽ được cập nhật sớm.</p>'}
+                                ${tour.termsConditions ? this.formatTermsConditions(tour.termsConditions) : '<p>Điều khoản sẽ được cập nhật sớm.</p>'}
                             </div>
                         </div>
 
@@ -240,7 +264,7 @@ class TourDetailManager {
                             <div class="reviews-summary">
                                 <div class="rating-overview">
                                     <div class="rating-score">
-                                        <span class="score">${rating.toFixed(1)}</span>
+                                        <span class="score">${rating > 0 ? rating.toFixed(1) : '0.0'}</span>
                                         <div class="stars">${stars}</div>
                                         <span class="review-count">Dựa trên ${reviewCount} đánh giá</span>
                                     </div>
@@ -298,13 +322,31 @@ class TourDetailManager {
 
     async showBookingModal() {
         if (!apiClient.isAuthenticated()) {
-            window.location.href = 'login.html';
+            this.showToast('Vui lòng đăng nhập để đặt tour', 'warning');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
             return;
         }
 
-        // Here you would implement the booking modal
-        // For now, just redirect to a booking page or show a simple modal
-        alert('Chức năng đặt tour sẽ được triển khai sớm!');
+        // Check if tour is available
+        if (!this.currentTour) {
+            this.showToast('Thông tin tour không hợp lệ', 'error');
+            return;
+        }
+
+        const availableSlots = this.currentTour.maxParticipants - (this.currentTour.currentParticipants || 0);
+        if (availableSlots <= 0) {
+            this.showToast('Tour đã hết chỗ', 'error');
+            return;
+        }
+
+        // For now, redirect to a booking form with tour ID
+        // In a full implementation, you would show a booking modal here
+        this.showToast('Chuyển hướng đến trang đặt tour...', 'info');
+        setTimeout(() => {
+            window.location.href = `booking.html?tourId=${this.currentTour.id}`;
+        }, 1000);
     }
 
     async toggleWishlist() {
@@ -322,24 +364,21 @@ class TourDetailManager {
             const relatedGrid = document.getElementById('relatedToursGrid');
             if (!relatedGrid || !this.currentTour) return;
 
-            // For now, just get some tours from the same destination or type
-            const response = await apiClient.getTours({
-                page: 0,
-                size: 4,
-                destination: this.currentTour.destination
-            });
+            // Use the backend's related tours endpoint
+            const relatedTours = await apiClient.getRelatedTours(this.currentTour.id, 3);
 
-            const tours = response.content || response.data || [];
-            const filteredTours = tours.filter(tour => tour.id !== this.currentTour.id).slice(0, 3);
-
-            if (filteredTours.length > 0) {
-                this.renderRelatedTours(filteredTours);
+            if (relatedTours && relatedTours.length > 0) {
+                this.renderRelatedTours(relatedTours);
             } else {
                 relatedGrid.innerHTML = '<p>Không có tour liên quan.</p>';
             }
 
         } catch (error) {
             console.error('Error loading related tours:', error);
+            const relatedGrid = document.getElementById('relatedToursGrid');
+            if (relatedGrid) {
+                relatedGrid.innerHTML = '<p>Không thể tải tour liên quan.</p>';
+            }
         }
     }
 
@@ -368,8 +407,9 @@ class TourDetailManager {
     }
 
     generateStarRating(rating) {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 !== 0;
+        const clampedRating = Math.max(0, Math.min(5, rating)); // Clamp between 0-5
+        const fullStars = Math.floor(clampedRating);
+        const hasHalfStar = clampedRating % 1 >= 0.5;
         let html = '';
 
         // Full stars
@@ -383,7 +423,7 @@ class TourDetailManager {
         }
 
         // Empty stars
-        const emptyStars = 5 - Math.ceil(rating);
+        const emptyStars = 5 - Math.ceil(clampedRating);
         for (let i = 0; i < emptyStars; i++) {
             html += '<ion-icon name="star-outline"></ion-icon>';
         }
@@ -399,6 +439,32 @@ class TourDetailManager {
         if (!dateString) return 'Chưa xác định';
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
+    }
+
+    formatTermsConditions(termsConditions) {
+        if (!termsConditions) return '<p>Chưa có điều khoản.</p>';
+        
+        // Split by lines and format each line
+        const lines = termsConditions.split('\n').filter(line => line.trim());
+        
+        if (lines.length === 0) return '<p>Chưa có điều khoản.</p>';
+        
+        return lines.map(line => {
+            const trimmedLine = line.trim();
+            
+            // Check if it's a header (all caps or starts with number)
+            if (trimmedLine.match(/^\d+\./) || trimmedLine === trimmedLine.toUpperCase()) {
+                return `<h4>${trimmedLine}</h4>`;
+            }
+            
+            // Check if it's a list item
+            if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
+                return `<ul><li>${trimmedLine.substring(1).trim()}</li></ul>`;
+            }
+            
+            // Regular paragraph
+            return `<p>${trimmedLine}</p>`;
+        }).join('');
     }
 
     showError(message) {
@@ -424,6 +490,45 @@ class TourDetailManager {
         
         setTimeout(() => toast.classList.add('show'), 100);
         setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    getAvailabilityInfo(tour) {
+        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
+        
+        if (tour.status !== 'ACTIVE') {
+            return '<span class="unavailable">Tour không khả dụng</span>';
+        }
+        
+        if (availableSlots <= 0) {
+            return '<span class="sold-out">Đã hết chỗ</span>';
+        }
+        
+        if (availableSlots <= 5) {
+            return `<span class="limited-slots">Chỉ còn ${availableSlots} chỗ</span>`;
+        }
+        
+        return `<span class="available-slots">Còn ${availableSlots} chỗ</span>`;
+    }
+
+    renderBookingButton(tour) {
+        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
+        const isAvailable = tour.status === 'ACTIVE' && availableSlots > 0;
+        
+        if (!isAvailable) {
+            return `
+                <button class="btn btn-secondary btn-large" disabled>
+                    <ion-icon name="close-outline"></ion-icon>
+                    <span>Không khả dụng</span>
+                </button>
+            `;
+        }
+        
+        return `
+            <button class="btn btn-primary btn-large" onclick="tourDetailManager.showBookingModal()">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span data-translate="book_now">Đặt ngay</span>
+            </button>
+        `;
     }
 }
 
