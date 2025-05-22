@@ -1,13 +1,8 @@
 // Profile Page JavaScript
-class ProfileManager {
-    constructor() {
+class ProfileManager {    constructor() {
         this.currentUser = null;
-        this.currentPage = 1;
-        this.bookingsPerPage = 10;
         this.init();
-    }
-
-    init() {
+    }init() {
         // Check authentication
         this.checkAuthentication();
         
@@ -20,7 +15,6 @@ class ProfileManager {
         
         // Load user data
         this.loadUserProfile();
-        this.loadUserBookings();
     }
 
     checkAuthentication() {
@@ -29,9 +23,7 @@ class ProfileManager {
             return;
         }
         this.currentUser = apiClient.getCurrentUser();
-    }
-
-    initializeTabs() {
+    }    initializeTabs() {
         const tabButtons = document.querySelectorAll('.profile-nav-item');
         const tabContents = document.querySelectorAll('.profile-tab');
 
@@ -46,11 +38,6 @@ class ProfileManager {
                 // Add active class to clicked button and corresponding tab
                 button.classList.add('active');
                 document.getElementById(`${tabId}Tab`).classList.add('active');
-                
-                // Load tab-specific data
-                if (tabId === 'bookings') {
-                    this.loadUserBookings();
-                }
             });
         });
     }
@@ -104,16 +91,7 @@ class ProfileManager {
                 e.preventDefault();
                 await this.handleChangePassword(passwordForm);
             });
-        }
-
-        // Booking status filter
-        const statusFilter = document.getElementById('bookingStatusFilter');
-        if (statusFilter) {
-            statusFilter.addEventListener('change', () => {
-                this.currentPage = 1;
-                this.loadUserBookings();
-            });
-        }
+        }        // Booking status filter (removed - bookings moved to separate page)
     }
 
     initializeAvatarUpload() {
@@ -331,9 +309,7 @@ class ProfileManager {
 
         const bookingsHTML = bookingsData.map(booking => this.createBookingCard(booking)).join('');
         bookingsList.innerHTML = bookingsHTML;
-    }
-
-    createBookingCard(booking) {
+    }    createBookingCard(booking) {
         const statusClass = this.getBookingStatusClass(booking.status);
         const statusText = this.getBookingStatusText(booking.status);
         
@@ -341,26 +317,25 @@ class ProfileManager {
             <div class="booking-card">
                 <div class="booking-header">
                     <div class="booking-info">
-                        <h4 class="booking-tour-name">${booking.tour?.title || 'N/A'}</h4>
-                        <p class="booking-code">Mã đặt tour: ${booking.bookingCode}</p>
+                        <h4 class="booking-tour-name">${booking.tourName || 'N/A'}</h4>
+                        <p class="booking-code">Mã đặt tour: ${booking.invoiceNumber || 'N/A'}</p>
                     </div>
                     <div class="booking-status ${statusClass}">
                         ${statusText}
                     </div>
                 </div>
-                
-                <div class="booking-details">
+                  <div class="booking-details">
                     <div class="booking-detail-item">
                         <ion-icon name="calendar-outline"></ion-icon>
-                        <span>Ngày đặt: ${this.formatDate(booking.bookingDate)}</span>
+                        <span>Ngày đặt: ${this.formatDate(booking.bookingDate || booking.createdAt)}</span>
                     </div>
                     <div class="booking-detail-item">
-                        <ion-icon name="airplane-outline"></ion-icon>
-                        <span>Ngày khởi hành: ${this.formatDate(booking.tour?.startDate)}</span>
+                        <ion-icon name="location-outline"></ion-icon>
+                        <span>Điểm đến: ${booking.tourDestination || 'N/A'}</span>
                     </div>
                     <div class="booking-detail-item">
                         <ion-icon name="people-outline"></ion-icon>
-                        <span>Số người: ${booking.numberOfPeople}</span>
+                        <span>Số người: ${booking.participantsCount}</span>
                     </div>
                     <div class="booking-detail-item">
                         <ion-icon name="card-outline"></ion-icon>

@@ -83,12 +83,16 @@ public class BookingTourService {
 
         // Lưu booking và tour
         BookingTour savedBooking = bookingTourRepository.save(booking);
-        tourRepository.save(tour);
-
-        // Gửi email xác nhận
+        tourRepository.save(tour);        // Gửi email xác nhận
         emailService.sendBookingConfirmationEmail(savedBooking);
 
-        return modelMapper.map(savedBooking, BookingTourResponse.class);
+        BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
+        // Map thông tin tour
+        if (savedBooking.getTour() != null) {
+            response.setTourName(savedBooking.getTour().getName());
+            response.setTourDestination(savedBooking.getTour().getDestination());
+        }
+        return response;
     }
 
     /**
@@ -109,10 +113,16 @@ public class BookingTourService {
             bookings = bookingTourRepository.findByDeletedAtIsNull(pageable);
         }
 
-        return bookings.map(booking -> modelMapper.map(booking, BookingTourResponse.class));
-    }
-
-    /**
+        return bookings.map(booking -> {
+            BookingTourResponse response = modelMapper.map(booking, BookingTourResponse.class);
+            // Map thông tin tour
+            if (booking.getTour() != null) {
+                response.setTourName(booking.getTour().getName());
+                response.setTourDestination(booking.getTour().getDestination());
+            }
+            return response;
+        });
+    }    /**
      * Lấy lịch sử đặt tour của user
      */
     public Page<BookingTourResponse> getUserBookings(String username, Pageable pageable) {
@@ -120,16 +130,29 @@ public class BookingTourService {
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
 
         Page<BookingTour> bookings = bookingTourRepository.findByUserAndDeletedAtIsNull(user, pageable);
-        return bookings.map(booking -> modelMapper.map(booking, BookingTourResponse.class));
-    }
-
-    /**
+        return bookings.map(booking -> {
+            BookingTourResponse response = modelMapper.map(booking, BookingTourResponse.class);
+            // Map thông tin tour
+            if (booking.getTour() != null) {
+                response.setTourName(booking.getTour().getName());
+                response.setTourDestination(booking.getTour().getDestination());
+            }
+            return response;
+        });
+    }    /**
      * Lấy chi tiết đơn đặt
      */
     public BookingTourResponse getBookingById(Long id) {
         BookingTour booking = bookingTourRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn đặt tour"));
-        return modelMapper.map(booking, BookingTourResponse.class);
+        
+        BookingTourResponse response = modelMapper.map(booking, BookingTourResponse.class);
+        // Map thông tin tour
+        if (booking.getTour() != null) {
+            response.setTourName(booking.getTour().getName());
+            response.setTourDestination(booking.getTour().getDestination());
+        }
+        return response;
     }
 
     /**
@@ -160,11 +183,16 @@ public class BookingTourService {
                 booking.complete();
                 break;
             default:
-                break;
-        }
+                break;        }
 
         BookingTour savedBooking = bookingTourRepository.save(booking);
-        return modelMapper.map(savedBooking, BookingTourResponse.class);
+        BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
+        // Map thông tin tour
+        if (savedBooking.getTour() != null) {
+            response.setTourName(savedBooking.getTour().getName());
+            response.setTourDestination(savedBooking.getTour().getDestination());
+        }
+        return response;
     }
 
     /**
@@ -195,12 +223,16 @@ public class BookingTourService {
         tour.decreaseParticipants(booking.getParticipantsCount());
         tourRepository.save(tour);
 
-        BookingTour savedBooking = bookingTourRepository.save(booking);
-
-        // Gửi email thông báo hủy
+        BookingTour savedBooking = bookingTourRepository.save(booking);        // Gửi email thông báo hủy
         emailService.sendBookingCancelledEmail(savedBooking);
 
-        return modelMapper.map(savedBooking, BookingTourResponse.class);
+        BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
+        // Map thông tin tour
+        if (savedBooking.getTour() != null) {
+            response.setTourName(savedBooking.getTour().getName());
+            response.setTourDestination(savedBooking.getTour().getDestination());
+        }
+        return response;
     }
 
     /**

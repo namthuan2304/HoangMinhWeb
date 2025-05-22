@@ -1575,10 +1575,37 @@ address {
   .header.active .navbar-link { color: var(--onyx); }
 
   .header.active .navbar-link:is(:hover, :focus) { color: var(--bright-navy-blue); }
-
   .header.active .social-link {
     color: var(--onyx);
     border-color: hsla(0, 0%, 0%, 0.15);
+  }
+
+  .header.active .btn-outline {
+    background: transparent;
+    color: var(--oxford-blue);
+    border: 1px solid var(--oxford-blue);
+  }
+  .header.active .btn-outline:is(:hover, :focus) {
+    background: var(--oxford-blue);
+    color: var(--white);
+  }
+
+  .header.active .user-trigger {
+    color: var(--oxford-blue);
+  }
+
+
+  .header.active .user-name {
+    color: var(--oxford-blue);
+  }
+
+  .header.active .dropdown-icon {
+    color: var(--oxford-blue);
+  }
+
+  .header.active .user-avatar {
+    background: var(--united-nations-blue);
+    color: var(--white);
   }
 
   .overlay { display: none; }

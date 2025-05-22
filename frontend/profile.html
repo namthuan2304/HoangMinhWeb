@@ -212,9 +212,7 @@
                 </div>
                 <h3 class="profile-name" id="profileName">Tên người dùng</h3>
                 <p class="profile-email" id="profileEmail">email@example.com</p>
-              </div>
-
-              <nav class="profile-nav">
+              </div>              <nav class="profile-nav">
                 <button class="profile-nav-item active" data-tab="personal">
                   <ion-icon name="person-outline"></ion-icon>
                   <span data-translate="personal_info">Thông tin cá nhân</span>
@@ -222,10 +220,6 @@
                 <button class="profile-nav-item" data-tab="security">
                   <ion-icon name="shield-checkmark-outline"></ion-icon>
                   <span data-translate="change_password">Đổi mật khẩu</span>
-                </button>
-                <button class="profile-nav-item" data-tab="bookings">
-                  <ion-icon name="calendar-outline"></ion-icon>
-                  <span data-translate="booking_history">Lịch sử đặt tour</span>
                 </button>
                 <button class="profile-nav-item" data-tab="settings">
                   <ion-icon name="settings-outline"></ion-icon>
@@ -352,34 +346,7 @@
                       </span>
                     </button>
                   </div>
-                </form>
-              </div>
-
-              <!-- Bookings Tab -->
-              <div class="profile-tab" id="bookingsTab">
-                <div class="tab-header">
-                  <h2 data-translate="booking_history">Lịch sử đặt tour</h2>
-                  <p>Xem tất cả các tour bạn đã đặt</p>
-                </div>
-
-                <div class="bookings-filter">
-                  <select id="bookingStatusFilter" class="form-control">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="PENDING">Chờ xử lý</option>
-                    <option value="CONFIRMED">Đã xác nhận</option>
-                    <option value="CANCELLED">Đã hủy</option>
-                    <option value="COMPLETED">Hoàn thành</option>
-                  </select>
-                </div>
-
-                <div class="bookings-list" id="bookingsList">
-                  <!-- Bookings will be loaded here -->
-                </div>
-
-                <div class="pagination" id="bookingsPagination">
-                  <!-- Pagination will be rendered here -->
-                </div>
-              </div>
+                </form>              </div>
 
               <!-- Settings Tab -->
               <div class="profile-tab" id="settingsTab">

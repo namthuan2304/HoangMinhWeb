@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết Tour - Du Lịch Hoàng Minh</title>
+    <title>Lịch sử đặt tour - Du Lịch Hoàng Minh</title>
 
     <!-- favicon -->
-    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">    <!-- custom css link -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+    
+    <!-- custom css link -->
     <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./assets/css/tour-detail.css">
-    <link rel="stylesheet" href="./assets/css/toast.css">
+    <link rel="stylesheet" href="./assets/css/bookings.css">
     <link rel="stylesheet" href="./assets/css/toast.css">
 
     <!-- google font link -->
@@ -34,8 +35,7 @@
                     </div>
                     <div class="wrapper">
                         <p class="helpline-title" data-translate="helpline_title">Để biết thêm thông tin:</p>
-                        <p class="helpline-number">+84 (123) 456 789</p>
-                    </div>
+                        <p class="helpline-number">+84 (123) 456 789</p>                    </div>
                 </a>
 
                 <a href="index.html" class="logo">
@@ -79,7 +79,9 @@
                         <li><a href="gallery.html" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a></li>
                         <li><a href="contact.html" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a></li>
                     </ul>
-                </nav>                <!-- Auth Section -->
+                </nav>
+
+                <!-- Auth Section -->
                 <div class="auth-section">
                     <!-- Authentication buttons (shown when not logged in) -->
                     <div class="auth-buttons" id="authButtons">
@@ -103,7 +105,7 @@
                                     <ion-icon name="person-outline"></ion-icon>
                                     <span data-translate="profile">Hồ sơ</span>
                                 </a>
-                                <a href="bookings.html" class="dropdown-item">
+                                <a href="bookings.html" class="dropdown-item active">
                                     <ion-icon name="calendar-outline"></ion-icon>
                                     <span data-translate="my_bookings">Đặt chỗ của tôi</span>
                                 </a>
@@ -124,38 +126,32 @@
         </div>
     </header>
 
-    <main>        <!-- Breadcrumb -->
+    <main>
+        <!-- Breadcrumb -->
         <section class="breadcrumb-section">
             <div class="container">
                 <nav class="breadcrumb">
                     <a href="index.html" data-translate="home">Trang chủ</a>
                     <ion-icon name="chevron-forward-outline"></ion-icon>
-                    <a href="tours.html" data-translate="packages">Gói tour</a>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                    <span id="tourNameBreadcrumb">Chi tiết tour</span>
+                    <span>Lịch sử đặt tour</span>
                 </nav>
             </div>
         </section>
 
-        <!-- Tour Detail -->
-        <section class="tour-detail-section">
+        <!-- Bookings Section -->
+        <section class="bookings-section">
             <div class="container">
-                <div class="tour-detail-wrapper" id="tourDetailWrapper">
+                <div class="bookings-header">
+                    <h1>Lịch sử đặt tour</h1>
+                    <p>Quản lý và theo dõi các chuyến đi của bạn</p>
+                </div>
+
+                <div class="bookings-wrapper" id="bookingsWrapper">
                     <!-- Loading state -->
                     <div class="loading-spinner">
                         <div class="spinner"></div>
                         <p data-translate="loading">Đang tải...</p>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Related Tours -->
-        <section class="related-tours-section">
-            <div class="container">
-                <h2 class="section-title">Tour liên quan</h2>
-                <div class="related-tours-grid" id="relatedToursGrid">
-                    <!-- Related tours will be loaded here -->
                 </div>
             </div>
         </section>
@@ -224,14 +220,16 @@
     <!-- Go to top -->
     <a href="#top" class="go-top" data-go-top>
         <ion-icon name="chevron-up-outline"></ion-icon>
-    </a>    <!-- Toast notification -->
+    </a>
+
+    <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
     <script src="./assets/js/api.js"></script>
     <script src="./assets/js/language.js"></script>
     <script src="./assets/js/auth.js"></script>
-    <script src="./assets/js/tour-detail.js"></script>
+    <script src="./assets/js/bookings.js"></script>
     <script src="./assets/js/script.js"></script>
 
     <!-- ionicon link -->

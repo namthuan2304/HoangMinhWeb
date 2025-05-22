@@ -1,0 +1,480 @@
+/* Bookings Page Styles */
+
+/* Header override for bookings page */
+.header {
+    background: var(--white);
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-top {
+    background: var(--white);
+}
+
+.header-bottom {
+    background: var(--white);
+}
+
+/* Fix text colors for white background */
+.header .helpline-title,
+.header .helpline-number {
+    color: var(--oxford-blue);
+}
+
+.header .user-trigger {
+    color: var(--oxford-blue);
+}
+
+.header .user-trigger:hover {
+    background: var(--cultured-1);
+}
+
+.header .user-name {
+    color: var(--oxford-blue);
+}
+
+.header .dropdown-icon {
+    color: var(--oxford-blue);
+}
+
+.header .user-avatar {
+    background: var(--united-nations-blue);
+    color: var(--white);
+}
+
+.header .search-btn,
+.header .nav-open-btn {
+    color: var(--oxford-blue);
+}
+
+.header .search-btn:hover,
+.header .nav-open-btn:hover {
+    background: var(--cultured-1);
+}
+
+/* Fix navbar text colors */
+.header .navbar-link {
+    color: var(--oxford-blue);
+}
+
+.header .navbar-link:hover {
+    color: var(--united-nations-blue);
+}
+
+/* Fix social links */
+.header .social-link {
+    color: var(--oxford-blue);
+}
+
+.header .social-link:hover {
+    color: var(--united-nations-blue);
+}
+
+/* Fix auth buttons for white background */
+.header .btn-outline {
+    background: transparent;
+    color: var(--oxford-blue);
+    border: 1px solid var(--oxford-blue);
+}
+
+.header .btn-outline:hover {
+    background: var(--oxford-blue);
+    color: var(--white);
+}
+
+.header .btn-primary {
+    background: var(--united-nations-blue);
+    color: var(--white);
+}
+
+.header .btn-primary:hover {
+    background: var(--oxford-blue);
+}
+
+/* Breadcrumb */
+.breadcrumb-section {
+    padding: 1rem 0;
+    background-color: var(--cultured-1);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--fs-6);
+}
+
+.breadcrumb a {
+    color: var(--united-nations-blue);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.breadcrumb a:hover {
+    color: var(--oxford-blue);
+}
+
+.breadcrumb ion-icon {
+    color: var(--spanish-gray);
+    font-size: 1rem;
+}
+
+.breadcrumb span {
+    color: var(--oxford-blue);
+    font-weight: var(--fw-500);
+}
+
+.bookings-section {
+    padding: 2rem 0 4rem;
+    background-color: var(--cultured);
+    min-height: 60vh;
+}
+
+.bookings-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.bookings-header h1 {
+    color: var(--charcoal);
+    font-size: var(--fs-2);
+    font-weight: var(--fw-700);
+    margin-bottom: 0.5rem;
+}
+
+.bookings-header p {
+    color: var(--sonic-silver);
+    font-size: var(--fs-5);
+}
+
+.bookings-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.bookings-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.booking-card {
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+    transition: var(--transition-1);
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-3);
+}
+
+.booking-card-header {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.booking-tour-image {
+    width: 120px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.booking-tour-info h3 {
+    color: var(--charcoal);
+    font-size: var(--fs-4);
+    font-weight: var(--fw-700);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.booking-tour-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.booking-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sonic-silver);
+    font-size: var(--fs-7);
+}
+
+.booking-meta-item ion-icon {
+    color: var(--bright-navy-blue);
+    font-size: 14px;
+}
+
+.booking-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: var(--fs-8);
+    font-weight: var(--fw-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.completed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.booking-price {
+    color: var(--bright-navy-blue);
+    font-size: var(--fs-5);
+    font-weight: var(--fw-700);
+}
+
+.booking-card-body {
+    padding: 1.5rem;
+}
+
+.booking-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    color: var(--sonic-silver);
+    font-size: var(--fs-7);
+    font-weight: var(--fw-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: var(--charcoal);
+    font-size: var(--fs-6);
+}
+
+.booking-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: var(--fs-7);
+    border-radius: 6px;
+}
+
+.btn-view {
+    background: var(--bright-navy-blue);
+    color: var(--white);
+    border: 1px solid var(--bright-navy-blue);
+}
+
+.btn-view:hover {
+    background: transparent;
+    color: var(--bright-navy-blue);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--red-orange-crayola);
+    border: 1px solid var(--red-orange-crayola);
+}
+
+.btn-cancel:hover {
+    background: var(--red-orange-crayola);
+    color: var(--white);
+}
+
+.btn-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--sonic-silver);
+}
+
+.empty-state ion-icon {
+    font-size: 4rem;
+    color: var(--light-gray);
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--sonic-silver);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--light-gray);
+    border-top: 4px solid var(--bright-navy-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--sonic-silver);
+}
+
+.error-state ion-icon {
+    font-size: 4rem;
+    color: var(--red-orange-crayola);
+    margin-bottom: 1rem;
+}
+
+.error-state h3 {
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--light-gray);
+    background: var(--white);
+    color: var(--charcoal);
+    border-radius: 8px;
+    font-size: var(--fs-6);
+    font-weight: var(--fw-600);
+    cursor: pointer;
+    transition: var(--transition-1);
+}
+
+.pagination-btn:hover {
+    background: var(--bright-navy-blue);
+    color: var(--white);
+    border-color: var(--bright-navy-blue);
+}
+
+.pagination-btn.active {
+    background: var(--bright-navy-blue);
+    color: var(--white);
+    border-color: var(--bright-navy-blue);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: var(--sonic-silver);
+    font-size: var(--fs-7);
+    margin: 0 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-card-header {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .booking-tour-image {
+        width: 100%;
+        height: 150px;
+        justify-self: center;
+    }
+    
+    .booking-status {
+        align-items: center;
+    }
+    
+    .booking-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .booking-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .bookings-section {
+        padding: 1rem 0 2rem;
+    }
+    
+    .bookings-header {
+        margin-bottom: 2rem;
+    }
+    
+    .booking-card-header,
+    .booking-card-body {
+        padding: 1rem;
+    }
+    
+    .btn-sm {
+        flex: 1;
+        text-align: center;
+    }
+}
