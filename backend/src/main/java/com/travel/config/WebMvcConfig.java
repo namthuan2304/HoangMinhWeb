@@ -11,7 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Cấu hình Web MVC
  */
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {    @Value("${app.upload.dir:uploads}")
+public class WebMvcConfig implements WebMvcConfigurer {
+    
+    @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
     /**
@@ -23,9 +25,10 @@ public class WebMvcConfig implements WebMvcConfigurer {    @Value("${app.upload.
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false)
-                .maxAge(3600);
-    }    /**
+                .allowCredentials(false)                .maxAge(3600);
+    }
+
+    /**
      * Cấu hình static resources
      */
     @Override
@@ -33,7 +36,9 @@ public class WebMvcConfig implements WebMvcConfigurer {    @Value("${app.upload.
         // Serve uploaded files
         String uploadsPath = System.getProperty("user.dir") + "/" + uploadDir + "/";
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadsPath);
+                .addResourceLocations("file:" + uploadsPath)
+                .setCachePeriod(3600)
+                .resourceChain(true);
         
         // Log để debug
         System.out.println("Upload path configured: " + uploadsPath);
