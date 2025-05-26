@@ -288,60 +288,238 @@
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gainsboro);
 }
 
 .btn-sm {
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1.25rem;
     font-size: var(--fs-7);
-    border-radius: 6px;
+    font-weight: 600;
+    border-radius: 8px;
+    min-width: 110px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent;
 }
 
 .btn-view {
     background: var(--bright-navy-blue);
     color: var(--white);
-    border: 1px solid var(--bright-navy-blue);
+    border: 2px solid var(--bright-navy-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-view::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-view:hover::before {
+    left: 100%;
 }
 
 .btn-view:hover {
     background: transparent;
     color: var(--bright-navy-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-view ion-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.btn-view:hover ion-icon {
+    transform: scale(1.1);
 }
 
 .btn-cancel {
-    background: transparent;
-    color: var(--red-orange-crayola);
-    border: 1px solid var(--red-orange-crayola);
+    background: #fff5f5;
+    color: #dc2626;
+    border: 2px solid #dc2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-cancel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-cancel:hover::before {
+    left: 100%;
 }
 
 .btn-cancel:hover {
-    background: var(--red-orange-crayola);
-    color: var(--white);
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-cancel ion-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.btn-cancel:hover ion-icon {
+    transform: scale(1.1);
 }
 
 .btn-cancel:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-cancel:disabled::before {
+    display: none;
 }
 
 .empty-state {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     color: var(--sonic-silver);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    margin: 2rem 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.empty-state ion-icon {
-    font-size: 4rem;
-    color: var(--light-gray);
-    margin-bottom: 1rem;
+.empty-state::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--bright-navy-blue), var(--united-nations-blue));
 }
 
-.empty-state h3 {
-    color: var(--charcoal);
-    margin-bottom: 0.5rem;
-}
-
-.empty-state p {
+.empty-state-icon {
     margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-state-icon ion-icon {
+    font-size: 6rem;
+    color: var(--bright-navy-blue);
+    background: linear-gradient(135deg, var(--bright-navy-blue), var(--united-nations-blue));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: float 3s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.empty-state-content h3 {
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.empty-state-content p {
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--spanish-gray);
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-state .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.empty-state .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.empty-state .btn:hover::before {
+    left: 100%;
+}
+
+.empty-state .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.empty-state .btn ion-icon {
+    font-size: 1.25rem;
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: inherit;
+    color: inherit;
 }
 
 .loading-spinner {
@@ -453,9 +631,29 @@
     .booking-details {
         grid-template-columns: 1fr;
     }
-    
-    .booking-actions {
+      .booking-actions {
         justify-content: center;
+        gap: 1rem;
+        flex-direction: row;
+    }
+    
+    .btn-sm {
+        flex: 1;
+        min-width: 120px;
+        max-width: 150px;
+    }
+    
+    .empty-state {
+        padding: 3rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .empty-state-icon ion-icon {
+        font-size: 5rem;
+    }
+    
+    .empty-state-content h3 {
+        font-size: 1.5rem;
     }
 }
 
@@ -472,9 +670,48 @@
     .booking-card-body {
         padding: 1rem;
     }
-    
-    .btn-sm {
+      .btn-sm {
         flex: 1;
         text-align: center;
+        min-width: 100px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .btn-cancel {
+        background: #fef2f2;
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+    
+    .btn-cancel:hover {
+        background: #ef4444;
+        color: #ffffff;
+    }
+    
+    .empty-state {
+        padding: 2.5rem 1rem;
+        margin: 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .empty-state-icon ion-icon {
+        font-size: 4rem;
+    }
+    
+    .empty-state-content h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .empty-state-content p {
+        font-size: 0.875rem;
+        margin-bottom: 2rem;
+    }
+    
+    .empty-state .btn {
+        padding: 0.875rem 2rem;
+        font-size: 0.875rem;
     }
 }

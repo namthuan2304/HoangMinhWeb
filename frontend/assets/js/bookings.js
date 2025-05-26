@@ -205,17 +205,19 @@ class BookingsManager {
 
     renderEmptyState() {
         const wrapper = document.getElementById('bookingsWrapper');
-        if (!wrapper) return;
-
-        wrapper.innerHTML = `
+        if (!wrapper) return;        wrapper.innerHTML = `
             <div class="empty-state">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <h3>Chưa có lịch sử đặt tour</h3>
-                <p>Bạn chưa đặt tour nào. Hãy khám phá các tour du lịch hấp dẫn của chúng tôi!</p>
-                <a href="tours.html" class="btn btn-primary">
-                    <ion-icon name="search-outline"></ion-icon>
-                    <span>Tìm tour</span>
-                </a>
+                <div class="empty-state-icon">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                </div>
+                <div class="empty-state-content">
+                    <h3>Chưa có lịch sử đặt tour</h3>
+                    <p>Bạn chưa đặt tour nào. Hãy khám phá các tour du lịch hấp dẫn của chúng tôi và bắt đầu cuộc phiêu lưu của bạn!</p>
+                    <a href="tours.html" class="btn btn-primary">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <span>Khám phá tour</span>
+                    </a>
+                </div>
             </div>
         `;
     }

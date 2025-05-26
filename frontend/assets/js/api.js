@@ -193,20 +193,27 @@ class APIClient {
             method: 'POST',
             body: JSON.stringify(passwordData),
         });
-    }
-
-    async uploadAvatar(avatarFile) {
+    }    async uploadAvatar(avatarFile) {
         const formData = new FormData();
         formData.append('file', avatarFile);
 
-        return await this.request('/users/upload-avatar', {
+        const url = `${this.baseURL}/users/upload-avatar`;
+        const config = {
             method: 'POST',
             body: formData,
             headers: {
                 'Authorization': `Bearer ${this.token}`,
-                // Don't set Content-Type for FormData
+                // Don't set Content-Type for FormData - browser will set it automatically
             },
-        });
+        };
+
+        try {
+            const response = await fetch(url, config);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Avatar upload error:', error);
+            throw error;
+        }
     }
 
     // Comments Methods

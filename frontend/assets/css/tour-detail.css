@@ -152,8 +152,9 @@
 }
 
 .badge.featured {
-  background-color: var(--red-salsa);
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
   color: var(--white);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 .badge.type {
@@ -293,20 +294,44 @@
 .tour-actions {
   display: flex;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .btn-large {
   padding: 1rem 2rem;
   font-size: var(--fs-5);
   min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-large ion-icon {
-  margin-right: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .wishlist-btn {
-  min-width: 120px;
+  min-width: 150px;
+  background: var(--cultured-2);
+  color: var(--oxford-blue);
+  border-color: var(--cultured-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.wishlist-btn:is(:hover, :focus) {
+  background: var(--bright-navy-blue);
+  color: var(--white);
+  border-color: var(--bright-navy-blue);
+}
+
+.wishlist-btn ion-icon {
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 /* Tour Detail Body */
@@ -710,12 +735,13 @@
     gap: 1rem;
     text-align: center;
   }
-
   .tour-actions {
     flex-direction: column;
+    gap: 0.75rem;
   }
 
-  .btn-large {
+  .btn-large,
+  .wishlist-btn {
     min-width: auto;
     width: 100%;
   }

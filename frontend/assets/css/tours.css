@@ -218,7 +218,8 @@
 }
 
 .tour-badge.featured {
-  background: #e74c3c;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .tour-badge.new {
