@@ -2,6 +2,7 @@
 class APIClient {
     constructor() {
         this.baseURL = 'http://localhost:8080/api';
+        this.serverURL = 'http://localhost:8080'; // Base server URL for static resources
         this.token = localStorage.getItem('authToken');
         this.refreshToken = localStorage.getItem('refreshToken');
     }
@@ -490,6 +491,24 @@ class APIClient {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+    }
+
+    // Helper method to create full URL for images and static resources
+    getFullImageUrl(relativePath) {
+        if (!relativePath) return null;
+        
+        // If already a full URL, return as is
+        if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+            return relativePath;
+        }
+        
+        // If it's a relative path starting with /, add server URL
+        if (relativePath.startsWith('/')) {
+            return `${this.serverURL}${relativePath}`;
+        }
+        
+        // If it's a relative path without /, treat as local asset
+        return relativePath;
     }
 }
 

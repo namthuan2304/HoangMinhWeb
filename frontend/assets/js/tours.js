@@ -280,7 +280,7 @@ class ToursManager {
         ];        return `
             <div class="tour-card">
                 <div class="tour-card-banner">
-                    <img src="${tour.mainImageUrl || tour.imageUrls?.[0] || './assets/images/packege-1.jpg'}" 
+                    <img src="${apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(tour.imageUrls?.[0]) || './assets/images/packege-1.jpg'}" 
                          alt="${tour.name}" loading="lazy">
                     
                     ${tour.isFeatured ? '<div class="tour-badge featured">Nổi bật</div>' : ''}

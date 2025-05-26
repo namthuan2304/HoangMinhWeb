@@ -123,13 +123,11 @@ class TourDetailManager {
 
     renderTourDetail(tour) {
         const wrapper = document.getElementById('tourDetailWrapper');
-        if (!wrapper) return;
-
-        const rating = tour.ratingAverage || 0;
+        if (!wrapper) return;        const rating = tour.ratingAverage || 0;
         const reviewCount = tour.totalBookings || 0;
         const formattedPrice = this.formatPrice(tour.price);
         const images = tour.imageUrls || [];
-        const mainImage = tour.mainImageUrl || images[0] || './assets/images/packege-1.jpg';
+        const mainImage = apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(images[0]) || './assets/images/packege-1.jpg';
         
         // Generate star rating HTML
         const stars = this.generateStarRating(rating);
@@ -140,13 +138,12 @@ class TourDetailManager {
                     <div class="tour-images">
                         <div class="main-image">
                             <img src="${mainImage}" alt="${tour.name}" id="mainTourImage">
-                        </div>
-                        ${images.length > 1 ? `
+                        </div>                        ${images.length > 1 ? `
                             <div class="image-gallery">
                                 ${images.map((img, index) => `
-                                    <img src="${img}" alt="${tour.name}" 
+                                    <img src="${apiClient.getFullImageUrl(img)}" alt="${tour.name}" 
                                          class="gallery-thumb ${index === 0 ? 'active' : ''}"
-                                         onclick="tourDetailManager.changeMainImage('${img}', this)">
+                                         onclick="tourDetailManager.changeMainImage('${apiClient.getFullImageUrl(img)}', this)">
                                 `).join('')}
                             </div>
                         ` : ''}
@@ -384,12 +381,10 @@ class TourDetailManager {
 
     renderRelatedTours(tours) {
         const relatedGrid = document.getElementById('relatedToursGrid');
-        if (!relatedGrid) return;
-
-        const html = tours.map(tour => `
+        if (!relatedGrid) return;        const html = tours.map(tour => `
             <div class="related-tour-card">
                 <div class="tour-image">
-                    <img src="${tour.mainImageUrl || tour.imageUrls?.[0] || './assets/images/packege-1.jpg'}" 
+                    <img src="${apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(tour.imageUrls?.[0]) || './assets/images/packege-1.jpg'}" 
                          alt="${tour.name}">
                 </div>
                 <div class="tour-content">

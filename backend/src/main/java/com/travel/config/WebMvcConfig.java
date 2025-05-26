@@ -25,15 +25,17 @@ public class WebMvcConfig implements WebMvcConfigurer {    @Value("${app.upload.
                 .allowedHeaders("*")
                 .allowCredentials(false)
                 .maxAge(3600);
-    }
-
-    /**
+    }    /**
      * Cấu hình static resources
      */
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         // Serve uploaded files
+        String uploadsPath = System.getProperty("user.dir") + "/" + uploadDir + "/";
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations("file:" + uploadsPath);
+        
+        // Log để debug
+        System.out.println("Upload path configured: " + uploadsPath);
     }
 }

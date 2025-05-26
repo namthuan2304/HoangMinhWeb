@@ -155,7 +155,9 @@
 }
 
 .profile-tab.active {
-    display: block;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .tab-header {
@@ -515,13 +517,20 @@
     box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.15);
     padding: 1rem;
     z-index: 1000;
+    
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
     transform: translateX(400px);
-    transition: transform 0.3s ease;
+    
+    transition: all 0.3s ease;
     min-width: 300px;
     max-width: 400px;
 }
 
 .toast.show {
+    opacity: 1;
+    visibility: visible;
     transform: translateX(0);
 }
 

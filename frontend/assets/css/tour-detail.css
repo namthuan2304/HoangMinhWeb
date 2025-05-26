@@ -723,6 +723,26 @@
   background: var(--oxford-blue);
 }
 
+/* Fix language button for white background */
+.header .language-btn {
+  color: var(--oxford-blue);
+  border: 1px solid var(--oxford-blue);
+}
+
+.header .language-btn:hover {
+  color: var(--united-nations-blue);
+  background: var(--cultured-1);
+  border-color: var(--united-nations-blue);
+}
+
+.header .language-btn ion-icon {
+  color: var(--oxford-blue);
+}
+
+.header .language-btn:hover ion-icon {
+  color: var(--united-nations-blue);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .tour-detail-header {

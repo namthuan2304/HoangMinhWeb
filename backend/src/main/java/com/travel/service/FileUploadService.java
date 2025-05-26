@@ -58,14 +58,12 @@ public class FileUploadService {
             String fileExtension = originalFilename != null && originalFilename.contains(".") 
                 ? originalFilename.substring(originalFilename.lastIndexOf("."))
                 : "";
-            String fileName = UUID.randomUUID().toString() + fileExtension;
-
-            // Lưu file
+            String fileName = UUID.randomUUID().toString() + fileExtension;            // Lưu file
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Trả về URL tương đối
-            return subDir + "/" + fileName;
+            // Trả về URL đầy đủ để truy cập qua web
+            return "/uploads/" + subDir + "/" + fileName;
 
         } catch (IOException e) {
             throw new FileUploadException("Không thể lưu file: " + e.getMessage());

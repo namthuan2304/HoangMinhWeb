@@ -254,15 +254,14 @@ function updateFeaturedTours(tours) {
     tours.forEach(tour => {
         console.log('Processing tour:', tour); // Debug log
         
-        const listItem = document.createElement('li');
-        const formattedPrice = formatCurrency(tour.price);
+        const listItem = document.createElement('li');        const formattedPrice = formatCurrency(tour.price);
         const duration = tour.durationDays || 7; // Backend sử dụng durationDays
         const imageUrl = tour.imageUrls && tour.imageUrls.length > 0 
-            ? tour.imageUrls[0] 
-            : (tour.mainImageUrl || './assets/images/packege-1.jpg');
+            ? apiClient.getFullImageUrl(tour.imageUrls[0])
+            : (apiClient.getFullImageUrl(tour.mainImageUrl) || './assets/images/packege-1.jpg');
         const description = IndexUtils 
             ? IndexUtils.truncateText(tour.description || '', 150)
-            : (tour.description || 'Trải nghiệm du lịch tuyệt vời.');        // Debug rating data
+            : (tour.description || 'Trải nghiệm du lịch tuyệt vời.');// Debug rating data
         console.log('Tour rating data:', {
             ratingAverage: tour.ratingAverage,
             totalBookings: tour.totalBookings

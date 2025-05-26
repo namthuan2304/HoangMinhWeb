@@ -1,17 +1,29 @@
 // Header Management
 class HeaderManager {
     constructor() {
+        console.log('HeaderManager: Constructor called');
         this.authButtons = document.getElementById('authButtons');
         this.userMenu = document.getElementById('userMenu');
         this.userTrigger = document.getElementById('userTrigger');
         this.userDropdownMenu = document.getElementById('userDropdownMenu');
         this.userName = document.getElementById('userName');
+        this.userAvatar = document.querySelector('.user-avatar');
         this.logoutBtn = document.getElementById('logoutBtn');
+        this.serverBaseUrl = 'http://localhost:8080';
+        
+        console.log('HeaderManager: Elements found:', {
+            authButtons: !!this.authButtons,
+            userMenu: !!this.userMenu,
+            userTrigger: !!this.userTrigger,
+            userDropdownMenu: !!this.userDropdownMenu,
+            userName: !!this.userName,
+            userAvatar: !!this.userAvatar,
+            logoutBtn: !!this.logoutBtn
+        });
         
         this.init();
-    }
-
-    init() {
+    }    init() {
+        console.log('HeaderManager: Initializing...');
         // Check authentication state
         this.updateAuthState();
         
@@ -25,7 +37,15 @@ class HeaderManager {
         window.addEventListener('authStateChanged', () => {
             this.updateAuthState();
         });
-    }    updateAuthState() {
+    }
+
+    // Utility method to create full URL for assets
+    getFullUrl(relativePath) {
+        if (!relativePath) return null;
+        return relativePath.startsWith('http') 
+            ? relativePath 
+            : `${this.serverBaseUrl}${relativePath.startsWith('/') ? relativePath : '/' + relativePath}`;
+    }updateAuthState() {
         console.log('Updating auth state...');
         try {
             if (typeof apiClient !== 'undefined' && apiClient && apiClient.isAuthenticated()) {
@@ -39,11 +59,11 @@ class HeaderManager {
             console.error('Error updating auth state:', error);
             this.showAuthButtons(); // Fallback to showing auth buttons
         }
-    }showUserMenu() {
+    }    showUserMenu() {
         if (this.authButtons) this.authButtons.style.display = 'none';
         if (this.userMenu) this.userMenu.style.display = 'block';
         
-        // Update user name
+        // Update user name and avatar
         try {
             const user = apiClient ? apiClient.getCurrentUser() : null;
             if (user && this.userName) {
@@ -51,11 +71,69 @@ class HeaderManager {
             } else if (this.userName) {
                 this.userName.textContent = 'User';
             }
+
+            // Update user avatar
+            this.updateUserAvatar(user);
         } catch (error) {
             console.error('Error getting user data:', error);
             if (this.userName) {
                 this.userName.textContent = 'User';
             }
+            this.setDefaultAvatar();
+        }
+    }
+
+    updateUserAvatar(user) {
+        if (!this.userAvatar) return;
+
+        // Load user profile to get latest avatar
+        if (typeof apiClient !== 'undefined' && apiClient && apiClient.isAuthenticated()) {
+            apiClient.getUserProfile()
+                .then(userProfile => {
+                    if (userProfile.avatarUrl) {
+                        // Create img element if it doesn't exist
+                        let avatarImg = this.userAvatar.querySelector('img');
+                        if (!avatarImg) {
+                            avatarImg = document.createElement('img');
+                            avatarImg.alt = 'User Avatar';
+                            avatarImg.style.width = '100%';
+                            avatarImg.style.height = '100%';
+                            avatarImg.style.borderRadius = '50%';
+                            avatarImg.style.objectFit = 'cover';
+                            
+                            // Hide the icon and add the image
+                            const icon = this.userAvatar.querySelector('ion-icon');
+                            if (icon) icon.style.display = 'none';
+                            this.userAvatar.appendChild(avatarImg);
+                        }
+                        
+                        avatarImg.src = this.getFullUrl(userProfile.avatarUrl);
+                    } else {
+                        this.setDefaultAvatar();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user profile for avatar:', error);
+                    this.setDefaultAvatar();
+                });
+        } else {
+            this.setDefaultAvatar();
+        }
+    }
+
+    setDefaultAvatar() {
+        if (!this.userAvatar) return;
+        
+        // Remove any existing img element
+        const existingImg = this.userAvatar.querySelector('img');
+        if (existingImg) {
+            existingImg.remove();
+        }
+        
+        // Show the default icon
+        const icon = this.userAvatar.querySelector('ion-icon');
+        if (icon) {
+            icon.style.display = 'block';
         }
     }
 
@@ -65,10 +143,30 @@ class HeaderManager {
     }
 
     initUserDropdown() {
-        if (!this.userTrigger || !this.userDropdownMenu) return;
+        console.log('HeaderManager: Initializing user dropdown...', {
+            userTrigger: !!this.userTrigger,
+            userDropdownMenu: !!this.userDropdownMenu
+        });
+        
+        // Try to find elements again if they weren't found initially
+        if (!this.userTrigger) {
+            this.userTrigger = document.getElementById('userTrigger');
+        }
+        
+        if (!this.userDropdownMenu) {
+            this.userDropdownMenu = document.getElementById('userDropdownMenu');
+        }
+        
+        if (!this.userTrigger || !this.userDropdownMenu) {
+            console.warn('HeaderManager: User dropdown elements not found, will retry');
+            // Set a retry timer
+            setTimeout(() => this.initUserDropdown(), 500);
+            return;
+        }
 
         // Toggle dropdown on click
         this.userTrigger.addEventListener('click', (e) => {
+            console.log('HeaderManager: User trigger clicked');
             e.stopPropagation();
             this.toggleDropdown();
         });
@@ -86,19 +184,67 @@ class HeaderManager {
                 this.closeDropdown();
             }
         });
+        
+        // Add debug click handler to explicitly show dropdown
+        this.userTrigger.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            console.log('Double click force toggle');
+            if (this.userDropdownMenu) {
+                this.userDropdownMenu.style.opacity = '1';
+                this.userDropdownMenu.style.visibility = 'visible';
+                this.userDropdownMenu.style.transform = 'translateY(0)';
+                this.userDropdownMenu.style.display = 'block';
+            }
+        });
+        
+        console.log('HeaderManager: User dropdown initialized successfully');
     }
 
     toggleDropdown() {
         const dropdown = this.userTrigger?.closest('.user-dropdown');
+        console.log('HeaderManager: Toggling dropdown', { dropdown: !!dropdown });
         if (dropdown) {
+            const isActive = dropdown.classList.contains('active');
             dropdown.classList.toggle('active');
+            
+            // Explicitly show/hide the dropdown menu for better reliability
+            if (this.userDropdownMenu) {
+                if (!isActive) {
+                    // If dropdown is being activated, ensure dropdown menu is visible
+                    this.userDropdownMenu.style.opacity = '1';
+                    this.userDropdownMenu.style.visibility = 'visible';
+                    this.userDropdownMenu.style.transform = 'translateY(0)';
+                } else {
+                    // If dropdown is being deactivated
+                    this.userDropdownMenu.style.opacity = '0';
+                    this.userDropdownMenu.style.visibility = 'hidden';
+                    this.userDropdownMenu.style.transform = 'translateY(-10px)';
+                }
+            }
+            
+            console.log('HeaderManager: Dropdown toggled', { 
+                wasActive: isActive, 
+                nowActive: dropdown.classList.contains('active') 
+            });
         }
     }
 
     closeDropdown() {
         const dropdown = this.userTrigger?.closest('.user-dropdown');
         if (dropdown) {
+            const wasActive = dropdown.classList.contains('active');
             dropdown.classList.remove('active');
+            
+            // Explicitly hide the dropdown menu
+            if (this.userDropdownMenu) {
+                this.userDropdownMenu.style.opacity = '0';
+                this.userDropdownMenu.style.visibility = 'hidden';
+                this.userDropdownMenu.style.transform = 'translateY(-10px)';
+            }
+            
+            if (wasActive) {
+                console.log('HeaderManager: Dropdown closed');
+            }
         }
     }
 

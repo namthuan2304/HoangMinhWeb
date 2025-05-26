@@ -3,62 +3,124 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--white);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.15);
-    padding: 1rem;
-    z-index: 1000;
-    transform: translateX(400px);
-    transition: transform 0.3s ease;
     min-width: 300px;
     max-width: 400px;
-    border-left: 4px solid var(--bright-navy-blue);
+    padding: 16px 20px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid var(--emerald);
+    z-index: 10000;
+    
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: inherit;
 }
 
 .toast.show {
+    opacity: 1;
+    visibility: visible;
     transform: translateX(0);
 }
 
-.toast-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+.toast.success {
+    border-left-color: var(--emerald);
 }
 
-.toast-success {
-    border-left-color: #27ae60;
+.toast.error {
+    border-left-color: var(--red-orange-crayola);
 }
 
-.toast-error {
-    border-left-color: #e74c3c;
+.toast.warning {
+    border-left-color: #f59e0b;
 }
 
-.toast-warning {
-    border-left-color: #f39c12;
-}
-
-.toast-info {
+.toast.info {
     border-left-color: var(--bright-navy-blue);
 }
 
-.toast ion-icon {
-    font-size: 1.25rem;
+.toast-icon {
+    font-size: 24px;
+    flex-shrink: 0;
 }
 
-.toast-success ion-icon {
-    color: #27ae60;
+.toast.success .toast-icon {
+    color: var(--emerald);
 }
 
-.toast-error ion-icon {
-    color: #e74c3c;
+.toast.error .toast-icon {
+    color: var(--red-orange-crayola);
 }
 
-.toast-warning ion-icon {
-    color: #f39c12;
+.toast.warning .toast-icon {
+    color: #f59e0b;
 }
 
-.toast-info ion-icon {
+.toast.info .toast-icon {
     color: var(--bright-navy-blue);
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: var(--sonic-silver);
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--sonic-silver);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    background: var(--cultured-1);
+    color: var(--charcoal);
+}
+
+.toast-close ion-icon {
+    font-size: 18px;
+}
+
+/* Auto hide animation */
+.toast.auto-hide {
+    animation: toastAutoHide 3s ease-in-out forwards;
+}
+
+@keyframes toastAutoHide {
+    0%, 85% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(100%);
+    }
 }
 
 /* Loading States */
@@ -182,5 +244,33 @@
     
     .loading-spinner {
         border-width: 4px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .toast {
+        left: 20px;
+        right: 20px;
+        min-width: auto;
+        max-width: none;
+        transform: translateY(-100%);
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+    
+    @keyframes toastAutoHide {
+        0%, 85% {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        100% {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-100%);
+        }
     }
 }

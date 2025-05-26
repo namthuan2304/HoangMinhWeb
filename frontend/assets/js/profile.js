@@ -1,10 +1,27 @@
 // Profile Page JavaScript
 class ProfileManager {    constructor() {
         this.currentUser = null;
+        this.serverBaseUrl = 'http://localhost:8080';
         this.init();
+    }    // Utility method to create full URL for assets
+    getFullUrl(relativePath) {
+        if (!relativePath) return null;
+        return relativePath.startsWith('http') 
+            ? relativePath 
+            : `${this.serverBaseUrl}${relativePath.startsWith('/') ? relativePath : '/' + relativePath}`;
     }init() {
-        // Check authentication
-        this.checkAuthentication();
+        console.log('Initializing profile page...');
+        
+        // Check authentication first
+        const isAuthenticated = this.checkAuthentication();
+        if (!isAuthenticated) {
+            console.log('Authentication failed, stopping initialization');
+            return;
+        }
+          console.log('User is authenticated, initializing components');
+        
+        // Reset toast element to hidden state
+        this.initializeToast();
         
         // Initialize components
         this.initializeTabs();
@@ -15,21 +32,60 @@ class ProfileManager {    constructor() {
         
         // Load user data
         this.loadUserProfile();
+        
+        console.log('Profile page initialization complete');
     }
 
     checkAuthentication() {
-        if (!apiClient.isAuthenticated()) {
-            window.location.href = 'login.html';
-            return;
+        console.log('Checking authentication...');
+        try {
+            if (!apiClient || !apiClient.isAuthenticated()) {
+                console.log('User not authenticated, redirecting to login');
+                window.location.href = 'login.html?redirect=profile.html';
+                return false;
+            }
+            this.currentUser = apiClient.getCurrentUser();
+            console.log('User authenticated:', this.currentUser ? this.currentUser.username : 'unknown');
+            return true;
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+            // Give a small delay before redirecting
+            setTimeout(() => {
+                window.location.href = 'login.html?redirect=profile.html';
+            }, 500);
+            return false;        }
+    }
+
+    initializeToast() {
+        console.log('Initializing toast element');
+        const toast = document.getElementById('toast');
+        if (toast) {
+            // Reset toast to hidden state
+            toast.className = 'toast';
+            toast.innerHTML = '';
+            console.log('Toast element reset to hidden state');
         }
-        this.currentUser = apiClient.getCurrentUser();
-    }    initializeTabs() {
+    }
+
+    initializeTabs() {
+        console.log('Initializing profile tabs');
         const tabButtons = document.querySelectorAll('.profile-nav-item');
         const tabContents = document.querySelectorAll('.profile-tab');
+        
+        console.log('Found tab buttons:', tabButtons.length);
+        console.log('Found tab contents:', tabContents.length);
+
+        if (tabButtons.length === 0 || tabContents.length === 0) {
+            console.warn('Tab elements not found. Will retry in 500ms.');
+            setTimeout(() => this.initializeTabs(), 500);
+            return;
+        }
 
         tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const tabId = button.getAttribute('data-tab');
+                console.log('Tab clicked:', tabId);
                 
                 // Remove active class from all buttons and tabs
                 tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -37,9 +93,28 @@ class ProfileManager {    constructor() {
                 
                 // Add active class to clicked button and corresponding tab
                 button.classList.add('active');
-                document.getElementById(`${tabId}Tab`).classList.add('active');
+                const targetTab = document.getElementById(`${tabId}Tab`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                    // Force display block to ensure visibility
+                    targetTab.style.display = 'block';
+                    console.log('Activated tab:', tabId);
+                } else {
+                    console.error('Target tab not found:', `${tabId}Tab`);
+                }
             });
         });
+        
+        // Initialize first tab if none is active
+        if (!document.querySelector('.profile-tab.active')) {
+            const firstTab = tabButtons[0];
+            if (firstTab) {
+                firstTab.click();
+                console.log('Auto-activated first tab');
+            }
+        }
+        
+        console.log('Tab initialization complete');
     }
 
     initializeProfile() {
@@ -137,13 +212,11 @@ class ProfileManager {    constructor() {
             if (field && value) {
                 field.value = value;
             }
-        });
-
-        // Update avatar if available
-        if (userProfile.avatar) {
+        });        // Update avatar if available
+        if (userProfile.avatarUrl) {
             const avatarImg = document.getElementById('avatarImage');
             if (avatarImg) {
-                avatarImg.src = userProfile.avatar;
+                avatarImg.src = this.getFullUrl(userProfile.avatarUrl);
             }
         }
     }    async handleUpdateProfile(form) {
@@ -247,16 +320,16 @@ class ProfileManager {    constructor() {
             // Show loading
             const avatarUploadBtn = document.getElementById('avatarUploadBtn');
             avatarUploadBtn.style.opacity = '0.5';
-            avatarUploadBtn.disabled = true;
-
-            // Upload avatar
+            avatarUploadBtn.disabled = true;            // Upload avatar
             const response = await apiClient.uploadAvatar(file);
-            
-            // Update avatar image
+              // Update avatar image immediately with response
             const avatarImg = document.getElementById('avatarImage');
             if (avatarImg && response.avatarUrl) {
-                avatarImg.src = response.avatarUrl;
+                avatarImg.src = this.getFullUrl(response.avatarUrl);
             }
+
+            // Also reload user profile to get updated data
+            await this.loadUserProfile();
 
             this.showToast('Cập nhật ảnh đại diện thành công!', 'success');
 
@@ -373,20 +446,22 @@ class ProfileManager {    constructor() {
         document.querySelectorAll('.form-control.error').forEach(element => {
             element.classList.remove('error');
         });
-    }
+    }    showToast(message, type = 'info') {
+        // Use existing toast element
+        const toast = document.getElementById('toast');
+        if (!toast) return;
 
-    showToast(message, type = 'info') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
+        // Clear any existing content and classes
+        toast.className = 'toast';
         toast.innerHTML = `
             <div class="toast-content">
-                <ion-icon name="${type === 'success' ? 'checkmark-circle' : type === 'error' ? 'alert-circle' : 'information-circle'}-outline"></ion-icon>
+                <ion-icon name="${type === 'success' ? 'checkmark-circle' : type === 'error' ? 'alert-circle' : 'information-circle'}-outline" class="toast-icon"></ion-icon>
                 <span>${message}</span>
             </div>
         `;
 
-        document.body.appendChild(toast);
+        // Add type class
+        toast.classList.add(`toast-${type}`);
 
         // Show toast
         setTimeout(() => toast.classList.add('show'), 100);
@@ -394,18 +469,30 @@ class ProfileManager {    constructor() {
         // Hide toast after 4 seconds
         setTimeout(() => {
             toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
         }, 4000);
     }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.profileManager = new ProfileManager();
-});
-
-// Initialize header manager
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Initializing HeaderManager...');
-    window.headerManager = new HeaderManager();
+    console.log('Initializing ProfileManager...');
+    
+    // Wait for API client to be available
+    const initializeManagers = () => {
+        if (typeof apiClient !== 'undefined' && apiClient) {
+            // First initialize the profile manager
+            window.profileManager = new ProfileManager();
+            
+            // Then check if header manager exists, if not create it
+            if (!window.headerManager) {
+                console.log('Initializing HeaderManager from profile page...');
+                window.headerManager = new HeaderManager();
+            }
+        } else {
+            console.log('Waiting for API client...');
+            setTimeout(initializeManagers, 200);
+        }
+    };
+    
+    initializeManagers();
 });

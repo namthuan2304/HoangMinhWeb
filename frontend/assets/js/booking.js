@@ -134,10 +134,8 @@ class BookingManager {
 
     renderBookingForm(tour) {
         const wrapper = document.getElementById('bookingWrapper');
-        if (!wrapper) return;
-
-        const formattedPrice = this.formatPrice(tour.price);
-        const mainImage = tour.mainImageUrl || tour.imageUrls?.[0] || './assets/images/packege-1.jpg';
+        if (!wrapper) return;        const formattedPrice = this.formatPrice(tour.price);
+        const mainImage = apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(tour.imageUrls?.[0]) || './assets/images/packege-1.jpg';
         const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
 
         this.totalPrice = tour.price * this.participants;
