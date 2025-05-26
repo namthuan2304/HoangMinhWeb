@@ -224,6 +224,10 @@ class APIClient {
         return await this.request(endpoint, { auth: false });
     }
 
+    async getTourRating(tourId) {
+        return await this.request(`/comments/tour/${tourId}/rating`, { auth: false });
+    }
+
     async createComment(commentData) {
         return await this.request('/comments', {
             method: 'POST',
@@ -242,6 +246,12 @@ class APIClient {
         return await this.request(`/comments/${id}`, {
             method: 'DELETE',
         });
+    }
+
+    async getUserComments(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/comments/my-comments?${queryString}` : '/comments/my-comments';
+        return await this.request(endpoint);
     }
 
     // Articles Methods

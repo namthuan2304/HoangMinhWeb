@@ -3,6 +3,10 @@ class TourDetailManager {
     constructor() {
         this.tourId = null;
         this.currentTour = null;
+        this.reviews = [];
+        this.currentPage = 0;
+        this.totalPages = 0;
+        this.reviewsPerPage = 10;
         this.init();
     }
 
@@ -254,21 +258,73 @@ class TourDetailManager {
                             <div class="terms-content">
                                 ${tour.termsConditions ? this.formatTermsConditions(tour.termsConditions) : '<p>Điều khoản sẽ được cập nhật sớm.</p>'}
                             </div>
-                        </div>
-
-                        <div class="tab-pane" id="reviews">
-                            <h3>Đánh giá từ khách hàng</h3>
-                            <div class="reviews-summary">
-                                <div class="rating-overview">
-                                    <div class="rating-score">
-                                        <span class="score">${rating > 0 ? rating.toFixed(1) : '0.0'}</span>
-                                        <div class="stars">${stars}</div>
-                                        <span class="review-count">Dựa trên ${reviewCount} đánh giá</span>
+                        </div>                        <div class="tab-pane" id="reviews">
+                            <div class="reviews-section">
+                                <div class="reviews-header">
+                                    <h3>Đánh giá từ khách hàng</h3>
+                                    <div class="reviews-summary">
+                                        <div class="rating-overview">
+                                            <div class="rating-score">
+                                                <span class="score">${rating > 0 ? rating.toFixed(1) : '0.0'}</span>
+                                                <div class="stars">${stars}</div>
+                                                <span class="review-count">${reviewCount} đánh giá</span>
+                                            </div>
+                                            <div class="rating-breakdown" id="ratingBreakdown">
+                                                <!-- Rating breakdown will be loaded here -->
+                                            </div>
+                                        </div>
+                                        ${apiClient.isAuthenticated() ? `
+                                            <button class="btn btn-primary" id="writeReviewBtn" onclick="tourDetailManager.showReviewForm()">
+                                                <ion-icon name="create-outline"></ion-icon>
+                                                Viết đánh giá
+                                            </button>
+                                        ` : `
+                                            <p class="login-prompt">
+                                                <a href="login.html">Đăng nhập</a> để viết đánh giá
+                                            </p>
+                                        `}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="reviews-list">
-                                <p class="no-reviews">Chưa có đánh giá cho tour này.</p>
+
+                                <!-- Review Form -->
+                                <div class="review-form-container" id="reviewFormContainer" style="display: none;">
+                                    <div class="review-form">
+                                        <h4>Viết đánh giá của bạn</h4>
+                                        <form id="reviewForm">
+                                            <div class="rating-input">
+                                                <label>Đánh giá của bạn:</label>
+                                                <div class="star-rating" id="starRating">
+                                                    <span class="star" data-rating="1">★</span>
+                                                    <span class="star" data-rating="2">★</span>
+                                                    <span class="star" data-rating="3">★</span>
+                                                    <span class="star" data-rating="4">★</span>
+                                                    <span class="star" data-rating="5">★</span>
+                                                </div>
+                                                <span class="rating-text" id="ratingText">Chọn số sao</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="reviewContent">Nội dung đánh giá:</label>
+                                                <textarea id="reviewContent" rows="4" placeholder="Chia sẻ trải nghiệm của bạn về tour này..." required></textarea>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-outline" onclick="tourDetailManager.hideReviewForm()">Hủy</button>
+                                                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Reviews List -->
+                                <div class="reviews-list" id="reviewsList">
+                                    <div class="loading-placeholder">
+                                        <p>Đang tải đánh giá...</p>
+                                    </div>
+                                </div>
+
+                                <!-- Reviews Pagination -->
+                                <div class="reviews-pagination" id="reviewsPagination" style="display: none;">
+                                    <!-- Pagination will be rendered here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -280,9 +336,7 @@ class TourDetailManager {
 
         // Initialize tabs
         this.initializeTabs();
-    }
-
-    initializeTabs() {
+    }    initializeTabs() {
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabPanes = document.querySelectorAll('.tab-pane');
 
@@ -300,8 +354,475 @@ class TourDetailManager {
                 if (targetPane) {
                     targetPane.classList.add('active');
                 }
+
+                // Load reviews when reviews tab is clicked
+                if (tabId === 'reviews' && this.currentTour) {
+                    this.loadReviews();
+                }
             });
         });
+    }
+
+    // Review Management Methods
+    async loadReviews(page = 0) {
+        try {
+            const reviewsList = document.getElementById('reviewsList');
+            if (!reviewsList) return;
+
+            // Show loading
+            reviewsList.innerHTML = '<div class="loading-placeholder"><p>Đang tải đánh giá...</p></div>';
+
+            // Fetch reviews
+            const response = await apiClient.getCommentsByTour(this.tourId, {
+                page: page,
+                size: this.reviewsPerPage,
+                sortBy: 'createdAt',
+                sortDir: 'desc'
+            });
+
+            this.reviews = response.content || [];
+            this.currentPage = response.number || 0;
+            this.totalPages = response.totalPages || 0;
+
+            // Check if user has already reviewed this tour
+            await this.checkUserReview();
+
+            // Render reviews
+            this.renderReviews();
+            this.renderReviewsPagination();
+
+            // Load rating breakdown
+            await this.loadRatingBreakdown();
+
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+            const reviewsList = document.getElementById('reviewsList');
+            if (reviewsList) {
+                reviewsList.innerHTML = '<div class="error-message"><p>Không thể tải đánh giá. Vui lòng thử lại sau.</p></div>';
+            }
+        }
+    }
+
+    async checkUserReview() {
+        if (!apiClient.isAuthenticated()) return;
+
+        try {
+            const currentUser = apiClient.getCurrentUser();
+            if (!currentUser) return;
+
+            // Check if user has already reviewed this tour
+            const userHasReviewed = this.reviews.some(review => 
+                review.user.username === currentUser.username
+            );
+
+            const writeReviewBtn = document.getElementById('writeReviewBtn');
+            if (writeReviewBtn) {
+                if (userHasReviewed) {
+                    writeReviewBtn.textContent = 'Bạn đã đánh giá tour này';
+                    writeReviewBtn.disabled = true;
+                    writeReviewBtn.classList.add('disabled');
+                } else {
+                    writeReviewBtn.textContent = 'Viết đánh giá';
+                    writeReviewBtn.disabled = false;
+                    writeReviewBtn.classList.remove('disabled');
+                }
+            }
+        } catch (error) {
+            console.error('Error checking user review:', error);
+        }
+    }
+
+    renderReviews() {
+        const reviewsList = document.getElementById('reviewsList');
+        if (!reviewsList) return;
+
+        if (this.reviews.length === 0) {
+            reviewsList.innerHTML = '<div class="no-reviews"><p>Chưa có đánh giá cho tour này.</p></div>';
+            return;
+        }
+
+        const html = this.reviews.map(review => this.renderSingleReview(review)).join('');
+        reviewsList.innerHTML = html;
+    }
+
+    renderSingleReview(review) {
+        const stars = this.generateStarRating(review.rating);
+        const reviewDate = new Date(review.createdAt).toLocaleDateString('vi-VN');
+        const currentUser = apiClient.getCurrentUser();
+        const isOwner = currentUser && currentUser.username === review.user.username;
+
+        return `
+            <div class="review-item" data-review-id="${review.id}">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">
+                            ${review.user.avatarUrl ? 
+                                `<img src="${apiClient.getFullImageUrl(review.user.avatarUrl)}" alt="${review.user.fullName || review.user.username}">` :
+                                `<div class="default-avatar"><ion-icon name="person-outline"></ion-icon></div>`
+                            }
+                        </div>
+                        <div class="reviewer-details">
+                            <h5 class="reviewer-name">${review.user.fullName || review.user.username}</h5>
+                            <div class="review-rating">${stars}</div>
+                            <span class="review-date">${reviewDate}</span>
+                        </div>
+                    </div>
+                    ${isOwner ? `
+                        <div class="review-actions">
+                            <button class="btn-icon" onclick="tourDetailManager.editReview(${review.id})" title="Chỉnh sửa">
+                                <ion-icon name="create-outline"></ion-icon>
+                            </button>
+                            <button class="btn-icon" onclick="tourDetailManager.deleteReview(${review.id})" title="Xóa">
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="review-content">
+                    <p>${review.content}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    renderReviewsPagination() {
+        const pagination = document.getElementById('reviewsPagination');
+        if (!pagination || this.totalPages <= 1) {
+            pagination.style.display = 'none';
+            return;
+        }
+
+        pagination.style.display = 'block';
+        
+        let html = '<div class="pagination-controls">';
+        
+        // Previous button
+        if (this.currentPage > 0) {
+            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage - 1})">
+                        <ion-icon name="chevron-back-outline"></ion-icon> Trước
+                     </button>`;
+        }
+
+        // Page numbers
+        const startPage = Math.max(0, this.currentPage - 2);
+        const endPage = Math.min(this.totalPages - 1, this.currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === this.currentPage;
+            html += `<button class="btn ${isActive ? 'btn-primary' : 'btn-outline'}" 
+                            onclick="tourDetailManager.loadReviews(${i})">${i + 1}</button>`;
+        }
+
+        // Next button
+        if (this.currentPage < this.totalPages - 1) {
+            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage + 1})">
+                        Sau <ion-icon name="chevron-forward-outline"></ion-icon>
+                     </button>`;
+        }
+
+        html += '</div>';
+        pagination.innerHTML = html;
+    }
+
+    async loadRatingBreakdown() {
+        try {
+            const ratingData = await apiClient.getTourRating(this.tourId);
+            this.renderRatingBreakdown(ratingData);
+        } catch (error) {
+            console.error('Error loading rating breakdown:', error);
+        }
+    }
+
+    renderRatingBreakdown(ratingData) {
+        const breakdown = document.getElementById('ratingBreakdown');
+        if (!breakdown) return;
+
+        const totalComments = ratingData.totalComments || 0;
+        if (totalComments === 0) {
+            breakdown.innerHTML = '<p class="no-data">Chưa có đánh giá</p>';
+            return;
+        }
+
+        // This would need to be enhanced to show rating distribution
+        // For now, just show total count
+        breakdown.innerHTML = `
+            <div class="rating-stats">
+                <div class="stat-item">
+                    <span class="label">Tổng đánh giá:</span>
+                    <span class="value">${totalComments}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Đánh giá trung bình:</span>
+                    <span class="value">${ratingData.averageRating ? ratingData.averageRating.toFixed(1) : '0.0'}/5</span>
+                </div>
+            </div>
+        `;
+    }    showReviewForm() {
+        const container = document.getElementById('reviewFormContainer');
+        const writeBtn = document.getElementById('writeReviewBtn');
+        
+        // Don't show form if button is disabled
+        if (writeBtn && writeBtn.disabled) {
+            return;
+        }
+        
+        if (container) {
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        if (writeBtn) {
+            writeBtn.style.display = 'none';
+        }
+
+        this.initializeReviewForm();
+    }
+
+    hideReviewForm() {
+        const container = document.getElementById('reviewFormContainer');
+        const writeBtn = document.getElementById('writeReviewBtn');
+        
+        if (container) {
+            container.style.display = 'none';
+        }
+        
+        if (writeBtn) {
+            writeBtn.style.display = 'block';
+        }
+
+        this.resetReviewForm();
+    }    initializeReviewForm() {
+        const stars = document.querySelectorAll('#starRating .star');
+        const ratingText = document.getElementById('ratingText');
+        const form = document.getElementById('reviewForm');
+        const starRating = document.getElementById('starRating');
+        
+        // Get existing rating if editing
+        let selectedRating = parseInt(starRating.dataset.selectedRating) || 0;
+
+        // Remove existing event listeners to prevent duplicates
+        const newStars = [];
+        stars.forEach((star, index) => {
+            const newStar = star.cloneNode(true);
+            star.parentNode.replaceChild(newStar, star);
+            newStars.push(newStar);
+        });
+
+        // Star rating interaction
+        newStars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                newStars.forEach((s, i) => {
+                    s.classList.toggle('hover', i <= index);
+                });
+            });
+
+            star.addEventListener('mouseout', () => {
+                newStars.forEach(s => s.classList.remove('hover'));
+            });
+
+            star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                newStars.forEach((s, i) => {
+                    s.classList.toggle('selected', i < selectedRating);
+                });
+                
+                const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+                ratingText.textContent = ratingTexts[index] || 'Chọn số sao';
+                
+                // Store selected rating
+                starRating.dataset.selectedRating = selectedRating;
+            });
+        });
+
+        // Remove existing form listener and add new one
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        // Form submission
+        newForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentRating = parseInt(document.getElementById('starRating').dataset.selectedRating) || 0;
+            
+            if (currentRating === 0) {
+                this.showToast('Vui lòng chọn số sao đánh giá', 'warning');
+                return;
+            }
+
+            const content = document.getElementById('reviewContent').value.trim();
+            if (!content) {
+                this.showToast('Vui lòng nhập nội dung đánh giá', 'warning');
+                return;
+            }
+
+            const reviewData = {
+                tourId: this.tourId,
+                rating: currentRating,
+                content: content
+            };
+
+            // Check if editing
+            const editingId = newForm.dataset.editing;
+            if (editingId) {
+                await this.updateReview(editingId, reviewData);
+            } else {
+                await this.submitReview(reviewData);
+            }
+        });
+    }
+
+    async submitReview(reviewData) {
+        try {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang gửi...';
+            }
+
+            await apiClient.createComment(reviewData);
+            
+            this.showToast('Đánh giá của bạn đã được gửi thành công!', 'success');
+            this.hideReviewForm();
+            
+            // Reload reviews and tour data
+            await this.loadReviews();
+            await this.loadTourDetail(); // Refresh rating in header
+
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá';
+            
+            if (error.message.includes('đã bình luận')) {
+                errorMessage = 'Bạn đã đánh giá tour này rồi';
+            }
+            
+            this.showToast(errorMessage, 'error');
+        } finally {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gửi đánh giá';
+            }
+        }
+    }
+
+    async updateReview(reviewId, reviewData) {
+        try {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang cập nhật...';
+            }
+
+            await apiClient.updateComment(reviewId, reviewData);
+            
+            this.showToast('Đánh giá của bạn đã được cập nhật thành công!', 'success');
+            this.hideReviewForm();
+            
+            // Reload reviews and tour data
+            await this.loadReviews();
+            await this.loadTourDetail(); // Refresh rating in header
+
+        } catch (error) {
+            console.error('Error updating review:', error);
+            this.showToast('Có lỗi xảy ra khi cập nhật đánh giá', 'error');
+        } finally {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Cập nhật đánh giá';
+            }
+        }
+    }    resetReviewForm() {
+        const form = document.getElementById('reviewForm');
+        const stars = document.querySelectorAll('#starRating .star');
+        const ratingText = document.getElementById('ratingText');
+        const submitBtn = form?.querySelector('button[type="submit"]');
+        
+        if (form) {
+            form.reset();
+            delete form.dataset.editing;
+        }
+        if (stars) stars.forEach(star => star.classList.remove('selected', 'hover'));
+        if (ratingText) ratingText.textContent = 'Chọn số sao';
+        if (submitBtn) submitBtn.textContent = 'Gửi đánh giá';
+    }    async editReview(reviewId) {
+        // Find the review
+        const review = this.reviews.find(r => r.id === reviewId);
+        if (!review) return;
+
+        // Show form with existing data
+        this.showReviewForm();
+        
+        // Populate form
+        document.getElementById('reviewContent').value = review.content;
+        
+        // Set rating
+        const stars = document.querySelectorAll('#starRating .star');
+        stars.forEach((star, index) => {
+            star.classList.toggle('selected', index < review.rating);
+        });
+        
+        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+        document.getElementById('ratingText').textContent = ratingTexts[review.rating - 1];
+
+        // Change form submission to update instead of create
+        const form = document.getElementById('reviewForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.textContent = 'Cập nhật đánh giá';
+        
+        // Store editing state
+        form.dataset.editing = reviewId;
+        
+        // Update the selected rating variable in the form
+        const starRating = document.getElementById('starRating');
+        starRating.dataset.selectedRating = review.rating;
+    }
+
+    async updateReview(reviewId, reviewData) {
+        try {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang cập nhật...';
+            }
+
+            await apiClient.updateComment(reviewId, reviewData);
+            
+            this.showToast('Đánh giá của bạn đã được cập nhật thành công!', 'success');
+            this.hideReviewForm();
+            
+            // Reload reviews and tour data
+            await this.loadReviews();
+            await this.loadTourDetail(); // Refresh rating in header
+
+        } catch (error) {
+            console.error('Error updating review:', error);
+            this.showToast('Có lỗi xảy ra khi cập nhật đánh giá', 'error');
+        } finally {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Cập nhật đánh giá';
+            }
+        }
+    }
+
+    async deleteReview(reviewId) {
+        if (!confirm('Bạn có chắc muốn xóa đánh giá này?')) return;
+
+        try {
+            await apiClient.deleteComment(reviewId);
+            this.showToast('Đã xóa đánh giá thành công', 'success');
+            
+            // Reload reviews and tour data
+            await this.loadReviews();
+            await this.loadTourDetail(); // Refresh rating in header
+            
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            this.showToast('Có lỗi xảy ra khi xóa đánh giá', 'error');
+        }
     }
 
     changeMainImage(src, thumbElement) {
