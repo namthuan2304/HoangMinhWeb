@@ -591,7 +591,6 @@ class TourDetailManager {
                                 <div class="rating-stars">${stars}</div>
                                 <span class="rating-number">${review.rating}/5</span>
                             </div>
-                            <span class="review-date" title="${reviewDate}">${timeAgo}</span>
                             ${review.tourBookingId ? `
                                 <div class="verified-indicator" title="Đã trải nghiệm tour">
                                     <ion-icon name="checkmark-circle"></ion-icon>
@@ -617,12 +616,7 @@ class TourDetailManager {
                 </div>
                 
                 <div class="review-footer">
-                    <div class="helpful-section">
-                        <button class="helpful-btn">
-                            <ion-icon name="thumbs-up-outline"></ion-icon>
-                            Hữu ích
-                        </button>
-                    </div>
+                    <span class="review-date">${reviewDate}</span>
                     <span class="review-time-ago">${timeAgo}</span>
                 </div>
             </div>
