@@ -118,10 +118,12 @@
 
             <li>
               <a href="#destination" class="navbar-link" data-nav-link data-translate="destination">Điểm đến</a>
+            </li>            <li>
+              <a href="#package" class="navbar-link" data-nav-link data-translate="packages">Gói tour</a>
             </li>
 
             <li>
-              <a href="#package" class="navbar-link" data-nav-link data-translate="packages">Gói tour</a>
+              <a href="articles.html" class="navbar-link" data-translate="articles">Bài viết</a>
             </li>
 
             <li>
@@ -262,7 +264,7 @@
       -->      <section class="popular" id="destination">
         <div class="container">
 
-          <p class="section-subtitle">Khám phá địa điểm</p>
+          <p class="section-subtitle" data-translate="explore_destinations">Khám phá địa điểm</p>
 
           <h2 class="h2 section-title" data-translate="popular_destinations">Điểm đến phổ biến</h2>
 
@@ -375,7 +377,7 @@
 
           </ul>
 
-          <button class="btn btn-primary" data-translate="view_all">Xem tất cả</button>
+          <button class="btn btn-primary" data-translate="view_all">Xem tất cả gói tour</button>
 
         </div>
       </section>
@@ -616,7 +618,7 @@
               </div>
             </li>
 
-          </ul>          <button class="btn btn-primary" data-translate="view_all">Xem tất cả gói tour</button>
+          </ul> <button class="btn btn-primary" data-translate="view_all">Xem tất cả gói tour</button>
 
         </div>
       </section>
@@ -671,26 +673,54 @@
               </figure>
             </li>
 
+          </ul>        </div>
+      </section>
+
+      <!-- 
+        - #FEATURED ARTICLES
+      -->
+
+      <section class="featured-articles">
+        <div class="container">
+
+          <p class="section-subtitle" data-translate="discover_information">Khám phá thông tin</p>
+
+          <h2 class="h2 section-title" data-translate="featured_articles_title">Bài viết nổi bật</h2>
+
+          <p class="section-text" data-translate="featured_articles_subtitle">
+            Khám phá những câu chuyện, kinh nghiệm và bí quyết du lịch từ các chuyên gia để có những chuyến đi trọn vẹn nhất.
+          </p>
+
+          <ul class="featured-articles-list" id="featuredArticlesList">
+            <!-- Featured articles will be loaded here -->
+            <li class="loading-placeholder">
+              <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Đang tải bài viết...</p>
+              </div>
+            </li>
           </ul>
+
+          <div class="article-cta">
+            <a href="articles.html" class="btn btn-primary" data-translate="view_all_articles">Xem tất cả bài viết</a>
+          </div>
 
         </div>
       </section>
-
-
-
-
 
       <!-- 
         - #CTA
       -->
 
       <section class="cta" id="contact">
-        <div class="container">          <div class="cta-content">
-            <p class="section-subtitle">Kêu gọi hành động</p>
+        <div class="container">
 
-            <h2 class="h2 section-title">Sẵn sàng cho chuyến du lịch khó quên. Hãy nhớ đến chúng tôi!</h2>
+          <div class="cta-content">
+            <p class="section-subtitle" data-translate="call_to_action">Kêu gọi hành động</p>
 
-            <p class="section-text">
+            <h2 class="h2 section-title" data-translate="ready_for_trip">Sẵn sàng cho chuyến du lịch khó quên. Hãy nhớ đến chúng tôi!</h2>
+
+            <p class="section-text" data-translate="cta_description">
               Chúng tôi cam kết mang đến cho bạn những trải nghiệm du lịch tuyệt vời nhất. 
               Hãy liên hệ với chúng tôi để bắt đầu hành trình khám phá thế giới.
             </p>

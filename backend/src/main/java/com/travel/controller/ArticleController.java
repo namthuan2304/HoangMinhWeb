@@ -281,4 +281,14 @@ public class ArticleController {
         
         return ResponseEntity.ok(articles);
     }
+
+    /**
+     * Lấy tất cả tags (Public)
+     */
+    @GetMapping("/tags")
+    @Operation(summary = "Lấy tất cả tags")
+    public ResponseEntity<List<String>> getAllTags() {
+        List<String> tags = articleService.getAllTags();
+        return ResponseEntity.ok(tags);
+    }
 }

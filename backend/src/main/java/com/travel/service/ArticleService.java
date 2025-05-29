@@ -332,5 +332,15 @@ public class ArticleService {
 
         Page<Article> articles = articleRepository.findByAuthorAndDeletedAtIsNull(author, pageable);
         return articles.map(article -> modelMapper.map(article, ArticleResponse.class));
+    }    /**
+     * Lấy tất cả tags từ các bài viết đã xuất bản
+     */
+    public List<String> getAllTags() {
+        List<Article> articles = articleRepository.findPublishedArticles();
+        return articles.stream()
+            .flatMap(article -> article.getTags().stream())
+            .distinct()
+            .sorted()
+            .collect(Collectors.toList());
     }
 }

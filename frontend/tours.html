@@ -155,9 +155,9 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="priceRange" data-translate="price">Khoảng giá</label>
+                                <label for="priceRange" data-translate="price_range">Khoảng giá</label>
                                 <select id="priceRange" name="priceRange">
-                                    <option value="">Tất cả</option>
+                                    <option value="" data-translate="all">Tất cả</option>
                                     <option value="0-5000000">Dưới 5 triệu</option>
                                     <option value="5000000-10000000">5 - 10 triệu</option>
                                     <option value="10000000-20000000">10 - 20 triệu</option>
@@ -169,7 +169,7 @@
                             <div class="filter-group">
                                 <label for="duration" data-translate="duration">Thời gian</label>
                                 <select id="duration" name="duration">
-                                    <option value="">Tất cả</option>
+                                    <option value="" data-translate="all">Tất cả</option>
                                     <option value="1-3">1-3 ngày</option>
                                     <option value="4-7">4-7 ngày</option>
                                     <option value="8-14">8-14 ngày</option>
@@ -178,13 +178,13 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="sortBy">Sắp xếp theo</label>
+                                <label for="sortBy" data-translate="sort_by">Sắp xếp theo</label>
                                 <select id="sortBy" name="sortBy">
-                                    <option value="newest">Mới nhất</option>
-                                    <option value="price-asc">Giá thấp đến cao</option>
-                                    <option value="price-desc">Giá cao đến thấp</option>
-                                    <option value="rating">Đánh giá cao nhất</option>
-                                    <option value="popular">Phổ biến nhất</option>
+                                    <option value="newest" data-translate="newest">Mới nhất</option>
+                                    <option value="price-asc" data-translate="price_low_high">Giá thấp đến cao</option>
+                                    <option value="price-desc" data-translate="price_high_low">Giá cao đến thấp</option>
+                                    <option value="rating" data-translate="rating_high_low">Đánh giá cao nhất</option>
+                                    <option value="popular" data-translate="popular">Phổ biến nhất</option>
                                 </select>
                             </div>
 
@@ -195,7 +195,7 @@
                                 </button>
                                 <button type="reset" class="btn btn-outline">
                                     <ion-icon name="refresh-outline"></ion-icon>
-                                    <span>Xóa bộ lọc</span>
+                                    <span data-translate="clear_filters">Xóa bộ lọc</span>
                                 </button>
                             </div>
                         </div>

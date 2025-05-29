@@ -263,17 +263,17 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                      <label for="dateOfBirth" class="form-label" data-translate="date_of_birth">Ngày sinh</label>
                       <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control">
                     </div>
 
                     <div class="form-group">
-                      <label for="gender" class="form-label">Giới tính</label>
+                      <label for="gender" class="form-label" data-translate="gender">Giới tính</label>
                       <select id="gender" name="gender" class="form-control">
-                        <option value="">Chọn giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
+                        <option value="" data-translate="select_gender">Chọn giới tính</option>
+                        <option value="male" data-translate="male">Nam</option>
+                        <option value="female" data-translate="female">Nữ</option>
+                        <option value="other" data-translate="other">Khác</option>
                       </select>
                     </div>
                   </div>
@@ -299,12 +299,12 @@
               <div class="profile-tab" id="securityTab">
                 <div class="tab-header">
                   <h2 data-translate="change_password">Đổi mật khẩu</h2>
-                  <p>Thay đổi mật khẩu để bảo mật tài khoản của bạn</p>
+                  <p data-translate="password_security_note">Thay đổi mật khẩu để bảo mật tài khoản của bạn</p>
                 </div>
 
                 <form class="profile-form" id="changePasswordForm">
                   <div class="form-group">
-                    <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                    <label for="currentPassword" class="form-label" data-translate="current_password">Mật khẩu hiện tại</label>
                     <div class="password-input">
                       <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
                       <button type="button" class="password-toggle">
@@ -315,7 +315,7 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                    <label for="newPassword" class="form-label" data-translate="new_password">Mật khẩu mới</label>
                     <div class="password-input">
                       <input type="password" id="newPassword" name="newPassword" class="form-control" required>
                       <button type="button" class="password-toggle">
@@ -323,7 +323,7 @@
                       </button>
                     </div>
                     <span class="error-message" id="newPasswordError"></span>
-                    <small class="form-hint">Mật khẩu phải có ít nhất 6 ký tự</small>
+                    <small class="form-hint" data-translate="password_requirement">Mật khẩu phải có ít nhất 6 ký tự</small>
                   </div>
 
                   <div class="form-group">
@@ -339,10 +339,10 @@
 
                   <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="changePasswordBtn">
-                      <span class="btn-text">Đổi mật khẩu</span>
+                      <span class="btn-text" data-translate="change_password">Đổi mật khẩu</span>
                       <span class="btn-loading" style="display: none;">
                         <ion-icon name="refresh-outline" class="rotating"></ion-icon>
-                        <span>Đang xử lý...</span>
+                        <span data-translate="processing">Đang xử lý...</span>
                       </span>
                     </button>
                   </div>
@@ -352,29 +352,29 @@
               <div class="profile-tab" id="settingsTab">
                 <div class="tab-header">
                   <h2 data-translate="settings">Cài đặt</h2>
-                  <p>Tùy chỉnh trải nghiệm của bạn</p>
+                  <p data-translate="customize_experience">Tùy chỉnh trải nghiệm của bạn</p>
                 </div>
 
                 <div class="settings-section">
-                  <h3>Thông báo</h3>
+                  <h3 data-translate="notifications">Thông báo</h3>
                   <div class="setting-item">
                     <label class="setting-label">
                       <input type="checkbox" id="emailNotifications" checked>
                       <span class="checkmark"></span>
-                      Nhận thông báo qua email
+                      <span data-translate="email_notifications">Nhận thông báo qua email</span>
                     </label>
                   </div>
                   <div class="setting-item">
                     <label class="setting-label">
                       <input type="checkbox" id="smsNotifications">
                       <span class="checkmark"></span>
-                      Nhận thông báo qua SMS
+                      <span data-translate="sms_notifications">Nhận thông báo qua SMS</span>
                     </label>
                   </div>
                 </div>
 
                 <div class="settings-section">
-                  <h3>Ngôn ngữ</h3>
+                  <h3 data-translate="language">Ngôn ngữ</h3>
                   <div class="setting-item">
                     <select id="languageSelect" class="form-control">
                       <option value="vi">Tiếng Việt</option>
@@ -384,11 +384,11 @@
                 </div>
 
                 <div class="settings-section">
-                  <h3>Tài khoản</h3>
+                  <h3 data-translate="account">Tài khoản</h3>
                   <div class="setting-item">
                     <button class="btn btn-danger" id="deleteAccountBtn">
                       <ion-icon name="trash-outline"></ion-icon>
-                      Xóa tài khoản
+                      <span data-translate="delete_account">Xóa tài khoản</span>
                     </button>
                   </div>
                 </div>

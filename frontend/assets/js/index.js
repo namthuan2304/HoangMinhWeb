@@ -22,11 +22,11 @@ async function initIndexPage() {
         // Test API connection first
         const isApiOnline = await testApiConnection();
         
-        if (isApiOnline) {
-            // Tải dữ liệu từ API song song
+        if (isApiOnline) {            // Tải dữ liệu từ API song song
             const promises = [
                 loadPopularDestinations(),
                 loadFeaturedTours(),
+                loadFeaturedArticles(),
                 loadGalleryImages()
             ];
             
@@ -35,7 +35,7 @@ async function initIndexPage() {
             
             // Log kết quả
             results.forEach((result, index) => {
-                const names = ['Popular Destinations', 'Featured Tours', 'Gallery Images'];
+                const names = ['Popular Destinations', 'Featured Tours', 'Featured Articles', 'Gallery Images'];
                 if (result.status === 'rejected') {
                     console.error(`Failed to load ${names[index]}:`, result.reason);
                 } else {
@@ -379,6 +379,147 @@ async function loadGalleryImages() {
     } catch (error) {
         console.error('Error loading gallery images:', error);
     }
+}
+
+// Tải bài viết nổi bật từ API
+async function loadFeaturedArticles() {
+    const featuredList = document.getElementById('featuredArticlesList');
+    if (!featuredList) return;
+    
+    try {
+        // Show loading state
+        if (IndexUtils) IndexUtils.showLoading(featuredList);
+        
+        const response = await fetch(`${API_BASE_URL}/api/articles?size=3&sort=viewCount:desc`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch featured articles');
+        }
+
+        const data = await response.json();
+        const articles = data.content || [];
+        
+        renderFeaturedArticles(articles);
+        
+    } catch (error) {
+        console.error('Error loading featured articles:', error);
+        // Show fallback articles or hide section
+        renderFallbackArticles();
+    } finally {
+        if (IndexUtils) IndexUtils.hideLoading(featuredList);
+    }
+}
+
+// Render bài viết nổi bật
+function renderFeaturedArticles(articles) {
+    const featuredList = document.getElementById('featuredArticlesList');
+    if (!featuredList) return;
+    
+    if (articles.length === 0) {
+        renderFallbackArticles();
+        return;
+    }
+    
+    featuredList.innerHTML = '';
+    
+    articles.forEach(article => {
+        const listItem = document.createElement('li');
+        
+        const publishedDate = new Date(article.publishedAt || article.createdAt).toLocaleDateString('vi-VN');
+        const defaultImage = './assets/images/img8.jpg';
+        const articleImage = article.featuredImage || defaultImage;
+        const excerpt = article.excerpt || article.content?.substring(0, 150) + '...' || '';
+        
+        listItem.innerHTML = `
+            <div class="featured-article-card" onclick="window.location.href='article-detail.html?slug=${article.slug}'">
+                <figure class="card-banner">
+                    <img src="${articleImage}" 
+                         alt="${article.title}" 
+                         loading="lazy"
+                         onerror="this.src='${defaultImage}'">
+                    ${article.isPrimary ? '<div class="card-badge">Nổi bật</div>' : ''}
+                </figure>
+                
+                <div class="card-content">
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>${publishedDate}</span>
+                        </div>
+                        <div class="meta-item">
+                            <ion-icon name="person-outline"></ion-icon>
+                            <span>${article.author || 'Admin'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <ion-icon name="eye-outline"></ion-icon>
+                            <span>${article.viewCount || 0}</span>
+                        </div>
+                    </div>
+                    
+                    <h3 class="card-title">
+                        <a href="article-detail.html?slug=${article.slug}">${article.title}</a>
+                    </h3>
+                    
+                    <p class="card-text">${excerpt}</p>
+                    
+                    <div class="card-footer">
+                        <a href="article-detail.html?slug=${article.slug}" class="read-more">
+                            Đọc thêm
+                        </a>
+                        <div class="view-count">
+                            <ion-icon name="eye-outline"></ion-icon>
+                            <span>${article.viewCount || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        featuredList.appendChild(listItem);
+    });
+}
+
+// Render bài viết fallback khi không có dữ liệu từ API
+function renderFallbackArticles() {
+    const featuredList = document.getElementById('featuredArticlesList');
+    if (!featuredList) return;
+    
+    const fallbackArticles = [
+        {
+            slug: 'kinh-nghiem-du-lich-ha-long',
+            title: 'Kinh nghiệm du lịch Hạ Long - Những điều cần biết',
+            excerpt: 'Khám phá vẻ đẹp kỳ thú của Vịnh Hạ Long với những hang động tuyệt đẹp và hoạt động thú vị...',
+            author: 'Admin',
+            publishedAt: new Date(),
+            viewCount: 1250,
+            featuredImage: './assets/images/gallery-1.jpg',
+            isPrimary: true
+        },
+        {
+            slug: 'am-thuc-viet-nam',
+            title: 'Ẩm thực Việt Nam - Hành trình khám phá hương vị',
+            excerpt: 'Từ phở Hà Nội đến bánh mì Sài Gòn, cùng khám phá tinh hoa ẩm thực ba miền đất nước...',
+            author: 'Admin', 
+            publishedAt: new Date(),
+            viewCount: 980,
+            featuredImage: './assets/images/gallery-2.jpg'
+        },
+        {
+            slug: 'meo-du-lich-tiet-kiem',
+            title: 'Mẹo du lịch tiết kiệm cho sinh viên',
+            excerpt: 'Những bí quyết giúp bạn có thể vi vu khắp nơi mà vẫn tiết kiệm được chi phí...',
+            author: 'Admin',
+            publishedAt: new Date(), 
+            viewCount: 750,
+            featuredImage: './assets/images/gallery-3.jpg'
+        }
+    ];
+    
+    renderFeaturedArticles(fallbackArticles);
 }
 
 // Thiết lập event listeners

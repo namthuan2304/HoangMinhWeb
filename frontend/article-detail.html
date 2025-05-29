@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Du Lịch Hoàng Minh - Chi tiết bài viết</title>
+
+  <!-- 
+    - favicon
+  -->
+  <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+
+  <!-- 
+    - custom css link
+  -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/article-detail.css">
+  <link rel="stylesheet" href="./assets/css/toast.css">
+
+  <!-- 
+    - google font link
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body id="top">
+
+  <!-- 
+    - #HEADER
+  -->
+  <header class="header" data-header>
+    <div class="overlay" data-overlay></div>
+
+    <div class="header-top">
+      <div class="container">
+
+        <a href="tel:+01123456790" class="helpline-box">
+          <div class="icon-box">
+            <ion-icon name="call-outline"></ion-icon>
+          </div>
+          <div class="wrapper">
+            <p class="helpline-title" data-translate="helpline_title">Để biết thêm thông tin:</p>
+            <p class="helpline-number">+84 (123) 456 789</p>
+          </div>
+        </a>
+
+        <a href="index.html" class="logo">
+          <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+        </a>
+
+        <div class="header-btn-group">
+          <button class="search-btn" aria-label="Tìm kiếm" data-translate-title="search">
+            <ion-icon name="search"></ion-icon>
+          </button>
+
+          <button class="nav-open-btn" aria-label="Mở menu" data-nav-open-btn data-translate-title="open_menu">
+            <ion-icon name="menu-outline"></ion-icon>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="header-bottom">
+      <div class="container">
+
+        <ul class="social-list">
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-facebook"></ion-icon>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-twitter"></ion-icon>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-youtube"></ion-icon>
+            </a>
+          </li>
+        </ul>
+
+        <nav class="navbar" data-navbar>
+          <div class="navbar-top">
+            <a href="index.html" class="logo">
+              <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
+            </a>
+
+            <button class="nav-close-btn" aria-label="Đóng menu" data-nav-close-btn data-translate-title="close_menu">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+
+          <ul class="navbar-list">
+            <li>
+              <a href="index.html" class="navbar-link" data-nav-link data-translate="home">Trang chủ</a>
+            </li>
+            <li>
+              <a href="index.html#about" class="navbar-link" data-nav-link data-translate="about_us">Về chúng tôi</a>
+            </li>
+            <li>
+              <a href="index.html#destination" class="navbar-link" data-nav-link data-translate="destination">Điểm đến</a>
+            </li>
+            <li>
+              <a href="tours.html" class="navbar-link" data-nav-link data-translate="packages">Gói tour</a>
+            </li>
+            <li>
+              <a href="articles.html" class="navbar-link active" data-nav-link data-translate="articles">Bài viết</a>
+            </li>
+            <li>
+              <a href="index.html#contact" class="navbar-link" data-nav-link data-translate="contact_us">Liên hệ</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Auth Section -->
+        <div class="auth-section">
+          <!-- Authentication buttons (shown when not logged in) -->
+          <div class="auth-buttons" id="authButtons">
+            <a href="login.html" class="btn btn-outline" data-translate="login">Đăng nhập</a>
+            <a href="register.html" class="btn btn-primary" data-translate="register">Đăng ký</a>
+          </div>
+
+          <!-- User menu (shown when logged in) -->
+          <div class="user-menu" id="userMenu" style="display: none;">
+            <div class="user-dropdown">
+              <button class="user-trigger" id="userTrigger">
+                <div class="user-avatar">
+                  <ion-icon name="person-outline"></ion-icon>
+                </div>
+                <span class="user-name" id="userName">User</span>
+                <ion-icon name="chevron-down-outline" class="dropdown-icon"></ion-icon>
+              </button>
+              
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <a href="profile.html" class="dropdown-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span data-translate="profile">Hồ sơ</span>
+                </a>
+                <a href="bookings.html" class="dropdown-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span data-translate="my_bookings">Đặt chỗ của tôi</span>
+                </a>
+                <a href="articles.html" class="dropdown-item">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <span data-translate="articles">Bài viết</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item logout-btn" id="logoutBtn">
+                  <ion-icon name="log-out-outline"></ion-icon>
+                  <span data-translate="logout">Đăng xuất</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <article>
+      <!-- Loading -->
+      <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p data-translate="loading">Đang tải...</p>
+        </div>
+      </div>
+
+      <!-- Article Not Found -->
+      <div class="error-container" id="errorContainer" style="display: none;">
+        <div class="error-content">
+          <div class="error-icon">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+          </div>
+          <h2 data-translate="article_not_found">Không tìm thấy bài viết</h2>
+          <p data-translate="article_not_found_desc">Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+          <a href="articles.html" class="btn btn-primary" data-translate="back_to_articles">Trở về danh sách bài viết</a>
+        </div>
+      </div>
+
+      <!-- Article Content -->
+      <div class="article-container" id="articleContainer" style="display: none;">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+          <div class="container">
+            <nav class="breadcrumb-nav">
+              <a href="index.html" data-translate="home">Trang chủ</a>
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+              <a href="articles.html" data-translate="articles">Bài viết</a>
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+              <span id="breadcrumbTitle">Chi tiết bài viết</span>
+            </nav>
+          </div>
+        </section>
+
+        <!-- Article Header -->
+        <section class="article-header">
+          <div class="container">
+            <div class="article-meta">
+              <div class="meta-info">
+                <div class="author-info">
+                  <div class="author-avatar">
+                    <img id="authorAvatar" src="./assets/images/default-avatar.png" alt="Tác giả">
+                  </div>
+                  <div class="author-details">
+                    <span class="author-name" id="authorName">Tác giả</span>
+                    <span class="publish-date" id="publishDate">Ngày đăng</span>
+                  </div>
+                </div>
+                <div class="article-stats">
+                  <div class="stat-item">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    <span id="viewCount">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h1 class="article-title" id="articleTitle">Tiêu đề bài viết</h1>
+
+            <div class="article-summary">
+              <p id="articleSummary">Tóm tắt bài viết...</p>
+            </div>
+
+            <div class="article-tags" id="articleTags">
+              <!-- Tags will be loaded here -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Image -->
+        <section class="featured-image" id="featuredImageSection" style="display: none;">
+          <div class="container">
+            <div class="image-wrapper">
+              <img id="featuredImage" src="" alt="Ảnh đại diện bài viết">
+            </div>
+          </div>
+        </section>
+
+        <!-- Article Content -->
+        <section class="article-content">
+          <div class="container">
+            <div class="content-wrapper">
+              <div class="main-content">
+                <div class="article-body" id="articleBody">
+                  <!-- Article content will be loaded here -->
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="share-section">
+                  <h4 data-translate="share_article">Chia sẻ bài viết</h4>
+                  <div class="share-buttons">
+                    <button class="share-btn facebook" onclick="shareOnFacebook()">
+                      <ion-icon name="logo-facebook"></ion-icon>
+                      <span>Facebook</span>
+                    </button>
+                    <button class="share-btn twitter" onclick="shareOnTwitter()">
+                      <ion-icon name="logo-twitter"></ion-icon>
+                      <span>Twitter</span>
+                    </button>
+                    <button class="share-btn" onclick="copyToClipboard()">
+                      <ion-icon name="link-outline"></ion-icon>
+                      <span data-translate="copy_link">Sao chép liên kết</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sidebar -->
+              <div class="sidebar">
+                <!-- Author Card -->
+                <div class="sidebar-widget author-card">
+                  <h3 class="widget-title" data-translate="about_author">Về tác giả</h3>
+                  <div class="author-profile">
+                    <div class="author-avatar-large">
+                      <img id="sidebarAuthorAvatar" src="./assets/images/default-avatar.png" alt="Tác giả">
+                    </div>
+                    <div class="author-info">
+                      <h4 class="author-name" id="sidebarAuthorName">Tác giả</h4>
+                      <p class="author-bio" id="sidebarAuthorBio">Thông tin về tác giả...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Related Tours -->
+                <div class="sidebar-widget related-tours" id="relatedToursWidget" style="display: none;">
+                  <h3 class="widget-title" data-translate="related_tours">Tours liên quan</h3>
+                  <div class="related-tours-list" id="relatedToursList">
+                    <!-- Related tours will be loaded here -->
+                  </div>
+                </div>
+
+                <!-- Popular Articles -->
+                <div class="sidebar-widget">
+                  <h3 class="widget-title" data-translate="popular_articles">Bài viết phổ biến</h3>
+                  <div class="popular-list" id="popularArticles">
+                    <!-- Popular articles will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Related Articles -->
+        <section class="related-articles" id="relatedArticlesSection" style="display: none;">
+          <div class="container">
+            <h2 class="section-title" data-translate="related_articles">Bài viết liên quan</h2>
+            <div class="related-articles-grid" id="relatedArticlesGrid">
+              <!-- Related articles will be loaded here -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+          </a>
+          <p class="footer-text">
+            Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
+            trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
+          </p>
+        </div>
+
+        <div class="footer-contact">
+          <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
+          <p class="contact-text">
+            Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!
+          </p>
+
+          <ul>
+            <li class="contact-item">
+              <ion-icon name="call-outline"></ion-icon>
+              <a href="tel:+84123456789" class="contact-link">+84 (123) 456 789</a>
+            </li>
+            <li class="contact-item">
+              <ion-icon name="mail-outline"></ion-icon>
+              <a href="mailto:info@hoangminhtravel.com" class="contact-link">info@hoangminhtravel.com</a>
+            </li>
+            <li class="contact-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <address>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</address>
+            </li>
+          </ul>
+        </div>
+
+        <div class="footer-form">
+          <p class="form-text" data-translate="newsletter_text">
+            Đăng ký nhận bản tin để cập nhật thông tin tour mới nhất!
+          </p>
+
+          <form action="" class="form-wrapper">
+            <input type="email" name="email" class="input-field" 
+                   data-translate-placeholder="email_address" placeholder="Nhập email của bạn" required>
+            <button type="submit" class="btn btn-secondary" data-translate="subscribe">Đăng ký</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p class="copyright">
+          &copy; 2024 <a href="">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
+        </p>
+
+        <ul class="footer-bottom-list">
+          <li>
+            <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
+          </li>
+          <li>
+            <a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a>
+          </li>
+          <li>
+            <a href="#" class="footer-bottom-link">FAQ</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- GO TO TOP -->
+  <a href="#top" class="go-top" data-go-top>
+    <ion-icon name="chevron-up-outline"></ion-icon>
+  </a>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="./assets/js/utils.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/language.js"></script>
+  <script src="./assets/js/header.js"></script>
+  <script src="./assets/js/article-detail.js"></script>
+  <script src="./assets/js/script.js"></script>
+
+  <!-- Ionicon link -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>

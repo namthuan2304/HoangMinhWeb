@@ -291,6 +291,31 @@ class APIClient {
         });
     }
 
+    // Additional Articles Methods
+    async getArticleTags() {
+        return await this.request('/articles/tags', { auth: false });
+    }
+
+    async trackArticleView(articleId) {
+        return await this.request(`/articles/${articleId}/view`, {
+            method: 'POST',
+            auth: false
+        });
+    }
+
+    async getArticleComments(articleId, params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/comments/article/${articleId}?${queryString}` : `/comments/article/${articleId}`;
+        return await this.request(endpoint, { auth: false });
+    }
+
+    async createArticleComment(commentData) {
+        return await this.request('/comments', {
+            method: 'POST',
+            body: JSON.stringify(commentData),
+        });
+    }
+
     // Bookings Methods
     async createBooking(bookingData) {
         return await this.request('/bookings', {

@@ -22,6 +22,7 @@ class LanguageManager {
                 'register': 'Đăng ký',
                 'profile': 'Hồ sơ',
                 'logout': 'Đăng xuất',
+                'articles': 'Bài viết',
                 
                 // Hero Section
                 'hero_title': 'Khám phá thế giới cùng chúng tôi',
@@ -58,6 +59,7 @@ class LanguageManager {
                 'price': 'Giá',
                 'availability': 'Còn chỗ',
                 'rating': 'Đánh giá',
+                'tour_type': 'Loại tour',
                 
                 // Gallery
                 'gallery_title': 'Thư viện ảnh',
@@ -95,6 +97,8 @@ class LanguageManager {
                 'special_requests': 'Yêu cầu đặc biệt',
                 'total_price': 'Tổng giá',
                 'confirm_booking': 'Xác nhận đặt tour',
+                'my_bookings': 'Đặt chỗ của tôi',
+                'favorites': 'Yêu thích',
                 
                 // Authentication
                 'signin': 'Đăng nhập',
@@ -116,6 +120,9 @@ class LanguageManager {
                 'personal_info': 'Thông tin cá nhân',
                 'save_changes': 'Lưu thay đổi',
                 'cancel': 'Hủy',
+                'settings': 'Cài đặt',
+                'update_personal_info': 'Cập nhật thông tin cá nhân của bạn',
+                'saving': 'Đang lưu...',
                 
                 // Booking Status
                 'pending': 'Chờ xử lý',
@@ -155,7 +162,62 @@ class LanguageManager {
                 'no_results': 'Không tìm thấy kết quả',
                 'load_more': 'Tải thêm',
                 'show_more': 'Hiển thị thêm',
-                'show_less': 'Hiển thị ít hơn'
+                'show_less': 'Hiển thị ít hơn',
+                'back_to_articles': 'Trở về danh sách bài viết',
+                
+                // Articles
+                'articles_title': 'Bài viết du lịch',
+                'articles_subtitle': 'Khám phá những câu chuyện, kinh nghiệm và bí quyết du lịch từ các chuyên gia',
+                'featured_articles_title': 'Bài viết nổi bật',
+                'featured_articles_subtitle': 'Khám phá những câu chuyện, kinh nghiệm và bí quyết du lịch từ các chuyên gia để có những chuyến đi trọn vẹn nhất.',
+                'view_all_articles': 'Xem tất cả bài viết',
+                'popular_articles': 'Bài viết phổ biến',
+                'latest_articles': 'Bài viết mới nhất',
+                'related_articles': 'Bài viết liên quan',
+                'article_not_found': 'Không tìm thấy bài viết',
+                'article_not_found_desc': 'Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.',
+                'about_author': 'Về tác giả',
+                'share_article': 'Chia sẻ bài viết',
+                'copy_link': 'Sao chép liên kết',
+                'filter_by_tag': 'Lọc theo chủ đề:',
+                'sort_by': 'Sắp xếp theo:',
+                'latest': 'Mới nhất',
+                'most_popular': 'Phổ biến nhất',
+                'alphabetical': 'Theo tên A-Z',
+                'all': 'Tất cả',
+                'no_articles_found': 'Không tìm thấy bài viết nào',
+                'try_different_search': 'Hãy thử tìm kiếm với từ khóa khác',
+                'related_tours': 'Tours liên quan',
+                
+                // Tour Detail & Booking
+                'tour_overview': 'Tổng quan tour',
+                'tour_highlights': 'Điểm nổi bật',
+                'tour_itinerary': 'Lịch trình tour',
+                'tour_includes': 'Bao gồm',
+                'tour_excludes': 'Không bao gồm',
+                'tour_notes': 'Ghi chú',
+                'customer_reviews': 'Đánh giá khách hàng',
+                'write_review': 'Viết đánh giá',
+                'booking_summary': 'Tóm tắt đặt tour',
+                'guest_information': 'Thông tin khách',
+                'payment_method': 'Phương thức thanh toán',
+                'terms_conditions': 'Điều khoản và điều kiện',
+                'i_agree': 'Tôi đồng ý với',
+                'proceed_payment': 'Tiến hành thanh toán',
+                
+                // Filter & Search
+                'filter_results': 'Lọc kết quả',
+                'clear_filters': 'Xóa bộ lọc',
+                'price_range': 'Khoảng giá',
+                'duration_range': 'Thời gian',
+                'departure_location': 'Nơi khởi hành',
+                'sort_options': 'Tùy chọn sắp xếp',
+                'newest': 'Mới nhất',
+                'oldest': 'Cũ nhất',
+                'price_low_high': 'Giá thấp đến cao',
+                'price_high_low': 'Giá cao đến thấp',
+                'rating_high_low': 'Đánh giá cao nhất',
+                'popular': 'Phổ biến nhất'
             },
             en: {
                 // Header
@@ -176,6 +238,7 @@ class LanguageManager {
                 'register': 'Register',
                 'profile': 'Profile',
                 'logout': 'Logout',
+                'articles': 'Articles',
                 
                 // Hero Section
                 'hero_title': 'Explore the world with us',
@@ -212,6 +275,7 @@ class LanguageManager {
                 'price': 'Price',
                 'availability': 'Available',
                 'rating': 'Rating',
+                'tour_type': 'Tour Type',
                 
                 // Gallery
                 'gallery_title': 'Gallery',
@@ -249,6 +313,8 @@ class LanguageManager {
                 'special_requests': 'Special Requests',
                 'total_price': 'Total Price',
                 'confirm_booking': 'Confirm Booking',
+                'my_bookings': 'My Bookings',
+                'favorites': 'Favorites',
                 
                 // Authentication
                 'signin': 'Sign In',
@@ -270,6 +336,9 @@ class LanguageManager {
                 'personal_info': 'Personal Information',
                 'save_changes': 'Save Changes',
                 'cancel': 'Cancel',
+                'settings': 'Settings',
+                'update_personal_info': 'Update your personal information',
+                'saving': 'Saving...',
                 
                 // Booking Status
                 'pending': 'Pending',
@@ -309,7 +378,62 @@ class LanguageManager {
                 'no_results': 'No results found',
                 'load_more': 'Load More',
                 'show_more': 'Show More',
-                'show_less': 'Show Less'
+                'show_less': 'Show Less',
+                'back_to_articles': 'Back to Articles',
+                
+                // Articles
+                'articles_title': 'Travel Articles',
+                'articles_subtitle': 'Discover stories, experiences and travel tips from experts',
+                'featured_articles_title': 'Featured Articles',
+                'featured_articles_subtitle': 'Discover stories, experiences and travel tips from experts to have the most complete trips.',
+                'view_all_articles': 'View All Articles',
+                'popular_articles': 'Popular Articles',
+                'latest_articles': 'Latest Articles',
+                'related_articles': 'Related Articles',
+                'article_not_found': 'Article Not Found',
+                'article_not_found_desc': 'The article you are looking for does not exist or has been deleted.',
+                'about_author': 'About Author',
+                'share_article': 'Share Article',
+                'copy_link': 'Copy Link',
+                'filter_by_tag': 'Filter by topic:',
+                'sort_by': 'Sort by:',
+                'latest': 'Latest',
+                'most_popular': 'Most Popular',
+                'alphabetical': 'Alphabetical A-Z',
+                'all': 'All',
+                'no_articles_found': 'No articles found',
+                'try_different_search': 'Try searching with different keywords',
+                'related_tours': 'Related Tours',
+                
+                // Tour Detail & Booking
+                'tour_overview': 'Tour Overview',
+                'tour_highlights': 'Tour Highlights',
+                'tour_itinerary': 'Tour Itinerary',
+                'tour_includes': 'Includes',
+                'tour_excludes': 'Excludes',
+                'tour_notes': 'Notes',
+                'customer_reviews': 'Customer Reviews',
+                'write_review': 'Write Review',
+                'booking_summary': 'Booking Summary',
+                'guest_information': 'Guest Information',
+                'payment_method': 'Payment Method',
+                'terms_conditions': 'Terms and Conditions',
+                'i_agree': 'I agree to',
+                'proceed_payment': 'Proceed to Payment',
+                
+                // Filter & Search
+                'filter_results': 'Filter Results',
+                'clear_filters': 'Clear Filters',
+                'price_range': 'Price Range',
+                'duration_range': 'Duration',
+                'departure_location': 'Departure Location',
+                'sort_options': 'Sort Options',
+                'newest': 'Newest',
+                'oldest': 'Oldest',
+                'price_low_high': 'Price Low to High',
+                'price_high_low': 'Price High to Low',
+                'rating_high_low': 'Highest Rating',
+                'popular': 'Most Popular'
             }
         };
         this.init();

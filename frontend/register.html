@@ -39,9 +39,9 @@
 
                         <form id="registerForm" class="auth-form">
                             <div class="form-group">
-                                <label for="fullName" class="form-label">Họ và tên</label>
+                                <label for="fullName" class="form-label" data-translate="full_name">Họ và tên</label>
                                 <input type="text" id="fullName" name="fullName" class="form-control" 
-                                       placeholder="Nhập họ và tên đầy đủ" required>
+                                       data-translate-placeholder="full_name" placeholder="Nhập họ và tên đầy đủ" required>
                                 <div class="error-message" id="fullNameError"></div>
                             </div>
 
@@ -62,7 +62,7 @@
                             <div class="form-group">
                                 <label for="phoneNumber" class="form-label" data-translate="phone_number">Số điện thoại</label>
                                 <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" 
-                                       placeholder="Nhập số điện thoại" required>
+                                       data-translate-placeholder="phone_number" placeholder="Nhập số điện thoại" required>
                                 <div class="error-message" id="phoneNumberError"></div>
                             </div>
 
@@ -82,7 +82,7 @@
                                 <label for="confirmPassword" class="form-label" data-translate="confirm_password">Xác nhận mật khẩu</label>
                                 <div class="password-wrapper">
                                     <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" 
-                                           placeholder="Nhập lại mật khẩu" required>
+                                           data-translate-placeholder="confirm_password" placeholder="Nhập lại mật khẩu" required>
                                     <button type="button" class="password-toggle">
                                         <ion-icon name="eye-outline"></ion-icon>
                                     </button>
@@ -94,7 +94,7 @@
                                 <label class="checkbox-wrapper">
                                     <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
                                     <span class="checkmark"></span>
-                                    <span>Tôi đồng ý với <a href="#" class="auth-link">Điều khoản dịch vụ</a> và <a href="#" class="auth-link">Chính sách bảo mật</a></span>
+                                    <span data-translate="i_agree">Tôi đồng ý với</span> <a href="#" class="auth-link" data-translate="terms_conditions">Điều khoản dịch vụ</a> và <a href="#" class="auth-link">Chính sách bảo mật</a></span>
                                 </label>
                             </div>
 
