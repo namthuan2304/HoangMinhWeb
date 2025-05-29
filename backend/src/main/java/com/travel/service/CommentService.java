@@ -16,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Service xử lý logic nghiệp vụ cho Comment
@@ -237,5 +240,22 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findByUserAndDeletedAtIsNull(user, pageable);
         return comments.map(this::mapToCommentResponse);
+    }
+
+    /**
+     * Lấy phân tích rating theo số sao
+     */
+    public Map<String, Long> getRatingBreakdown(Long tourId) {
+        Tour tour = tourRepository.findByIdAndDeletedAtIsNull(tourId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour"));
+
+        Map<String, Long> breakdown = new HashMap<>();
+        breakdown.put("fiveStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 5));
+        breakdown.put("fourStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 4));
+        breakdown.put("threeStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 3));
+        breakdown.put("twoStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 2));
+        breakdown.put("oneStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 1));
+        
+        return breakdown;
     }
 }

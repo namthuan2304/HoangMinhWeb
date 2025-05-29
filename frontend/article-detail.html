@@ -222,11 +222,11 @@
                 <div class="article-stats">
                   <div class="stat-item">
                     <ion-icon name="eye-outline"></ion-icon>
-                    <span id="viewCount">0 lượt xem</span>
+                    <span id="viewCount">0 <span data-translate="views">lượt xem</span></span>
                   </div>
                   <div class="stat-item">
                     <ion-icon name="time-outline"></ion-icon>
-                    <span id="readTime">5 phút đọc</span>
+                    <span id="readTime">5 <span data-translate="read_time">phút đọc</span></span>
                   </div>
                 </div>
               </div>
@@ -275,11 +275,11 @@
                 <div class="share-section">
                   <h4 data-translate="share_article">Chia sẻ bài viết</h4>
                   <div class="share-buttons">
-                    <button class="share-btn facebook" onclick="shareOnFacebook()">
+                    <button class="share-btn facebook" onclick="shareOnFacebook()" data-translate-title="share_on_facebook">
                       <ion-icon name="logo-facebook"></ion-icon>
                       <span>Facebook</span>
                     </button>
-                    <button class="share-btn twitter" onclick="shareOnTwitter()">
+                    <button class="share-btn twitter" onclick="shareOnTwitter()" data-translate-title="share_on_twitter">
                       <ion-icon name="logo-twitter"></ion-icon>
                       <span>Twitter</span>
                     </button>
@@ -347,7 +347,7 @@
                         <h4 class="popular-title">Khám phá vẻ đẹp của Vịnh Hạ Long</h4>
                         <span class="popular-views">
                           <ion-icon name="eye-outline"></ion-icon>
-                          1.2K
+                          <span>1.2K <span data-translate="popular_item_views">lượt xem</span></span>
                         </span>
                       </div>
                     </div>
@@ -359,13 +359,13 @@
                   <h3 class="widget-title" data-translate="tags">Thẻ phổ biến</h3>
                   <div class="tags-cloud" id="tagsCloud">
                     <!-- Tags will be loaded here -->
-                    <a href="#" class="tag-item">Du lịch</a>
-                    <a href="#" class="tag-item">Việt Nam</a>
-                    <a href="#" class="tag-item">Phượt</a>
-                    <a href="#" class="tag-item">Biển</a>
-                    <a href="#" class="tag-item">Ẩm thực</a>
-                    <a href="#" class="tag-item">Khách sạn</a>
-                    <a href="#" class="tag-item">Lịch trình</a>
+                    <a href="#" class="tag-item" data-translate="travel">Du lịch</a>
+                    <a href="#" class="tag-item" data-translate="vietnam">Việt Nam</a>
+                    <a href="#" class="tag-item" data-translate="backpacking">Phượt</a>
+                    <a href="#" class="tag-item" data-translate="beach">Biển</a>
+                    <a href="#" class="tag-item" data-translate="cuisine">Ẩm thực</a>
+                    <a href="#" class="tag-item" data-translate="hotel">Khách sạn</a>
+                    <a href="#" class="tag-item" data-translate="itinerary">Lịch trình</a>
                   </div>
                 </div>
               </div>
@@ -530,6 +530,36 @@
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/language.js"></script>
   <script src="./assets/js/header.js"></script>
+  
+  <!-- Add view tracking script before article-detail.js -->
+  <script>
+    // Prevent double view counting
+    let viewCountIncremented = false;
+    let currentArticleId = null;
+    
+    // Function to safely increment view count
+    window.incrementViewCount = function(articleId) {
+      if (viewCountIncremented || !articleId) return;
+      
+      viewCountIncremented = true;
+      currentArticleId = articleId;
+      
+      // Add to sessionStorage to prevent counting on page refresh
+      const viewedArticles = JSON.parse(sessionStorage.getItem('viewedArticles') || '[]');
+      if (viewedArticles.includes(articleId)) {
+        return; // Already viewed in this session
+      }
+      
+      viewedArticles.push(articleId);
+      sessionStorage.setItem('viewedArticles', JSON.stringify(viewedArticles));
+      
+      // Make API call to increment view count
+      if (window.api && window.api.incrementArticleViews) {
+        window.api.incrementArticleViews(articleId).catch(console.error);
+      }
+    };
+  </script>
+  
   <script src="./assets/js/article-detail.js"></script>
   <script src="./assets/js/script.js"></script>
 

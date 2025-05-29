@@ -201,16 +201,17 @@
             <div class="search-box">
               <div class="search-input-group">
                 <ion-icon name="search-outline" class="search-icon"></ion-icon>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết..." class="search-input">
-                <button type="button" id="clearSearch" class="clear-search">
+                <input type="text" id="searchInput" data-translate-placeholder="search_placeholder" placeholder="Tìm kiếm bài viết..." class="search-input">
+                <button type="button" id="clearSearch" class="clear-search" data-translate-title="clear_search">
                   <ion-icon name="close-outline"></ion-icon>
                 </button>
               </div>
-            </div>            <!-- Tag Filter -->
+            </div>            
+            <!-- Tag Filter -->
             <div class="tag-filter">
               <label class="filter-label" data-translate="filter_by_tag">Lọc theo chủ đề:</label>
               <select id="tagSelect" class="tag-select">
-                <option value="" data-translate="all">Tất cả chủ đề</option>
+                <option value="" data-translate="all_topics">Tất cả chủ đề</option>
                 <!-- Tags will be loaded dynamically -->
               </select>
             </div>
@@ -233,7 +234,7 @@
         <div class="container">
           <!-- Articles Count -->
           <div class="articles-count">
-            <span id="articlesCount">Đang tải...</span>
+            <span id="articlesCount" data-translate="loading">Đang tải...</span>
           </div>
 
           <!-- Loading -->

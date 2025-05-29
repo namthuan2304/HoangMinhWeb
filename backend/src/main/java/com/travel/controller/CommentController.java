@@ -76,6 +76,11 @@ public class CommentController {
         Map<String, Object> rating = new HashMap<>();
         rating.put("averageRating", commentService.getTourRatingAverage(tourId));
         rating.put("totalComments", commentService.getTourCommentCount(tourId));
+        
+        // Add rating breakdown
+        Map<String, Long> breakdown = commentService.getRatingBreakdown(tourId);
+        rating.putAll(breakdown);
+        
         return ResponseEntity.ok(rating);
     }
 

@@ -99,4 +99,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * Tìm comment theo user và chưa bị xóa với phân trang
      */
     Page<Comment> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
+
+    /**
+     * Đếm số bình luận theo tour và rating
+     */
+    long countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(Tour tour, Integer rating);
 }

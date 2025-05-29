@@ -269,7 +269,58 @@ class LanguageManager {
                 'views': 'lượt xem',
                 'end_date': 'Ngày kết thúc',
                 'checkout': 'Ngày kết thúc',
-                'checkin': 'Ngày khởi hành'
+                'checkin': 'Ngày khởi hành',
+                
+                // Missing translations for bookings and forms
+                'search_placeholder': 'Tìm kiếm bài viết...',
+                'clear_search': 'Xóa tìm kiếm',
+                'all_topics': 'Tất cả chủ đề',
+                'articles_found': 'bài viết được tìm thấy',
+                'read_more': 'Đọc thêm',
+                'popular_item_views': 'lượt xem',
+                'share_on_facebook': 'Chia sẻ trên Facebook',
+                'share_on_twitter': 'Chia sẻ trên Twitter',
+                'link_copied': 'Đã sao chép liên kết',
+                'share_failed': 'Không thể chia sẻ',
+                
+                // Toast messages
+                'toast_success': 'Thành công!',
+                'toast_error': 'Có lỗi xảy ra!',
+                'toast_warning': 'Cảnh báo!',
+                'toast_info': 'Thông tin',
+                
+                // Booking specific
+                'guest_details': 'Thông tin khách',
+                'contact_person': 'Người liên hệ',
+                'emergency_contact': 'Liên hệ khẩn cấp',
+                'dietary_requirements': 'Yêu cầu ăn kiêng',
+                'accessibility_needs': 'Nhu cầu hỗ trợ',
+                'travel_insurance': 'Bảo hiểm du lịch',
+                'terms_agreement': 'Đồng ý với điều khoản',
+                'booking_confirmation': 'Xác nhận đặt tour',
+                'booking_success': 'Đặt tour thành công',
+                'booking_failed': 'Đặt tour thất bại',
+                'please_login': 'Vui lòng đăng nhập',
+                'login_required': 'Cần đăng nhập để đặt tour',
+                
+                // Additional tag translations
+                'travel': 'Du lịch',
+                'vietnam': 'Việt Nam',
+                'backpacking': 'Phượt',
+                'beach': 'Biển',
+                'cuisine': 'Ẩm thực',
+                'hotel': 'Khách sạn',
+                'itinerary': 'Lịch trình',
+                'mountain': 'Núi',
+                'city': 'Thành phố',
+                'culture': 'Văn hóa',
+                'adventure': 'Phiêu lưu',
+                'budget': 'Tiết kiệm',
+                'luxury': 'Cao cấp',
+                'family': 'Gia đình',
+                'solo': 'Một mình',
+                'couple': 'Cặp đôi',
+                'group': 'Nhóm'
             },
             en: {
                 // Header
@@ -537,7 +588,58 @@ class LanguageManager {
                 'views': 'views',
                 'end_date': 'End Date',
                 'checkout': 'End Date',
-                'checkin': 'Departure Date'
+                'checkin': 'Departure Date',
+                
+                // Missing translations for bookings and forms
+                'search_placeholder': 'Search articles...',
+                'clear_search': 'Clear search',
+                'all_topics': 'All topics',
+                'articles_found': 'articles found',
+                'read_more': 'Read more',
+                'popular_item_views': 'views',
+                'share_on_facebook': 'Share on Facebook',
+                'share_on_twitter': 'Share on Twitter',
+                'link_copied': 'Link copied',
+                'share_failed': 'Failed to share',
+                
+                // Toast messages
+                'toast_success': 'Success!',
+                'toast_error': 'An error occurred!',
+                'toast_warning': 'Warning!',
+                'toast_info': 'Information',
+                
+                // Booking specific
+                'guest_details': 'Guest Details',
+                'contact_person': 'Contact Person',
+                'emergency_contact': 'Emergency Contact',
+                'dietary_requirements': 'Dietary Requirements',
+                'accessibility_needs': 'Accessibility Needs',
+                'travel_insurance': 'Travel Insurance',
+                'terms_agreement': 'Agree to terms',
+                'booking_confirmation': 'Booking Confirmation',
+                'booking_success': 'Booking successful',
+                'booking_failed': 'Booking failed',
+                'please_login': 'Please login',
+                'login_required': 'Login required to book tour',
+                
+                // Additional tag translations
+                'travel': 'Travel',
+                'vietnam': 'Vietnam',
+                'backpacking': 'Backpacking',
+                'beach': 'Beach',
+                'cuisine': 'Cuisine',
+                'hotel': 'Hotel',
+                'itinerary': 'Itinerary',
+                'mountain': 'Mountain',
+                'city': 'City',
+                'culture': 'Culture',
+                'adventure': 'Adventure',
+                'budget': 'Budget',
+                'luxury': 'Luxury',
+                'family': 'Family',
+                'solo': 'Solo',
+                'couple': 'Couple',
+                'group': 'Group'
             }
         };
         this.init();
