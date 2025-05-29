@@ -69,30 +69,33 @@ class ArticlesManager {    constructor() {
         });
 
         // Tag filter will be bound after tags are loaded
-    }
-
-    async loadArticles() {
+    }    async loadArticles() {
         if (this.isLoading) return;
         
         this.isLoading = true;
         this.showLoading();
 
         try {
+            let url;
             const params = new URLSearchParams({
                 page: this.currentPage - 1, // API uses 0-based pagination
                 size: this.pageSize,
-                sort: this.currentSort
+                sortBy: this.currentSort.split(':')[0],
+                sortDir: this.currentSort.split(':')[1]
             });
 
             if (this.currentSearch) {
-                params.append('search', this.currentSearch);
+                params.append('keyword', this.currentSearch);
             }
 
+            // Use different endpoints based on whether we're filtering by tag
             if (this.currentTag) {
-                params.append('tag', this.currentTag);
+                url = `${API_BASE_URL}/api/articles/tag/${encodeURIComponent(this.currentTag)}?${params}`;
+            } else {
+                url = `${API_BASE_URL}/api/articles?${params}`;
             }
 
-            const response = await fetch(`${API_BASE_URL}/api/articles?${params}`, {
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: getAuthHeaders()
             });
@@ -132,11 +135,9 @@ class ArticlesManager {    constructor() {
         } catch (error) {
             console.error('Error loading tags:', error);
         }
-    }
-
-    async loadPopularArticles() {
+    }    async loadPopularArticles() {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/articles?size=5&sort=viewCount:desc`, {
+            const response = await fetch(`${API_BASE_URL}/api/articles/popular?limit=5`, {
                 method: 'GET',
                 headers: getAuthHeaders()
             });
@@ -145,8 +146,8 @@ class ArticlesManager {    constructor() {
                 throw new Error('Failed to load popular articles');
             }
 
-            const data = await response.json();
-            this.renderSidebarArticles(data.content, this.popularArticles);
+            const articles = await response.json();
+            this.renderSidebarArticles(articles, this.popularArticles);
 
         } catch (error) {
             console.error('Error loading popular articles:', error);
@@ -155,7 +156,7 @@ class ArticlesManager {    constructor() {
 
     async loadLatestArticles() {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/articles?size=5&sort=createdAt:desc`, {
+            const response = await fetch(`${API_BASE_URL}/api/articles/latest?limit=5`, {
                 method: 'GET',
                 headers: getAuthHeaders()
             });
@@ -164,8 +165,8 @@ class ArticlesManager {    constructor() {
                 throw new Error('Failed to load latest articles');
             }
 
-            const data = await response.json();
-            this.renderSidebarArticles(data.content, this.latestArticles);
+            const articles = await response.json();
+            this.renderSidebarArticles(articles, this.latestArticles);
 
         } catch (error) {
             console.error('Error loading latest articles:', error);
