@@ -291,4 +291,14 @@ public class ArticleController {
         List<String> tags = articleService.getAllTags();
         return ResponseEntity.ok(tags);
     }
+
+    /**
+     * Track lượt xem bài viết (Public)
+     */
+    @PostMapping("/{id}/view")
+    @Operation(summary = "Track lượt xem bài viết")
+    public ResponseEntity<MessageResponse> trackView(@PathVariable Long id) {
+        articleService.incrementViewCount(id);
+        return ResponseEntity.ok(new MessageResponse("View tracked successfully"));
+    }
 }

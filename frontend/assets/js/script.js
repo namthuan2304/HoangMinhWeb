@@ -22,7 +22,33 @@ const navToggleEvent = function (elem) {
 }
 
 navToggleEvent(navElemArr);
-navToggleEvent(navLinks);
+
+// Updated navigation for smooth scrolling
+navLinks.forEach(link => {
+  link.addEventListener("click", function(e) {
+    const href = this.getAttribute("href");
+    
+    // Check if it's an internal anchor link
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const targetId = href.substring(1);
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Close mobile menu
+        navbar.classList.remove("active");
+        overlay.classList.remove("active");
+        
+        // Smooth scroll to target
+        targetElement.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+    // For external links like articles.html, let default behavior happen
+  });
+});
 
 
 

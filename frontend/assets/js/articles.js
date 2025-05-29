@@ -17,9 +17,7 @@ class ArticlesManager {    constructor() {
         this.loadTags();
         this.loadPopularArticles();
         this.loadLatestArticles();
-    }
-
-    initializeElements() {
+    }    initializeElements() {
         // Main elements
         this.articlesGrid = document.getElementById('articlesGrid');
         this.loadingContainer = document.getElementById('loadingContainer');
@@ -30,15 +28,13 @@ class ArticlesManager {    constructor() {
         // Filter elements
         this.searchInput = document.getElementById('searchInput');
         this.clearSearchBtn = document.getElementById('clearSearch');
-        this.tagButtons = document.getElementById('tagButtons');
+        this.tagSelect = document.getElementById('tagSelect');
         this.sortSelect = document.getElementById('sortSelect');
         
         // Sidebar elements
         this.popularArticles = document.getElementById('popularArticles');
         this.latestArticles = document.getElementById('latestArticles');
-    }
-
-    bindEvents() {
+    }    bindEvents() {
         // Search functionality
         let searchTimeout;
         this.searchInput.addEventListener('input', (e) => {
@@ -68,8 +64,13 @@ class ArticlesManager {    constructor() {
             this.loadArticles();
         });
 
-        // Tag filter will be bound after tags are loaded
-    }    async loadArticles() {
+        // Tag filter functionality
+        this.tagSelect.addEventListener('change', (e) => {
+            this.currentTag = e.target.value;
+            this.currentPage = 1;
+            this.loadArticles();
+        });
+    }async loadArticles() {
         if (this.isLoading) return;
         
         this.isLoading = true;
@@ -127,10 +128,8 @@ class ArticlesManager {    constructor() {
 
             if (!response.ok) {
                 throw new Error('Failed to load tags');
-            }
-
-            const tags = await response.json();
-            this.renderTagButtons(tags);
+            }            const tags = await response.json();
+            this.renderTagOptions(tags);
 
         } catch (error) {
             console.error('Error loading tags:', error);
@@ -230,34 +229,20 @@ class ArticlesManager {    constructor() {
                 </div>
             </div>
         `;
-    }
-
-    renderTagButtons(tags) {
-        const allButton = `<button class="tag-btn active" data-tag="" data-translate="all">Tất cả</button>`;
-        const tagButtons = tags.map(tag => 
-            `<button class="tag-btn" data-tag="${tag}">${tag}</button>`
-        ).join('');
+    }    renderTagOptions(tags) {
+        // Clear existing options except the first "All" option
+        const defaultOption = this.tagSelect.querySelector('option[value=""]');
+        this.tagSelect.innerHTML = '';
+        this.tagSelect.appendChild(defaultOption);
         
-        this.tagButtons.innerHTML = allButton + tagButtons;
-        
-        // Bind tag filter events
-        this.tagButtons.addEventListener('click', (e) => {
-            if (e.target.classList.contains('tag-btn')) {
-                // Remove active class from all buttons
-                this.tagButtons.querySelectorAll('.tag-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                // Add active class to clicked button
-                e.target.classList.add('active');
-                
-                // Update current tag and reload articles
-                this.currentTag = e.target.dataset.tag;
-                this.currentPage = 1;
-                this.loadArticles();
-            }
+        // Add tag options
+        tags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            option.textContent = tag;
+            this.tagSelect.appendChild(option);
         });
-    }    renderSidebarArticles(articles, container) {
+    }renderSidebarArticles(articles, container) {
         if (!articles || articles.length === 0) {
             container.innerHTML = '<p>Không có bài viết nào.</p>';
             return;

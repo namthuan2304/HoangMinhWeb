@@ -141,6 +141,12 @@ body { background: var(--white); }
   padding: var(--padding, 8px 18px);
   border: var(--border-width, 2px) solid transparent;
   transition: var(--transition);
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: var(--fw-600);
+  font-family: var(--ff-poppins);
 }
 
 .btn-primary {
@@ -1974,6 +1980,14 @@ address {
   text-align: center;
 }
 
+.article-cta .btn {
+  margin-inline: auto;
+  padding: 12px 30px;
+  font-size: var(--fs-5);
+  font-weight: var(--fw-600);
+}
+
+/* Loading placeholder styles */
 .loading-placeholder {
   grid-column: 1 / -1;
   text-align: center;

@@ -205,7 +205,7 @@
           </div>
         </section>
 
-        <!-- Article Header -->
+        <!-- Article Header - Redesigned -->
         <section class="article-header">
           <div class="container">
             <div class="article-meta">
@@ -222,7 +222,11 @@
                 <div class="article-stats">
                   <div class="stat-item">
                     <ion-icon name="eye-outline"></ion-icon>
-                    <span id="viewCount">0</span>
+                    <span id="viewCount">0 lượt xem</span>
+                  </div>
+                  <div class="stat-item">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span id="readTime">5 phút đọc</span>
                   </div>
                 </div>
               </div>
@@ -249,7 +253,16 @@
           </div>
         </section>
 
-        <!-- Article Content -->
+        <!-- Featured Image - Redesigned -->
+        <section class="featured-image" id="featuredImageSection" style="display: none;">
+          <div class="container">
+            <div class="image-wrapper">
+              <img id="featuredImage" src="" alt="Ảnh đại diện bài viết">
+            </div>
+          </div>
+        </section>
+
+        <!-- Article Content - Redesigned -->
         <section class="article-content">
           <div class="container">
             <div class="content-wrapper">
@@ -276,9 +289,27 @@
                     </button>
                   </div>
                 </div>
+                
+                <!-- Article Navigation -->
+                <div class="article-navigation">
+                  <a href="#" class="nav-btn prev" id="prevArticle" style="display: none;">
+                    <ion-icon name="arrow-back-outline"></ion-icon>
+                    <div class="nav-content">
+                      <span class="nav-label" data-translate="previous_article">Bài viết trước</span>
+                      <span class="nav-title" id="prevArticleTitle">Tiêu đề bài viết trước</span>
+                    </div>
+                  </a>
+                  <a href="#" class="nav-btn next" id="nextArticle" style="display: none;">
+                    <div class="nav-content">
+                      <span class="nav-label" data-translate="next_article">Bài viết tiếp theo</span>
+                      <span class="nav-title" id="nextArticleTitle">Tiêu đề bài viết tiếp theo</span>
+                    </div>
+                    <ion-icon name="arrow-forward-outline"></ion-icon>
+                  </a>
+                </div>
               </div>
 
-              <!-- Sidebar -->
+              <!-- Sidebar - Redesigned -->
               <div class="sidebar">
                 <!-- Author Card -->
                 <div class="sidebar-widget author-card">
@@ -306,7 +337,35 @@
                 <div class="sidebar-widget">
                   <h3 class="widget-title" data-translate="popular_articles">Bài viết phổ biến</h3>
                   <div class="popular-list" id="popularArticles">
-                    <!-- Popular articles will be loaded here -->
+                    <!-- Example popular article items - will be replaced by JS -->
+                    <div class="popular-item">
+                      <div class="popular-thumb">
+                        <img src="./assets/images/popular-1.jpg" alt="Bài viết phổ biến">
+                      </div>
+                      <div class="popular-info">
+                        <span class="popular-date">15 Tháng 8, 2023</span>
+                        <h4 class="popular-title">Khám phá vẻ đẹp của Vịnh Hạ Long</h4>
+                        <span class="popular-views">
+                          <ion-icon name="eye-outline"></ion-icon>
+                          1.2K
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Tags Cloud Widget -->
+                <div class="sidebar-widget">
+                  <h3 class="widget-title" data-translate="tags">Thẻ phổ biến</h3>
+                  <div class="tags-cloud" id="tagsCloud">
+                    <!-- Tags will be loaded here -->
+                    <a href="#" class="tag-item">Du lịch</a>
+                    <a href="#" class="tag-item">Việt Nam</a>
+                    <a href="#" class="tag-item">Phượt</a>
+                    <a href="#" class="tag-item">Biển</a>
+                    <a href="#" class="tag-item">Ẩm thực</a>
+                    <a href="#" class="tag-item">Khách sạn</a>
+                    <a href="#" class="tag-item">Lịch trình</a>
                   </div>
                 </div>
               </div>
@@ -314,12 +373,71 @@
           </div>
         </section>
 
-        <!-- Related Articles -->
+        <!-- Related Articles - Redesigned -->
         <section class="related-articles" id="relatedArticlesSection" style="display: none;">
           <div class="container">
             <h2 class="section-title" data-translate="related_articles">Bài viết liên quan</h2>
             <div class="related-articles-grid" id="relatedArticlesGrid">
-              <!-- Related articles will be loaded here -->
+              <!-- Example article card that will be replaced by JavaScript -->
+              <div class="article-card">
+                <div class="article-card-thumb">
+                  <img src="./assets/images/article-1.jpg" alt="Bài viết liên quan">
+                </div>
+                <div class="article-card-content">
+                  <h3 class="article-card-title">Khám phá 10 địa điểm du lịch tuyệt vời nhất tại Đà Nẵng</h3>
+                  <p class="article-card-text">Đà Nẵng với nhiều danh lam thắng cảnh nổi tiếng, từ bãi biển tuyệt đẹp đến các điểm tham quan văn hóa lịch sử...</p>
+                  <div class="article-card-meta">
+                    <div class="article-card-date">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      <span>10/06/2023</span>
+                    </div>
+                    <div class="article-card-views">
+                      <ion-icon name="eye-outline"></ion-icon>
+                      <span>1.5K</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="article-card">
+                <div class="article-card-thumb">
+                  <img src="./assets/images/article-2.jpg" alt="Bài viết liên quan">
+                </div>
+                <div class="article-card-content">
+                  <h3 class="article-card-title">Mùa hè rực rỡ: Những bãi biển đẹp nhất miền Trung</h3>
+                  <p class="article-card-text">Miền Trung Việt Nam nổi tiếng với những bãi biển trong xanh, cát trắng mịn và khung cảnh thiên nhiên tuyệt đẹp...</p>
+                  <div class="article-card-meta">
+                    <div class="article-card-date">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      <span>25/05/2023</span>
+                    </div>
+                    <div class="article-card-views">
+                      <ion-icon name="eye-outline"></ion-icon>
+                      <span>2.3K</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="article-card">
+                <div class="article-card-thumb">
+                  <img src="./assets/images/article-3.jpg" alt="Bài viết liên quan">
+                </div>
+                <div class="article-card-content">
+                  <h3 class="article-card-title">Những món ăn đặc sản không thể bỏ qua khi du lịch miền Bắc</h3>
+                  <p class="article-card-text">Ẩm thực miền Bắc Việt Nam nổi tiếng với hương vị đậm đà, tinh tế và đa dạng. Hãy cùng khám phá những món ăn...</p>
+                  <div class="article-card-meta">
+                    <div class="article-card-date">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      <span>18/04/2023</span>
+                    </div>
+                    <div class="article-card-views">
+                      <ion-icon name="eye-outline"></ion-icon>
+                      <span>1.8K</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -336,7 +454,7 @@
           <a href="#" class="logo">
             <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
           </a>
-          <p class="footer-text">
+          <p class="footer-text" data-translate="footer_description">
             Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
             trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
           </p>
@@ -344,7 +462,7 @@
 
         <div class="footer-contact">
           <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
-          <p class="contact-text">
+          <p class="contact-text" data-translate="footer_contact_desc">
             Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!
           </p>
 
@@ -386,13 +504,13 @@
 
         <ul class="footer-bottom-list">
           <li>
-            <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
+            <a href="#" class="footer-bottom-link" data-translate="privacy_policy">Chính sách bảo mật</a>
           </li>
           <li>
-            <a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a>
+            <a href="#" class="footer-bottom-link" data-translate="terms_conditions">Điều khoản & Điều kiện</a>
           </li>
           <li>
-            <a href="#" class="footer-bottom-link">FAQ</a>
+            <a href="#" class="footer-bottom-link" data-translate="faq">FAQ</a>
           </li>
         </ul>
       </div>

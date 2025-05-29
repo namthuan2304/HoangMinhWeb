@@ -432,8 +432,14 @@ function renderFeaturedArticles(articles) {
         
         const publishedDate = new Date(article.publishedAt || article.createdAt).toLocaleDateString('vi-VN');
         const defaultImage = './assets/images/img8.jpg';
-        const articleImage = article.featuredImage || defaultImage;
-        const excerpt = article.excerpt || article.content?.substring(0, 150) + '...' || '';
+        const articleImage = article.featuredImageUrl ? `${API_BASE_URL}${article.featuredImageUrl}` : defaultImage;
+        
+        // Safely get author name
+        const authorName = article.author?.fullName || article.author?.username || 'Admin';
+        
+        // Safely get excerpt/summary
+        const excerpt = article.summary || article.excerpt || 
+                       (article.content ? article.content.substring(0, 150) + '...' : 'Đọc để khám phá nội dung thú vị...');
         
         listItem.innerHTML = `
             <div class="featured-article-card" onclick="window.location.href='article-detail.html?slug=${article.slug}'">
@@ -442,7 +448,7 @@ function renderFeaturedArticles(articles) {
                          alt="${article.title}" 
                          loading="lazy"
                          onerror="this.src='${defaultImage}'">
-                    ${article.isPrimary ? '<div class="card-badge">Nổi bật</div>' : ''}
+                    ${article.isFeatured ? '<div class="card-badge">Nổi bật</div>' : ''}
                 </figure>
                 
                 <div class="card-content">
@@ -453,7 +459,7 @@ function renderFeaturedArticles(articles) {
                         </div>
                         <div class="meta-item">
                             <ion-icon name="person-outline"></ion-icon>
-                            <span>${article.author || 'Admin'}</span>
+                            <span>${authorName}</span>
                         </div>
                         <div class="meta-item">
                             <ion-icon name="eye-outline"></ion-icon>
@@ -483,7 +489,7 @@ function renderFeaturedArticles(articles) {
     });
 }
 
-// Render bài viết fallback khi không có dữ liệu từ API
+// Cập nhật fallback articles để sử dụng cùng structure
 function renderFallbackArticles() {
     const featuredList = document.getElementById('featuredArticlesList');
     if (!featuredList) return;
@@ -492,30 +498,32 @@ function renderFallbackArticles() {
         {
             slug: 'kinh-nghiem-du-lich-ha-long',
             title: 'Kinh nghiệm du lịch Hạ Long - Những điều cần biết',
-            excerpt: 'Khám phá vẻ đẹp kỳ thú của Vịnh Hạ Long với những hang động tuyệt đẹp và hoạt động thú vị...',
-            author: 'Admin',
-            publishedAt: new Date(),
+            summary: 'Khám phá vẻ đẹp kỳ thú của Vịnh Hạ Long với những hang động tuyệt đẹp và hoạt động thú vị...',
+            author: { fullName: 'Admin' },
+            publishedAt: new Date().toISOString(),
             viewCount: 1250,
-            featuredImage: './assets/images/gallery-1.jpg',
-            isPrimary: true
+            featuredImageUrl: './assets/images/gallery-1.jpg',
+            isFeatured: true
         },
         {
             slug: 'am-thuc-viet-nam',
             title: 'Ẩm thực Việt Nam - Hành trình khám phá hương vị',
-            excerpt: 'Từ phở Hà Nội đến bánh mì Sài Gòn, cùng khám phá tinh hoa ẩm thực ba miền đất nước...',
-            author: 'Admin', 
-            publishedAt: new Date(),
+            summary: 'Từ phở Hà Nội đến bánh mì Sài Gòn, cùng khám phá tinh hoa ẩm thực ba miền đất nước...',
+            author: { fullName: 'Admin' }, 
+            publishedAt: new Date().toISOString(),
             viewCount: 980,
-            featuredImage: './assets/images/gallery-2.jpg'
+            featuredImageUrl: './assets/images/gallery-2.jpg',
+            isFeatured: false
         },
         {
             slug: 'meo-du-lich-tiet-kiem',
             title: 'Mẹo du lịch tiết kiệm cho sinh viên',
-            excerpt: 'Những bí quyết giúp bạn có thể vi vu khắp nơi mà vẫn tiết kiệm được chi phí...',
-            author: 'Admin',
-            publishedAt: new Date(), 
+            summary: 'Những bí quyết giúp bạn có thể vi vu khắp nơi mà vẫn tiết kiệm được chi phí...',
+            author: { fullName: 'Admin' },
+            publishedAt: new Date().toISOString(), 
             viewCount: 750,
-            featuredImage: './assets/images/gallery-3.jpg'
+            featuredImageUrl: './assets/images/gallery-3.jpg',
+            isFeatured: false
         }
     ];
     
@@ -558,7 +566,14 @@ function setupEventListeners() {
     const viewAllButtons = document.querySelectorAll('.btn[data-translate="view_all"]');
     viewAllButtons.forEach(btn => {
         btn.addEventListener('click', function() {
-            window.location.href = 'tours.html';
+            const section = btn.closest('section');
+            if (section && section.id === 'articles') {
+                // For articles section, go to articles page
+                window.location.href = 'articles.html';
+            } else {
+                // For other sections, go to tours page
+                window.location.href = 'tours.html';
+            }
         });
     });
     
@@ -566,7 +581,10 @@ function setupEventListeners() {
     const learnMoreBtn = document.querySelector('.btn[data-translate="learn_more"]');
     if (learnMoreBtn) {
         learnMoreBtn.addEventListener('click', function() {
-            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+            const aboutSection = document.getElementById('about');
+            if (aboutSection) {
+                aboutSection.scrollIntoView({ behavior: 'smooth' });
+            }
         });
     }
     
@@ -574,7 +592,33 @@ function setupEventListeners() {
     const heroBookBtn = document.querySelector('.hero .btn[data-translate="book_now"]');
     if (heroBookBtn) {
         heroBookBtn.addEventListener('click', function() {
-            document.getElementById('package').scrollIntoView({ behavior: 'smooth' });
+            const packageSection = document.getElementById('package');
+            if (packageSection) {
+                packageSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    // Articles navigation handling
+    const articlesNavLink = document.querySelector('a[href="#articles"]');
+    if (articlesNavLink) {
+        articlesNavLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const articlesSection = document.getElementById('articles');
+            if (articlesSection) {
+                articlesSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Close mobile menu if open
+                const navbar = document.querySelector("[data-navbar]");
+                const overlay = document.querySelector("[data-overlay]");
+                if (navbar && overlay) {
+                    navbar.classList.remove("active");
+                    overlay.classList.remove("active");
+                }
+            }
         });
     }
 }

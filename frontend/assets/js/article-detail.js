@@ -23,8 +23,19 @@ class ArticleDetailManager {
         const params = new URLSearchParams(window.location.search);
         return params.get('slug');
     }
-
-    initializeElements() {
+    
+    estimateReadingTime(content) {
+        if (!content) return 1;
+        
+        // Remove HTML tags
+        const text = content.replace(/<[^>]*>/g, '');
+        
+        // Count words (average reading speed is 200-250 words per minute)
+        const words = text.split(/\s+/).length;
+        const minutes = Math.ceil(words / 200);
+        
+        return minutes > 0 ? minutes : 1;
+    }    initializeElements() {
         // Main content elements
         this.breadcrumbNav = document.querySelector('.breadcrumb-nav');
         this.articleHeader = document.querySelector('.article-header');
@@ -32,9 +43,25 @@ class ArticleDetailManager {
         this.authorInfo = document.querySelector('.author-info');
         this.relatedArticles = document.querySelector('.related-grid');
         
+        // Individual elements from HTML
+        this.articleTitle = document.getElementById('articleTitle');
+        this.articleSummary = document.getElementById('articleSummary');
+        this.articleTags = document.getElementById('articleTags');
+        this.articleBody = document.getElementById('articleBody');
+        this.authorName = document.getElementById('authorName');
+        this.authorAvatar = document.getElementById('authorAvatar');
+        this.publishDate = document.getElementById('publishDate');
+        this.viewCount = document.getElementById('viewCount');
+        this.featuredImage = document.getElementById('featuredImage');
+        this.featuredImageSection = document.getElementById('featuredImageSection');
+        this.breadcrumbTitle = document.getElementById('breadcrumbTitle');
+        
+        // Container elements
+        this.articleContainer = document.getElementById('articleContainer');
+        
         // Loading and error states
-        this.loadingContainer = document.querySelector('.loading-container');
-        this.errorContainer = document.querySelector('.error-container');
+        this.loadingContainer = document.getElementById('loadingContainer');
+        this.errorContainer = document.getElementById('errorContainer');
         
         // Comments elements
         this.commentsSection = document.querySelector('.comments-section');
@@ -81,7 +108,8 @@ class ArticleDetailManager {
         this.showLoading();
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/articles/${this.articleSlug}`, {
+            // Use expand=author parameter to ensure author details are included
+            const response = await fetch(`${API_BASE_URL}/api/articles/${this.articleSlug}?expand=author`, {
                 method: 'GET',
                 headers: getAuthHeaders()
             });
@@ -92,10 +120,21 @@ class ArticleDetailManager {
                 }
                 throw new Error('Không thể tải bài viết');
             }
-
+            
             this.article = await response.json();
+            console.log('Article data loaded:', this.article); // Log for debugging
+            
+            // Ensure author object exists
+            if (!this.article.author) {
+                this.article.author = {
+                    username: 'Admin',
+                    fullName: 'Admin',
+                    avatarUrl: null,
+                    bio: 'Tác giả bài viết tại Du Lịch Hoàng Minh'
+                };
+            }
+            
             this.renderArticle();
-            this.updatePageTitle();
             this.loadRelatedArticles();
             this.loadComments();
             
@@ -109,29 +148,105 @@ class ArticleDetailManager {
             this.isLoading = false;
             this.hideLoading();
         }
-    }
-
-    renderArticle() {
+    }    renderArticle() {
         if (!this.article) return;
 
+        // Show article container
+        this.articleContainer.style.display = 'block';
+        
         // Update breadcrumb
         this.updateBreadcrumb();
         
-        // Render article header
-        this.renderHeader();
-        
-        // Render article content
-        this.renderContent();
+        // Render article data
+        this.renderArticleData();
         
         // Render author info
         this.renderAuthorInfo();
     }
 
     updateBreadcrumb() {
-        const breadcrumbSpan = this.breadcrumbNav.querySelector('span:last-child');
-        if (breadcrumbSpan) {
-            breadcrumbSpan.textContent = this.article.title;
+        if (this.breadcrumbTitle) {
+            this.breadcrumbTitle.textContent = this.article.title;
         }
+    }
+
+    renderArticleData() {
+        const publishedDate = new Date(this.article.publishedAt || this.article.createdAt).toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Update title
+        if (this.articleTitle) {
+            this.articleTitle.textContent = this.article.title;
+        }
+
+        // Update summary
+        if (this.articleSummary && this.article.summary) {
+            this.articleSummary.textContent = this.article.summary;
+        } else if (this.articleSummary) {
+            this.articleSummary.style.display = 'none';
+        }
+
+        // Update tags
+        if (this.articleTags && this.article.tags && this.article.tags.length > 0) {
+            this.articleTags.innerHTML = this.article.tags.map(tag => 
+                `<a href="articles.html?tag=${encodeURIComponent(tag)}" class="tag">${tag}</a>`
+            ).join('');
+        } else if (this.articleTags) {
+            this.articleTags.style.display = 'none';
+        }
+
+        // Update content
+        if (this.articleBody) {
+            this.articleBody.innerHTML = this.formatContent(this.article.content || '');
+        }
+
+        // Update author info
+        if (this.authorName) {
+            const authorName = this.article.author?.fullName || this.article.author?.username || 'Admin';
+            this.authorName.textContent = authorName;
+            console.log('Setting author name:', authorName); // Debug log
+        }
+        
+        if (this.authorAvatar) {
+            if (this.article.author?.avatarUrl) {
+                this.authorAvatar.src = `http://localhost:8080${this.article.author.avatarUrl}`;
+            } else {
+                this.authorAvatar.src = './assets/images/default-avatar.png';
+            }
+        }
+
+        if (this.publishDate) {
+            this.publishDate.textContent = publishedDate;
+        }
+
+        if (this.viewCount) {
+            this.viewCount.textContent = `${this.article.viewCount || 0} lượt xem`;
+        }
+        
+        // Update reading time
+        const readTimeElement = document.getElementById('readTime');
+        if (readTimeElement) {
+            const minutes = this.estimateReadingTime(this.article.content);
+            readTimeElement.textContent = `${minutes} phút đọc`;
+        }
+
+        // Update featured image
+        if (this.featuredImage && this.featuredImageSection) {
+            if (this.article.featuredImageUrl) {
+                const imageUrl = `http://localhost:8080${this.article.featuredImageUrl}`;
+                this.featuredImage.src = imageUrl;
+                this.featuredImage.alt = this.article.title;
+                this.featuredImageSection.style.display = 'block';
+            } else {
+                this.featuredImageSection.style.display = 'none';
+            }
+        }
+
+        // Update page title
+        document.title = `${this.article.title} - Du Lịch Hoàng Minh`;
     }
 
     renderHeader() {
@@ -238,26 +353,39 @@ class ArticleDetailManager {
         
         articleFooter.innerHTML = footerHTML;
     }    renderAuthorInfo() {
-        if (!this.authorInfo) return;
-
-        const authorHTML = `
-            <div class="author-header">
-                <div class="author-avatar">
-                    <img src="./assets/images/default-avatar.png" alt="Tác giả" 
-                         onerror="this.src='./assets/images/default-avatar.png'">
-                </div>
-                <div class="author-details">
-                    <h4>${this.article.author?.fullName || this.article.author?.username || 'Admin'}</h4>
-                    <p class="author-role">Tác giả</p>
-                </div>
-            </div>
-            <p class="author-bio">
-                Chuyên gia du lịch với nhiều năm kinh nghiệm khám phá các điểm đến tuyệt vời trên khắp thế giới.
-                Chia sẻ những trải nghiệm và kiến thức để giúp bạn có những chuyến đi đáng nhớ.
-            </p>
-        `;
-
-        this.authorInfo.innerHTML = authorHTML;
+        if (!this.article || !this.article.author) return;
+        
+        // Update sidebar author info
+        const sidebarAuthorName = document.getElementById('sidebarAuthorName');
+        const sidebarAuthorAvatar = document.getElementById('sidebarAuthorAvatar');
+        const sidebarAuthorBio = document.getElementById('sidebarAuthorBio');
+        
+        if (sidebarAuthorName) {
+            sidebarAuthorName.textContent = this.article.author.fullName || this.article.author.username || 'Admin';
+        }
+        
+        if (sidebarAuthorAvatar) {
+            if (this.article.author.avatarUrl) {
+                sidebarAuthorAvatar.src = `http://localhost:8080${this.article.author.avatarUrl}`;
+            } else {
+                sidebarAuthorAvatar.src = './assets/images/default-avatar.png';
+            }
+            sidebarAuthorAvatar.alt = this.article.author.fullName || this.article.author.username || 'Admin';
+        }
+        
+        if (sidebarAuthorBio) {
+            sidebarAuthorBio.textContent = this.article.author.bio || 'Tác giả bài viết tại Du Lịch Hoàng Minh';
+        }
+        
+        // Update author info in article header if not already done in renderArticleData
+        if (this.authorAvatar) {
+            if (this.article.author.avatarUrl) {
+                this.authorAvatar.src = `http://localhost:8080${this.article.author.avatarUrl}`;
+            } else {
+                this.authorAvatar.src = './assets/images/default-avatar.png';
+            }
+            this.authorAvatar.alt = this.article.author.fullName || this.article.author.username || 'Admin';
+        }
     }
 
     async loadRelatedArticles() {
@@ -476,8 +604,17 @@ class ArticleDetailManager {
         }
     }
 
+    estimateReadingTime(content) {
+        if (!content) return 1;
+        const wordsPerMinute = 200;
+        const wordCount = content.split(' ').length;
+        return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+    }
+
     formatContent(content) {
-        // Basic content formatting
+        if (!content) return '';
+        
+        // Basic HTML formatting for line breaks
         return content
             .replace(/\n\n/g, '</p><p>')
             .replace(/\n/g, '<br>')
@@ -485,14 +622,8 @@ class ArticleDetailManager {
             .replace(/$/, '</p>');
     }
 
-    estimateReadingTime(content) {
-        const wordsPerMinute = 200; // Average reading speed
-        const words = content.split(/\s+/).length;
-        return Math.ceil(words / wordsPerMinute);
-    }
-
     updatePageTitle() {
-        if (this.article) {
+        if (this.article && this.article.title) {
             document.title = `${this.article.title} - Du Lịch Hoàng Minh`;
         }
     }
@@ -500,6 +631,12 @@ class ArticleDetailManager {
     showLoading() {
         if (this.loadingContainer) {
             this.loadingContainer.style.display = 'flex';
+        }
+        if (this.articleContainer) {
+            this.articleContainer.style.display = 'none';
+        }
+        if (this.errorContainer) {
+            this.errorContainer.style.display = 'none';
         }
     }
 
@@ -510,32 +647,18 @@ class ArticleDetailManager {
     }
 
     showError(message) {
-        this.hideLoading();
-        
         if (this.errorContainer) {
             this.errorContainer.style.display = 'block';
-            const errorMessage = this.errorContainer.querySelector('.error-message');
+            const errorMessage = this.errorContainer.querySelector('p');
             if (errorMessage) {
                 errorMessage.textContent = message;
             }
-        } else {
-            // Create error container if it doesn't exist
-            const main = document.querySelector('main');
-            if (main) {
-                main.innerHTML = `
-                    <div class="error-container">
-                        <div class="error-icon">
-                            <ion-icon name="alert-circle-outline"></ion-icon>
-                        </div>
-                        <h2 class="error-title">Đã xảy ra lỗi</h2>
-                        <p class="error-message">${message}</p>
-                        <a href="articles.html" class="back-btn">
-                            <ion-icon name="arrow-back-outline"></ion-icon>
-                            Quay lại danh sách bài viết
-                        </a>
-                    </div>
-                `;
-            }
+        }
+        if (this.loadingContainer) {
+            this.loadingContainer.style.display = 'none';
+        }
+        if (this.articleContainer) {
+            this.articleContainer.style.display = 'none';
         }
     }
 }

@@ -123,11 +123,11 @@
             </li>
 
             <li>
-              <a href="articles.html" class="navbar-link" data-translate="articles">Bài viết</a>
+              <a href="#gallery" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a>
             </li>
 
             <li>
-              <a href="#gallery" class="navbar-link" data-nav-link data-translate="gallery">Thư viện ảnh</a>
+              <a href="#articles" class="navbar-link" data-nav-link data-translate="articles">Bài viết</a>
             </li>
 
             <li>
@@ -220,7 +220,9 @@
       -->
 
       <section class="tour-search">
-        <div class="container">          <form action="" class="tour-search-form">
+        <div class="container">
+
+          <form action="" class="tour-search-form">
 
             <div class="input-wrapper">
               <label for="destination" class="input-label" data-translate="destination">Điểm đến*</label>
@@ -237,13 +239,13 @@
             </div>
 
             <div class="input-wrapper">
-              <label for="checkin" class="input-label" data-translate="departure_date">Ngày khởi hành*</label>
+              <label for="checkin" class="input-label" data-translate="checkin">Ngày khởi hành*</label>
 
               <input type="date" name="checkin" id="checkin" required class="input-field">
             </div>
 
             <div class="input-wrapper">
-              <label for="checkout" class="input-label">Ngày kết thúc*</label>
+              <label for="checkout" class="input-label" data-translate="checkout">Ngày kết thúc*</label>
 
               <input type="date" name="checkout" id="checkout" required class="input-field">
             </div>
@@ -680,7 +682,7 @@
         - #FEATURED ARTICLES
       -->
 
-      <section class="featured-articles">
+      <section class="featured-articles" id="articles">
         <div class="container">
 
           <p class="section-subtitle" data-translate="discover_information">Khám phá thông tin</p>
@@ -702,7 +704,7 @@
           </ul>
 
           <div class="article-cta">
-            <a href="articles.html" class="btn btn-primary" data-translate="view_all_articles">Xem tất cả bài viết</a>
+            <a href="articles.html" class="btn btn-primary" data-translate="view_all">Xem tất cả bài viết</a>
           </div>
 
         </div>
@@ -745,13 +747,15 @@
   <footer class="footer">
 
     <div class="footer-top">
-      <div class="container">        <div class="footer-brand">
+      <div class="container">
+
+        <div class="footer-brand">
 
           <a href="#" class="logo">
             <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
           </a>
 
-          <p class="footer-text">
+          <p class="footer-text" data-translate="footer_description">
             Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
             trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
           </p>
@@ -762,7 +766,7 @@
 
           <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
 
-          <p class="contact-text">
+          <p class="contact-text" data-translate="footer_contact_desc">
             Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!
           </p>
 
@@ -809,22 +813,24 @@
     </div>
 
     <div class="footer-bottom">
-      <div class="container">        <p class="copyright">
+      <div class="container">
+
+        <p class="copyright">
           &copy; 2024 <a href="">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
         </p>
 
         <ul class="footer-bottom-list">
 
           <li>
-            <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
+            <a href="#" class="footer-bottom-link" data-translate="privacy_policy">Chính sách bảo mật</a>
           </li>
 
           <li>
-            <a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a>
+            <a href="#" class="footer-bottom-link" data-translate="terms_conditions">Điều khoản & Điều kiện</a>
           </li>
 
           <li>
-            <a href="#" class="footer-bottom-link">FAQ</a>
+            <a href="#" class="footer-bottom-link" data-translate="faq">FAQ</a>
           </li>
 
         </ul>

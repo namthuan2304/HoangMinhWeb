@@ -206,15 +206,13 @@
                   <ion-icon name="close-outline"></ion-icon>
                 </button>
               </div>
-            </div>
-
-            <!-- Tag Filter -->
+            </div>            <!-- Tag Filter -->
             <div class="tag-filter">
               <label class="filter-label" data-translate="filter_by_tag">Lọc theo chủ đề:</label>
-              <div class="tag-buttons" id="tagButtons">
-                <button class="tag-btn active" data-tag="" data-translate="all">Tất cả</button>
+              <select id="tagSelect" class="tag-select">
+                <option value="" data-translate="all">Tất cả chủ đề</option>
                 <!-- Tags will be loaded dynamically -->
-              </div>
+              </select>
             </div>
 
             <!-- Sort -->
@@ -301,7 +299,7 @@
           <a href="#" class="logo">
             <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
           </a>
-          <p class="footer-text">
+          <p class="footer-text" data-translate="footer_description">
             Chúng tôi là công ty du lịch hàng đầu với kinh nghiệm nhiều năm trong việc tổ chức các chuyến du lịch 
             trong nước và quốc tế. Cam kết mang đến dịch vụ tốt nhất cho khách hàng.
           </p>
@@ -309,7 +307,7 @@
 
         <div class="footer-contact">
           <h4 class="contact-title" data-translate="contact_us">Liên hệ với chúng tôi</h4>
-          <p class="contact-text">
+          <p class="contact-text" data-translate="footer_contact_desc">
             Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ!
           </p>
 
@@ -351,13 +349,13 @@
 
         <ul class="footer-bottom-list">
           <li>
-            <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
+            <a href="#" class="footer-bottom-link" data-translate="privacy_policy">Chính sách bảo mật</a>
           </li>
           <li>
-            <a href="#" class="footer-bottom-link">Điều khoản & Điều kiện</a>
+            <a href="#" class="footer-bottom-link" data-translate="terms_conditions">Điều khoản & Điều kiện</a>
           </li>
           <li>
-            <a href="#" class="footer-bottom-link">FAQ</a>
+            <a href="#" class="footer-bottom-link" data-translate="faq">FAQ</a>
           </li>
         </ul>
       </div>

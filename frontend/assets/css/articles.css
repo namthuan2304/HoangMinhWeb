@@ -240,33 +240,24 @@
   font-size: var(--fs-6);
 }
 
-.tag-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tag-btn {
-  padding: 8px 16px;
+.tag-select {
+  padding: 12px 15px;
   border: 2px solid var(--platinum);
-  background: var(--white);
-  color: var(--sonic-silver);
   border-radius: var(--radius-5);
-  font-size: var(--fs-7);
+  font-size: var(--fs-6);
+  background: var(--white);
   cursor: pointer;
   transition: var(--transition-1);
-  white-space: nowrap;
+  min-width: 200px;
 }
 
-.tag-btn:hover {
+.tag-select:focus {
+  outline: none;
   border-color: var(--bright-navy-blue);
-  color: var(--bright-navy-blue);
 }
 
-.tag-btn.active {
-  background: var(--bright-navy-blue);
+.tag-select:hover {
   border-color: var(--bright-navy-blue);
-  color: var(--white);
 }
 
 /* Sort Filter */
