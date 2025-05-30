@@ -235,6 +235,25 @@
     <script src="./assets/js/tour-detail.js"></script>
     <script src="./assets/js/script.js"></script>
 
+    <!-- Additional script to ensure proper initialization -->
+    <script>
+        // Ensure proper method binding after all scripts load
+        window.addEventListener('load', () => {
+            // Double-check that tourDetailManager is available
+            if (window.tourDetailManager) {
+                console.log('TourDetailManager loaded successfully');
+            } else {
+                console.error('TourDetailManager not found');
+                // Try to create it manually if needed
+                try {
+                    window.tourDetailManager = new TourDetailManager();
+                } catch (error) {
+                    console.error('Failed to create TourDetailManager:', error);
+                }
+            }
+        });
+    </script>
+
     <!-- ionicon link -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>

@@ -623,345 +623,182 @@ class TourDetailManager {
         `;
     }
 
+    async editReview(reviewId) {
+        console.log('Editing review:', reviewId); // Debug log
+        
+        // Find the review
+        const review = this.reviews.find(r => r.id === reviewId);
+        if (!review) {
+            console.error('Review not found:', reviewId);
+            this.showToast('Không tìm thấy đánh giá', 'error');
+            return;
+        }
+
+        console.log('Found review:', review); // Debug log
+
+        // Show form with existing data
+        this.showReviewForm();
+        
+        // Wait a bit for the form to be rendered and initialized
+        setTimeout(() => {
+            this.populateEditForm(review);
+        }, 500); // Increased timeout further to ensure form is fully rendered
+    }
+
     showReviewForm() {
+        console.log('Showing review form...'); // Debug log
+        
         const overlay = document.getElementById('reviewFormOverlay');
         const writeBtn = document.getElementById('writeReviewBtn');
         
-        // Don't show form if button is disabled
-        if (writeBtn && writeBtn.disabled) {
+        console.log('Overlay found:', !!overlay); // Debug log
+        console.log('Write button:', writeBtn); // Debug log
+        
+        // Don't show form if button is disabled (but allow for editing)
+        if (writeBtn && writeBtn.disabled && !writeBtn.classList.contains('edit-mode')) {
+            console.log('Button is disabled, not showing form');
             return;
         }
         
         if (overlay) {
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
+            console.log('Form overlay activated'); // Debug log
+            
+            // Force display style as well
+            overlay.style.display = 'flex';
+            
+            // Initialize form after showing
+            setTimeout(() => {
+                this.initializeEnhancedReviewForm();
+            }, 100);
+        } else {
+            console.error('Review form overlay not found!');
+        }
+    }
+
+    populateEditForm(review) {
+        console.log('Populating edit form with review:', review); // Debug log
+        
+        // Make sure the form is visible first
+        const overlay = document.getElementById('reviewFormOverlay');
+        if (!overlay || !overlay.classList.contains('active')) {
+            console.error('Form overlay is not active!');
+            // Try to show it again
+            if (overlay) {
+                overlay.classList.add('active');
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Populate form content
+        const contentElement = document.getElementById('reviewContent');
+        if (contentElement) {
+            contentElement.value = review.content;
+            console.log('Content populated:', review.content);
+        } else {
+            console.error('Review content element not found');
+        }
+        
+        // Set rating stars
+        const stars = document.querySelectorAll('.star-input');
+        const starRatingInput = document.getElementById('starRatingInput');
+        const ratingFeedback = document.getElementById('ratingFeedback');
+        
+        console.log('Stars found:', stars.length);
+        console.log('Star rating input:', !!starRatingInput);
+        console.log('Rating feedback:', !!ratingFeedback);
+        
+        if (stars && stars.length > 0) {
+            // Clear all stars first
+            stars.forEach(star => star.classList.remove('selected', 'hover'));
+            
+            // Set selected stars
+            stars.forEach((star, index) => {
+                if (index < review.rating) {
+                    star.classList.add('selected');
+                }
+            });
+            
+            // Store the rating
+            if (starRatingInput) {
+                starRatingInput.setAttribute('data-selected-rating', review.rating.toString());
+                console.log('Rating set to:', review.rating);
+            }
+            
+            // Update feedback text
+            const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+            if (ratingFeedback) {
+                ratingFeedback.textContent = ratingTexts[review.rating - 1] || 'Chọn số sao';
+                console.log('Rating feedback set to:', ratingTexts[review.rating - 1]);
+            }
         }
 
-        this.initializeEnhancedReviewForm();
+        // Change form to edit mode
+        const form = document.getElementById('reviewForm');
+        if (form) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Cập nhật đánh giá';
+                console.log('Submit button updated for edit mode');
+            }
+            
+            // Store editing state
+            form.dataset.editing = review.id.toString();
+            console.log('Form editing ID set to:', review.id);
+            
+            // Update form title
+            const formTitle = document.querySelector('.form-title');
+            if (formTitle) {
+                formTitle.innerHTML = '<ion-icon name="create-outline"></ion-icon> Chỉnh sửa đánh giá';
+                console.log('Form title updated for edit mode');
+            }
+        } else {
+            console.error('Review form not found');
+        }
+        
+        console.log('Edit form populated successfully'); // Debug log
+    }
+
+    resetReviewForm() {
+        const form = document.getElementById('reviewForm');
+        const stars = document.querySelectorAll('.star-input');
+        const ratingFeedback = document.getElementById('ratingFeedback');
+        const submitBtn = form?.querySelector('button[type="submit"]');
+        const starRatingInput = document.getElementById('starRatingInput');
+        const formTitle = document.querySelector('.form-title');
+        
+        if (form) {
+            form.reset();
+            delete form.dataset.editing;
+        }
+        if (stars) stars.forEach(star => star.classList.remove('selected', 'hover'));
+        if (ratingFeedback) ratingFeedback.textContent = 'Chọn số sao';
+        if (submitBtn) {
+            submitBtn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Gửi đánh giá';
+        }
+        if (starRatingInput) starRatingInput.setAttribute('data-selected-rating', '0');
+        if (formTitle) {
+            formTitle.innerHTML = '<ion-icon name="star-outline"></ion-icon> Viết đánh giá';
+        }
+        
+        console.log('Form reset completed'); // Debug log
     }
 
     hideReviewForm() {
+        console.log('Hiding review form...'); // Debug log
+        
         const overlay = document.getElementById('reviewFormOverlay');
         
         if (overlay) {
             overlay.classList.remove('active');
+            overlay.style.display = 'none'; // Force hide
             document.body.style.overflow = '';
+            console.log('Form overlay hidden');
         }
 
         this.resetReviewForm();
-    }
-
-    initializeEnhancedReviewForm() {
-        const stars = document.querySelectorAll('.star-input');
-        const ratingFeedback = document.getElementById('ratingFeedback');
-        const form = document.getElementById('reviewForm');
-        const starRatingInput = document.getElementById('starRatingInput');
-        
-        if (!stars.length || !ratingFeedback || !form || !starRatingInput) {
-            console.error('Review form elements not found');
-            return;
-        }
-        
-        let selectedRating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
-        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
-
-        // Initialize star interactions
-        stars.forEach((star, index) => {
-            const rating = index + 1;
-            
-            star.addEventListener('mouseover', () => {
-                stars.forEach((s, i) => {
-                    if (i <= index) {
-                        s.classList.add('hover');
-                    } else {
-                        s.classList.remove('hover');
-                    }
-                });
-                ratingFeedback.textContent = ratingTexts[index];
-            });
-
-            star.addEventListener('mouseout', () => {
-                stars.forEach(s => s.classList.remove('hover'));
-                if (selectedRating > 0) {
-                    ratingFeedback.textContent = ratingTexts[selectedRating - 1];
-                } else {
-                    ratingFeedback.textContent = 'Chọn số sao';
-                }
-            });
-
-            star.addEventListener('click', () => {
-                selectedRating = rating;
-                
-                stars.forEach((s, i) => {
-                    if (i < selectedRating) {
-                        s.classList.add('selected');
-                    } else {
-                        s.classList.remove('selected');
-                    }
-                });
-                
-                ratingFeedback.textContent = ratingTexts[selectedRating - 1];
-                starRatingInput.setAttribute('data-selected-rating', selectedRating.toString());
-            });
-        });
-
-        // Handle form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const currentRating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
-            
-            if (currentRating === 0) {
-                this.showToast('Vui lòng chọn số sao đánh giá', 'warning');
-                return;
-            }
-
-            const content = document.getElementById('reviewContent').value.trim();
-            if (!content) {
-                this.showToast('Vui lòng nhập nội dung đánh giá', 'warning');
-                return;
-            }
-
-            const reviewData = {
-                tourId: this.tourId,
-                rating: currentRating,
-                content: content
-            };
-
-            const editingId = form.dataset.editing;
-            if (editingId) {
-                await this.updateReview(editingId, reviewData);
-            } else {
-                await this.submitReview(reviewData);
-            }
-        });
-
-        // Handle overlay click to close
-        const overlay = document.getElementById('reviewFormOverlay');
-        if (overlay) {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    this.hideReviewForm();
-                }
-            });
-        }
-    }
-
-    async loadRatingBreakdown() {
-        try {
-            console.log('Loading rating breakdown for tour:', this.tourId);
-            const ratingData = await apiClient.getTourRating(this.tourId);
-            console.log('Rating data received:', ratingData);
-            this.renderEnhancedRatingBreakdown(ratingData);
-        } catch (error) {
-            console.error('Error loading rating breakdown:', error);
-            // Show fallback breakdown
-            this.renderEnhancedRatingBreakdown({
-                totalComments: 0,
-                averageRating: 0,
-                fiveStarCount: 0,
-                fourStarCount: 0,
-                threeStarCount: 0,
-                twoStarCount: 0,
-                oneStarCount: 0
-            });
-        }
-    }
-
-    renderEnhancedRatingBreakdown(ratingData) {
-        const container = document.getElementById('ratingBarsContainer');
-        const positivePercentage = document.getElementById('positivePercentage');
-        const recommendPercentage = document.getElementById('recommendPercentage');
-        const ratingSummary = document.getElementById('ratingSummary');
-        
-        if (!container) {
-            console.error('Rating bars container not found');
-            return;
-        }
-
-        const totalComments = ratingData.totalComments || 0;
-        
-        // Update rating summary
-        if (ratingSummary) {
-            if (totalComments > 0) {
-                ratingSummary.textContent = `Dựa trên ${totalComments} đánh giá`;
-            } else {
-                ratingSummary.textContent = 'Chưa có đánh giá nào';
-            }
-        }
-
-        if (totalComments === 0) {
-            container.innerHTML = '<p class="empty-state-description">Chưa có đánh giá nào</p>';
-            if (positivePercentage) positivePercentage.textContent = '0%';
-            if (recommendPercentage) recommendPercentage.textContent = '0%';
-            return;
-        }
-
-        const starCounts = {
-            5: ratingData.fiveStarCount || 0,
-            4: ratingData.fourStarCount || 0,
-            3: ratingData.threeStarCount || 0,
-            2: ratingData.twoStarCount || 0,
-            1: ratingData.oneStarCount || 0
-        };
-        
-        console.log('Star counts:', starCounts);
-        console.log('Total comments:', totalComments);
-        
-        // Calculate percentages
-        const positiveCount = starCounts[4] + starCounts[5];
-        const positivePercent = totalComments > 0 ? Math.round((positiveCount / totalComments) * 100) : 0;
-        const recommendPercent = totalComments > 0 ? Math.round((starCounts[5] / totalComments) * 100) : 0;
-        
-        // Update stats
-        if (positivePercentage) positivePercentage.textContent = `${positivePercent}%`;
-        if (recommendPercentage) recommendPercentage.textContent = `${recommendPercent}%`;
-        
-        let html = '';
-        
-        for (let i = 5; i >= 1; i--) {
-            const count = starCounts[i] || 0;
-            const percentage = totalComments > 0 ? Math.round((count / totalComments) * 100) : 0;
-            
-            html += `
-                <div class="rating-bar-item">
-                    <div class="bar-label">
-                        ${i} <ion-icon name="star"></ion-icon>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: ${percentage}%" data-target-width="${percentage}%"></div>
-                    </div>
-                    <div class="bar-count">${count}</div>
-                    <div class="bar-percentage">${percentage}%</div>
-                </div>
-            `;
-        }
-        
-        container.innerHTML = html;
-
-        // Animate progress bars
-        setTimeout(() => {
-            const progressBars = container.querySelectorAll('.progress-fill');
-            progressBars.forEach(bar => {
-                const targetWidth = bar.getAttribute('data-target-width');
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = targetWidth;
-                }, 100);
-            });
-        }, 100);
-    }
-
-    initializeReviewFilters() {
-        const filterChips = document.querySelectorAll('.filter-chip');
-        if (!filterChips.length) return;
-        
-        filterChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                // Remove active class from all chips
-                filterChips.forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked chip
-                chip.classList.add('active');
-                
-                // Get filter value
-                const filterValue = chip.getAttribute('data-filter');
-                
-                // Filter reviews
-                this.filterReviews(filterValue);
-            });
-        });
-    }
-
-    filterReviews(filterValue) {
-        const reviewCards = document.querySelectorAll('.review-card');
-        if (!reviewCards.length) return;
-        
-        let visibleCount = 0;
-        
-        reviewCards.forEach(card => {
-            const rating = card.getAttribute('data-rating');
-            
-            if (filterValue === 'all' || rating === filterValue) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        // Show/hide empty state
-        const reviewsGrid = document.getElementById('reviewsGrid');
-        if (visibleCount === 0 && reviewsGrid) {
-            const existingEmpty = reviewsGrid.querySelector('.filter-empty-state');
-            if (!existingEmpty) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-state filter-empty-state';
-                emptyState.innerHTML = `
-                    <ion-icon name="filter-outline" class="empty-state-icon"></ion-icon>
-                    <h4 class="empty-state-title">Không có đánh giá ${filterValue} sao</h4>
-                    <p class="empty-state-description">Thử chọn bộ lọc khác để xem thêm đánh giá</p>
-                `;
-                reviewsGrid.appendChild(emptyState);
-            }
-        } else {
-            const existingEmpty = reviewsGrid.querySelector('.filter-empty-state');
-            if (existingEmpty) {
-                existingEmpty.remove();
-            }
-        }
-    }
-
-    changeMainImage(src, thumbElement) {
-        const mainImage = document.getElementById('mainTourImage');
-        const allThumbs = document.querySelectorAll('.gallery-thumb');
-
-        if (mainImage) {
-            mainImage.src = src;
-        }
-
-        // Update active thumb
-        allThumbs.forEach(thumb => thumb.classList.remove('active'));
-        thumbElement.classList.add('active');
-    }
-
-    async showBookingModal() {
-        if (!apiClient.isAuthenticated()) {
-            this.showToast('Vui lòng đăng nhập để đặt tour', 'warning');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
-            return;
-        }
-
-        // Check if tour is available
-        if (!this.currentTour) {
-            this.showToast('Thông tin tour không hợp lệ', 'error');
-            return;
-        }
-
-        const availableSlots = this.currentTour.maxParticipants - (this.currentTour.currentParticipants || 0);
-        if (availableSlots <= 0) {
-            this.showToast('Tour đã hết chỗ', 'error');
-            return;
-        }
-
-        // For now, redirect to a booking form with tour ID
-        // In a full implementation, you would show a booking modal here
-        this.showToast('Chuyển hướng đến trang đặt tour...', 'info');
-        setTimeout(() => {
-            window.location.href = `booking.html?tourId=${this.currentTour.id}`;
-        }, 1000);
-    }
-
-    async toggleWishlist() {
-        if (!apiClient.isAuthenticated()) {
-            this.showToast('Vui lòng đăng nhập để sử dụng tính năng này', 'warning');
-            return;
-        }
-
-        // Implement wishlist functionality
-        this.showToast('Tính năng yêu thích sẽ được triển khai sớm!', 'info');
     }
 
     async loadRelatedTours() {
@@ -1343,6 +1180,345 @@ class TourDetailManager {
         const diffInYears = Math.floor(diffInMonths / 12);
         return `${diffInYears} năm trước`;
     }
+
+    initializeEnhancedReviewForm() {
+        const stars = document.querySelectorAll('.star-input');
+        const ratingFeedback = document.getElementById('ratingFeedback');
+        const form = document.getElementById('reviewForm');
+        const starRatingInput = document.getElementById('starRatingInput');
+        
+        if (!stars.length || !ratingFeedback || !form || !starRatingInput) {
+            console.error('Review form elements not found');
+            return;
+        }
+        
+        let selectedRating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
+        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+
+        console.log('Initializing form with rating:', selectedRating); // Debug log
+
+        // Remove existing event listeners by cloning nodes to avoid conflicts
+        const formClone = form.cloneNode(true);
+        form.parentNode.replaceChild(formClone, form);
+        
+        // Get references to the new elements
+        const newForm = document.getElementById('reviewForm');
+        const newStars = document.querySelectorAll('.star-input');
+        const newRatingFeedback = document.getElementById('ratingFeedback');
+        const newStarRatingInput = document.getElementById('starRatingInput');
+
+        // Re-initialize rating from the cloned form
+        selectedRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
+
+        // Initialize star interactions on new elements
+        newStars.forEach((star, index) => {
+            const rating = index + 1;
+            
+            star.addEventListener('mouseover', () => {
+                newStars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.add('hover');
+                    } else {
+                        s.classList.remove('hover');
+                    }
+                });
+                newRatingFeedback.textContent = ratingTexts[index];
+            });
+
+            star.addEventListener('mouseout', () => {
+                newStars.forEach(s => s.classList.remove('hover'));
+                const currentRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
+                if (currentRating > 0) {
+                    newRatingFeedback.textContent = ratingTexts[currentRating - 1];
+                } else {
+                    newRatingFeedback.textContent = 'Chọn số sao';
+                }
+            });
+
+            star.addEventListener('click', () => {
+                selectedRating = rating;
+                
+                newStars.forEach((s, i) => {
+                    if (i < selectedRating) {
+                        s.classList.add('selected');
+                    } else {
+                        s.classList.remove('selected');
+                    }
+                });
+                
+                newRatingFeedback.textContent = ratingTexts[selectedRating - 1];
+                newStarRatingInput.setAttribute('data-selected-rating', selectedRating.toString());
+                
+                console.log('Selected rating:', selectedRating); // Debug log
+            });
+        });
+
+        // Handle form submission on new form
+        newForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
+            
+            console.log('Submitting form with rating:', currentRating); // Debug log
+            
+            if (currentRating === 0) {
+                this.showToast('Vui lòng chọn số sao đánh giá', 'warning');
+                return;
+            }
+
+            const content = document.getElementById('reviewContent').value.trim();
+            if (!content) {
+                this.showToast('Vui lòng nhập nội dung đánh giá', 'warning');
+                return;
+            }
+
+            const reviewData = {
+                tourId: this.tourId,
+                rating: currentRating,
+                content: content
+            };
+
+            const editingId = newForm.dataset.editing;
+            console.log('Editing ID:', editingId); // Debug log
+            
+            if (editingId) {
+                await this.updateReview(editingId, reviewData);
+            } else {
+                await this.submitReview(reviewData);
+            }
+        });
+
+        // Handle overlay click to close
+        const overlay = document.getElementById('reviewFormOverlay');
+        if (overlay) {
+            // Remove existing listeners
+            const newOverlay = overlay.cloneNode(true);
+            overlay.parentNode.replaceChild(newOverlay, overlay);
+            
+            newOverlay.addEventListener('click', (e) => {
+                if (e.target === newOverlay) {
+                    this.hideReviewForm();
+                }
+            });
+        }
+    }
+
+    async loadRatingBreakdown() {
+        try {
+            console.log('Loading rating breakdown for tour:', this.tourId);
+            const ratingData = await apiClient.getTourRating(this.tourId);
+            console.log('Rating data received:', ratingData);
+            this.renderEnhancedRatingBreakdown(ratingData);
+        } catch (error) {
+            console.error('Error loading rating breakdown:', error);
+            // Show fallback breakdown
+            this.renderEnhancedRatingBreakdown({
+                totalComments: 0,
+                averageRating: 0,
+                fiveStarCount: 0,
+                fourStarCount: 0,
+                threeStarCount: 0,
+                twoStarCount: 0,
+                oneStarCount: 0
+            });
+        }
+    }
+
+    renderEnhancedRatingBreakdown(ratingData) {
+        const container = document.getElementById('ratingBarsContainer');
+        const positivePercentage = document.getElementById('positivePercentage');
+        const recommendPercentage = document.getElementById('recommendPercentage');
+        const ratingSummary = document.getElementById('ratingSummary');
+        
+        if (!container) {
+            console.error('Rating bars container not found');
+            return;
+        }
+
+        const totalComments = ratingData.totalComments || 0;
+        
+        // Update rating summary
+        if (ratingSummary) {
+            if (totalComments > 0) {
+                ratingSummary.textContent = `Dựa trên ${totalComments} đánh giá`;
+            } else {
+                ratingSummary.textContent = 'Chưa có đánh giá nào';
+            }
+        }
+
+        if (totalComments === 0) {
+            container.innerHTML = '<p class="empty-state-description">Chưa có đánh giá nào</p>';
+            if (positivePercentage) positivePercentage.textContent = '0%';
+            if (recommendPercentage) recommendPercentage.textContent = '0%';
+            return;
+        }
+
+        const starCounts = {
+            5: ratingData.fiveStarCount || 0,
+            4: ratingData.fourStarCount || 0,
+            3: ratingData.threeStarCount || 0,
+            2: ratingData.twoStarCount || 0,
+            1: ratingData.oneStarCount || 0
+        };
+        
+        console.log('Star counts:', starCounts);
+        console.log('Total comments:', totalComments);
+        
+        // Calculate percentages
+        const positiveCount = starCounts[4] + starCounts[5];
+        const positivePercent = totalComments > 0 ? Math.round((positiveCount / totalComments) * 100) : 0;
+        const recommendPercent = totalComments > 0 ? Math.round((starCounts[5] / totalComments) * 100) : 0;
+        
+        // Update stats
+        if (positivePercentage) positivePercentage.textContent = `${positivePercent}%`;
+        if (recommendPercentage) recommendPercentage.textContent = `${recommendPercent}%`;
+        
+        let html = '';
+        
+        for (let i = 5; i >= 1; i--) {
+            const count = starCounts[i] || 0;
+            const percentage = totalComments > 0 ? Math.round((count / totalComments) * 100) : 0;
+            
+            html += `
+                <div class="rating-bar-item">
+                    <div class="bar-label">
+                        ${i} <ion-icon name="star"></ion-icon>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: ${percentage}%" data-target-width="${percentage}%"></div>
+                    </div>
+                    <div class="bar-count">${count}</div>
+                    <div class="bar-percentage">${percentage}%</div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+
+        // Animate progress bars
+        setTimeout(() => {
+            const progressBars = container.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const targetWidth = bar.getAttribute('data-target-width');
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+        }, 100);
+    }
+
+    initializeReviewFilters() {
+        const filterChips = document.querySelectorAll('.filter-chip');
+        if (!filterChips.length) return;
+        
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                // Remove active class from all chips
+                filterChips.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked chip
+                chip.classList.add('active');
+                
+                // Get filter value
+                const filterValue = chip.getAttribute('data-filter');
+                
+                // Filter reviews
+                this.filterReviews(filterValue);
+            });
+        });
+    }
+
+    filterReviews(filterValue) {
+        const reviewCards = document.querySelectorAll('.review-card');
+        if (!reviewCards.length) return;
+        
+        let visibleCount = 0;
+        
+        reviewCards.forEach(card => {
+            const rating = card.getAttribute('data-rating');
+            
+            if (filterValue === 'all' || rating === filterValue) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide empty state
+        const reviewsGrid = document.getElementById('reviewsGrid');
+        if (visibleCount === 0 && reviewsGrid) {
+            const existingEmpty = reviewsGrid.querySelector('.filter-empty-state');
+            if (!existingEmpty) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state filter-empty-state';
+                emptyState.innerHTML = `
+                    <ion-icon name="filter-outline" class="empty-state-icon"></ion-icon>
+                    <h4 class="empty-state-title">Không có đánh giá ${filterValue} sao</h4>
+                    <p class="empty-state-description">Thử chọn bộ lọc khác để xem thêm đánh giá</p>
+                `;
+                reviewsGrid.appendChild(emptyState);
+            }
+        } else {
+            const existingEmpty = reviewsGrid.querySelector('.filter-empty-state');
+            if (existingEmpty) {
+                existingEmpty.remove();
+            }
+        }
+    }
+
+    changeMainImage(src, thumbElement) {
+        const mainImage = document.getElementById('mainTourImage');
+        const allThumbs = document.querySelectorAll('.gallery-thumb');
+
+        if (mainImage) {
+            mainImage.src = src;
+        }
+
+        // Update active thumb
+        allThumbs.forEach(thumb => thumb.classList.remove('active'));
+        thumbElement.classList.add('active');
+    }
+
+    async showBookingModal() {
+        if (!apiClient.isAuthenticated()) {
+            this.showToast('Vui lòng đăng nhập để đặt tour', 'warning');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+            return;
+        }
+
+        // Check if tour is available
+        if (!this.currentTour) {
+            this.showToast('Thông tin tour không hợp lệ', 'error');
+            return;
+        }
+
+        const availableSlots = this.currentTour.maxParticipants - (this.currentTour.currentParticipants || 0);
+        if (availableSlots <= 0) {
+            this.showToast('Tour đã hết chỗ', 'error');
+            return;
+        }
+
+        // For now, redirect to a booking form with tour ID
+        // In a full implementation, you would show a booking modal here
+        this.showToast('Chuyển hướng đến trang đặt tour...', 'info');
+        setTimeout(() => {
+            window.location.href = `booking.html?tourId=${this.currentTour.id}`;
+        }, 1000);
+    }
+
+    async toggleWishlist() {
+        if (!apiClient.isAuthenticated()) {
+            this.showToast('Vui lòng đăng nhập để sử dụng tính năng này', 'warning');
+            return;
+        }
+
+        // Implement wishlist functionality
+        this.showToast('Tính năng yêu thích sẽ được triển khai sớm!', 'info');
+    }
 }
 
 // Initialize when DOM is loaded
@@ -1354,3 +1530,23 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = TourDetailManager;
 }
+
+// Make sure all methods are properly bound to the class instance
+window.addEventListener('DOMContentLoaded', () => {
+    // Create a single global instance
+    if (!window.tourDetailManager) {
+        window.tourDetailManager = new TourDetailManager();
+    }
+    
+    // Ensure all methods are bound to the instance
+    const manager = window.tourDetailManager;
+    
+    // Bind methods to prevent scope issues
+    window.editReview = (reviewId) => manager.editReview(reviewId);
+    window.deleteReview = (reviewId) => manager.deleteReview(reviewId);
+    window.showReviewForm = () => manager.showReviewForm();
+    window.hideReviewForm = () => manager.hideReviewForm();
+    window.changeMainImage = (src, thumbElement) => manager.changeMainImage(src, thumbElement);
+    window.showBookingModal = () => manager.showBookingModal();
+    window.toggleWishlist = () => manager.toggleWishlist();
+});
