@@ -1,0 +1,13 @@
+/* Admin Main CSS - Imports all admin styles */
+
+/* Import common admin styles */
+@import url('./admin-common.css');
+
+/* Import specific page styles */
+@import url('./admin-dashboard.css');
+@import url('./admin-bookings.css');
+@import url('./admin-booking-detail.css');
+@import url('./admin-tours.css');
+
+/* Legacy compatibility - Keep this file for backward compatibility */
+/* All specific styles have been moved to individual files for better organization */

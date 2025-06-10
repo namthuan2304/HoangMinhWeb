@@ -422,8 +422,8 @@ class APIClient {
         return await this.request('/statistics/revenue/quarterly?year=' + new Date().getFullYear());
     }
 
-    async getTopBookedTours() {
-        return await this.request('/bookings/statistics/top-tours');
+    async getTopBookedTours(limit = 10) {
+        return await this.request(`/bookings/statistics/top-tours?limit=${limit}`);
     }
 
     // PDF Methods
@@ -455,9 +455,8 @@ class APIClient {
         return response.blob();
     }
 
-    async getMonthlyRevenuePDF() {
-        const currentDate = new Date();
-        const response = await fetch(`${this.baseURL}/statistics/revenue/monthly/pdf?year=${currentDate.getFullYear()}&month=${currentDate.getMonth() + 1}`, {
+    async getMonthlyRevenuePDF(year, month) {
+        const response = await fetch(`${this.baseURL}/statistics/revenue/monthly/pdf?year=${year}&month=${month}`, {
             headers: {
                 'Authorization': `Bearer ${this.token}`,
             },
