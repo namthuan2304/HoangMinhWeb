@@ -216,6 +216,20 @@ public class TourController {
     }
 
     /**
+     * Đặt ảnh chính cho tour (Admin only)
+     */
+    @PostMapping("/{id}/set-main-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Đặt ảnh chính cho tour")
+    public ResponseEntity<TourResponse> setMainImage(
+            @PathVariable Long id,
+            @RequestParam String imageUrl) {
+        TourResponse updatedTour = tourService.setMainImage(id, imageUrl);
+        return ResponseEntity.ok(updatedTour);
+    }
+
+    /**
      * Lấy tour hot (Public)
      */
     @GetMapping("/hot")

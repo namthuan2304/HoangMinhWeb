@@ -650,6 +650,18 @@ class APIClient {
     getDefaultTourImage() {
         return '../assets/images/default-tour.jpg';
     }
+
+    async deleteTourImage(tourId, imageUrl) {
+        return await this.request(`/tours/${tourId}/images?imageUrl=${encodeURIComponent(imageUrl)}`, {
+            method: 'DELETE',
+        });
+    }
+
+    async setMainImage(tourId, imageUrl) {
+        return await this.request(`/tours/${tourId}/set-main-image?imageUrl=${encodeURIComponent(imageUrl)}`, {
+            method: 'POST',
+        });
+    }
 }
 
 // Tạo instance global

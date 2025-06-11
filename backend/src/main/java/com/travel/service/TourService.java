@@ -152,6 +152,23 @@ public class TourService {
     }
 
     /**
+     * Đặt ảnh chính cho tour từ URL có sẵn
+     */
+    public TourResponse setMainImage(Long id, String imageUrl) {
+        Tour tour = tourRepository.findByIdAndDeletedAtIsNull(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour với ID: " + id));
+
+        // Kiểm tra xem imageUrl có trong danh sách imageUrls của tour không
+        if (!tour.getImageUrls().contains(imageUrl)) {
+            throw new IllegalArgumentException("URL ảnh không thuộc về tour này");
+        }
+        
+        tour.setMainImageUrl(imageUrl);
+        Tour savedTour = tourRepository.save(tour);
+        return modelMapper.map(savedTour, TourResponse.class);
+    }
+
+    /**
      * Upload nhiều ảnh cho tour
      */
     public TourResponse uploadImages(Long id, MultipartFile[] files) {

@@ -229,17 +229,50 @@
     opacity: 1;
 }
 
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.btn-icon.btn-success {
+    background: rgba(40, 167, 69, 0.9);
+}
+
+.btn-icon.btn-success:hover {
+    background: rgba(40, 167, 69, 1);
+    transform: scale(1.1);
+}
+
+.btn-icon.btn-danger {
+    background: rgba(220, 53, 69, 0.9);
+}
+
+.btn-icon.btn-danger:hover {
+    background: rgba(220, 53, 69, 1);
+    transform: scale(1.1);
+}
+
 .main-image-badge {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 123, 255, 0.9);
+    background: linear-gradient(45deg, #28a745, #20c997);
     color: white;
     padding: 0.25rem;
     font-size: 0.75rem;
     text-align: center;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .image-name {
@@ -277,10 +310,19 @@
     background: #e3f2fd;
 }
 
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .upload-placeholder ion-icon {
     font-size: 3rem;
     color: #6c757d;
     margin-bottom: 1rem;
+    display: block;
 }
 
 .upload-placeholder p {

@@ -234,6 +234,9 @@ class AdminTourCreate {
             <div class="image-item" data-id="${image.id}">
                 <img src="${image.preview}" alt="${image.file.name}">
                 <div class="image-actions">
+                    <button type="button" class="btn-icon btn-success" onclick="adminTourCreate.setMainImage('${image.id}')" title="Đặt làm ảnh chính">
+                        <ion-icon name="star-outline"></ion-icon>
+                    </button>
                     <button type="button" class="btn-icon btn-danger" onclick="adminTourCreate.removeImage('${image.id}')" title="Xóa">
                         <ion-icon name="trash-outline"></ion-icon>
                     </button>
@@ -246,9 +249,29 @@ class AdminTourCreate {
         this.imagesPreview.innerHTML = html;
     }
 
+    setMainImage(imageId) {
+        // Find the image and move it to first position
+        const imageIndex = this.images.findIndex(img => img.id === imageId);
+        if (imageIndex > -1) {
+            const [image] = this.images.splice(imageIndex, 1);
+            this.images.unshift(image);
+            this.renderImagePreviews();
+            this.showToast('Đã đặt làm ảnh chính', 'success');
+        }
+    }
+
     removeImage(imageId) {
+        // Remove image from array
         this.images = this.images.filter(img => img.id !== imageId);
+        
+        // Revoke the blob URL to free memory
+        const imageToRemove = this.images.find(img => img.id === imageId);
+        if (imageToRemove) {
+            URL.revokeObjectURL(imageToRemove.preview);
+        }
+        
         this.renderImagePreviews();
+        this.clearFieldError('images');
     }
 
     async saveDraft() {
@@ -289,6 +312,23 @@ class AdminTourCreate {
                 try {
                     const imageFiles = this.images.map(img => img.file);
                     await apiClient.uploadTourImages(createdTour.id, imageFiles);
+                    
+                    // Set the first image as main image after upload
+                    if (imageFiles.length > 0) {
+                        // Wait a bit for images to be processed
+                        setTimeout(async () => {
+                            try {
+                                // Get the updated tour to get the uploaded image URLs
+                                const updatedTour = await apiClient.getTour(createdTour.id);
+                                if (updatedTour.imageUrls && updatedTour.imageUrls.length > 0) {
+                                    // Set first image as main
+                                    await apiClient.setMainImage(createdTour.id, updatedTour.imageUrls[0]);
+                                }
+                            } catch (error) {
+                                console.error('Error setting main image:', error);
+                            }
+                        }, 1000);
+                    }
                 } catch (error) {
                     console.error('Error uploading images:', error);
                     this.showToast('Tour đã được tạo nhưng có lỗi khi tải ảnh lên', 'warning');

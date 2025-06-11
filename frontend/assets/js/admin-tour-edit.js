@@ -74,14 +74,37 @@ class AdminTourEdit {
                 e.returnValue = 'Bạn có thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang?';
             }
         });
-    }
-
-    async loadTourData() {
+    }    async loadTourData() {
         this.showLoading(true);
         
         try {
             this.tour = await apiClient.getTour(this.tourId);
-            this.existingImages = this.tour.imageUrls || [];
+              // Combine mainImageUrl and imageUrls properly
+            this.existingImages = [];
+            
+            // Priority 1: Add mainImageUrl first if it exists
+            if (this.tour.mainImageUrl) {
+                this.existingImages.push(this.tour.mainImageUrl);
+            }
+            
+            // Priority 2: Add other images from imageUrls, excluding mainImageUrl to avoid duplicates
+            if (this.tour.imageUrls && this.tour.imageUrls.length > 0) {
+                const otherImages = this.tour.imageUrls.filter(url => url !== this.tour.mainImageUrl);
+                this.existingImages.push(...otherImages);
+            }
+            
+            // If no mainImageUrl but have imageUrls, set first imageUrl as main
+            if (!this.tour.mainImageUrl && this.tour.imageUrls && this.tour.imageUrls.length > 0) {
+                this.tour.mainImageUrl = this.tour.imageUrls[0];
+            }              console.log('Loaded tour images:', {
+                mainImageUrl: this.tour.mainImageUrl,
+                imageUrls: this.tour.imageUrls,
+                existingImages: this.existingImages
+            });
+            
+            // Debug tour images to verify proper handling of mainImageUrl
+            this.debugTourImages();
+            
             this.renderTourEditForm();
         } catch (error) {
             console.error('Error loading tour data:', error);
@@ -369,22 +392,29 @@ class AdminTourEdit {
         this.setupDateValidation();
     }
 
-    renderExistingImages() {
-        if (!this.existingImages || this.existingImages.length === 0) {
-            return '<p class="no-images">Chưa có hình ảnh nào</p>';
-        }
+    setupDateValidation() {
+        const departureDate = document.getElementById('departureDate');
+        const returnDate = document.getElementById('returnDate');
 
-        return this.existingImages.map((imageUrl, index) => `
-            <div class="image-item existing" data-url="${imageUrl}">
-                <img src="${apiClient.getFullImageUrl(imageUrl)}" alt="Tour image ${index + 1}">
-                <div class="image-actions">
-                    <button type="button" class="btn-icon btn-danger" onclick="adminTourEdit.removeExistingImage('${imageUrl}')" title="Xóa">
-                        <ion-icon name="trash-outline"></ion-icon>
-                    </button>
-                </div>
-                ${index === 0 ? '<div class="main-image-badge">Ảnh chính</div>' : ''}
-            </div>
-        `).join('');
+        if (departureDate && returnDate) {
+            departureDate.addEventListener('change', () => {
+                if (returnDate.value && returnDate.value < departureDate.value) {
+                    returnDate.value = '';
+                }
+                returnDate.min = departureDate.value;
+            });
+
+            returnDate.addEventListener('change', () => {
+                if (departureDate.value && returnDate.value) {
+                    const departure = new Date(departureDate.value);
+                    const returnD = new Date(returnDate.value);
+                    if (returnD <= departure) {
+                        this.showToast('Ngày kết thúc phải sau ngày khởi hành', 'error');
+                        returnDate.value = '';
+                    }
+                }
+            });
+        }
     }
 
     handleImageUpload(event) {
@@ -397,6 +427,103 @@ class AdminTourEdit {
         this.processNewImages(files);
     }
 
+    removeNewImage(fileName) {
+        this.newImages = this.newImages.filter(file => file.name !== fileName);
+        
+        // Remove from preview
+        const preview = document.getElementById('newImagesPreview');
+        if (preview) {
+            const items = preview.querySelectorAll('.image-item.new');
+            items.forEach(item => {
+                if (item.querySelector('.image-name') && item.querySelector('.image-name').textContent === fileName) {
+                    item.remove();
+                }
+            });
+        }
+        
+        this.hasChanges = true;
+        this.updateSaveButtonState();
+    }    renderExistingImages() {
+        if (!this.existingImages || this.existingImages.length === 0) {
+            return '<p class="no-images">Chưa có hình ảnh nào</p>';
+        }
+
+        return this.existingImages.map((imageUrl, index) => {
+            // Check if this is the main image - prioritize mainImageUrl from backend
+            const isMainImage = (this.tour.mainImageUrl && imageUrl === this.tour.mainImageUrl) || 
+                               (!this.tour.mainImageUrl && index === 0);
+            
+            return `
+                <div class="image-item existing" data-url="${imageUrl}">
+                    <img src="${apiClient.getFullImageUrl(imageUrl)}" alt="Tour image ${index + 1}">
+                    <div class="image-actions">
+                        <button type="button" class="btn-icon ${isMainImage ? 'btn-warning' : 'btn-success'}" 
+                                onclick="adminTourEdit.setMainImage('${imageUrl}')" 
+                                title="${isMainImage ? 'Ảnh chính hiện tại' : 'Đặt làm ảnh chính'}">
+                            <ion-icon name="${isMainImage ? 'star' : 'star-outline'}"></ion-icon>
+                        </button>
+                        <button type="button" class="btn-icon btn-danger" onclick="adminTourEdit.removeExistingImage('${imageUrl}')" title="Xóa">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    </div>
+                    ${isMainImage ? '<div class="main-image-badge">Ảnh chính</div>' : ''}
+                </div>
+            `;
+        }).join('');
+    }    removeExistingImage(imageUrl) {
+        if (confirm('Bạn có chắc chắn muốn xóa hình ảnh này?')) {
+            // Check if this is the main image being deleted
+            const isMainImage = imageUrl === this.tour.mainImageUrl;
+            
+            // Add to deletion list
+            if (!this.imagesToDelete.includes(imageUrl)) {
+                this.imagesToDelete.push(imageUrl);
+            }
+            
+            // Remove from existing images display
+            this.existingImages = this.existingImages.filter(url => url !== imageUrl);
+            
+            // If we deleted the main image, update mainImageUrl to the next available image
+            if (isMainImage) {
+                this.tour.mainImageUrl = this.existingImages.length > 0 ? this.existingImages[0] : null;
+                console.log('Deleted main image, new main image:', this.tour.mainImageUrl);
+            }
+            
+            // Re-render existing images
+            const grid = document.getElementById('existingImagesGrid');
+            if (grid) {
+                grid.innerHTML = this.renderExistingImages();
+            }
+            
+            this.hasChanges = true;
+            this.updateSaveButtonState();
+            
+            if (isMainImage && this.existingImages.length > 0) {
+                this.showToast('Đã xóa ảnh chính và đặt ảnh tiếp theo làm ảnh chính mới. Nhấn "Lưu thay đổi" để hoàn tất.', 'info');
+            } else {
+                this.showToast('Đã đánh dấu ảnh để xóa. Nhấn "Lưu thay đổi" để hoàn tất.', 'info');
+            }
+        }
+    }setMainImage(imageUrl) {
+        // Update the tour's mainImageUrl property
+        this.tour.mainImageUrl = imageUrl;
+        
+        // Move the selected image to the first position in existingImages
+        this.existingImages = this.existingImages.filter(url => url !== imageUrl);
+        this.existingImages.unshift(imageUrl);
+        
+        // Re-render existing images to show updated main image status
+        const grid = document.getElementById('existingImagesGrid');
+        if (grid) {
+            grid.innerHTML = this.renderExistingImages();
+        }
+        
+        this.hasChanges = true;
+        this.updateSaveButtonState();
+        
+        this.showToast('Đã đặt làm ảnh chính. Nhấn "Lưu thay đổi" để hoàn tất.', 'success');
+    }
+
     processNewImages(files) {
         const imageFiles = files.filter(file => file.type.startsWith('image/'));
         
@@ -406,7 +533,8 @@ class AdminTourEdit {
         }
 
         imageFiles.forEach(file => {
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            if (file.size > 5 * 1024 * 1024) // 5MB limit
+            {
                 this.showToast(`File ${file.name} quá lớn (tối đa 5MB)`, 'error');
                 return;
             }
@@ -443,9 +571,13 @@ class AdminTourEdit {
         reader.onload = (e) => {
             const imageItem = document.createElement('div');
             imageItem.className = 'image-item new';
+            imageItem.dataset.fileName = file.name;
             imageItem.innerHTML = `
                 <img src="${e.target.result}" alt="${file.name}">
                 <div class="image-actions">
+                    <button type="button" class="btn-icon btn-success" onclick="adminTourEdit.setMainNewImage('${file.name}')" title="Đặt làm ảnh chính">
+                        <ion-icon name="star-outline"></ion-icon>
+                    </button>
                     <button type="button" class="btn-icon btn-danger" onclick="adminTourEdit.removeNewImage('${file.name}')" title="Xóa">
                         <ion-icon name="trash-outline"></ion-icon>
                     </button>
@@ -457,64 +589,51 @@ class AdminTourEdit {
         reader.readAsDataURL(file);
     }
 
-    removeExistingImage(imageUrl) {
-        if (confirm('Bạn có chắc chắn muốn xóa hình ảnh này?')) {
-            // Add to deletion list
-            if (!this.imagesToDelete.includes(imageUrl)) {
-                this.imagesToDelete.push(imageUrl);
-            }
+    setMainNewImage(fileName) {
+        // Find the file and move it to first position
+        const fileIndex = this.newImages.findIndex(file => file.name === fileName);
+        if (fileIndex > -1) {
+            const [file] = this.newImages.splice(fileIndex, 1);
+            this.newImages.unshift(file);
             
-            // Remove from existing images display
-            this.existingImages = this.existingImages.filter(url => url !== imageUrl);
-            
-            // Re-render existing images
-            const grid = document.getElementById('existingImagesGrid');
-            if (grid) {
-                grid.innerHTML = this.renderExistingImages();
-            }
+            // Re-render preview
+            this.renderAllNewImagePreviews();
             
             this.hasChanges = true;
             this.updateSaveButtonState();
+            
+            this.showToast('Đã đặt làm ảnh chính cho ảnh mới', 'success');
         }
     }
 
-    removeNewImage(fileName) {
-        this.newImages = this.newImages.filter(file => file.name !== fileName);
-        
-        // Remove from preview
+    renderAllNewImagePreviews() {
         const preview = document.getElementById('newImagesPreview');
-        if (preview) {
-            const items = preview.querySelectorAll('.image-item.new');
-            items.forEach(item => {
-                if (item.querySelector('.image-name').textContent === fileName) {
-                    item.remove();
-                }
-            });
-        }
+        if (!preview) return;
         
-        this.hasChanges = true;
-        this.updateSaveButtonState();
-    }
-
-    setupDateValidation() {
-        const departureDate = document.getElementById('departureDate');
-        const returnDate = document.getElementById('returnDate');
-
-        if (departureDate && returnDate) {
-            departureDate.addEventListener('change', () => {
-                if (returnDate.value && returnDate.value < departureDate.value) {
-                    returnDate.value = '';
-                }
-                returnDate.min = departureDate.value;
-            });
-        }
-    }
-
-    updateSaveButtonState() {
-        if (this.saveTourBtn) {
-            this.saveTourBtn.disabled = this.isLoading || !this.hasChanges;
-            this.saveTourBtn.classList.toggle('loading', this.isLoading);
-        }
+        preview.innerHTML = '';
+        this.newImages.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item new';
+                imageItem.dataset.fileName = file.name;
+                imageItem.innerHTML = `
+                    <img src="${e.target.result}" alt="${file.name}">
+                    <div class="image-actions">
+                        <button type="button" class="btn-icon btn-success" onclick="adminTourEdit.setMainNewImage('${file.name}')" title="Đặt làm ảnh chính">
+                            <ion-icon name="star-outline"></ion-icon>
+                        </button>
+                        <button type="button" class="btn-icon btn-danger" onclick="adminTourEdit.removeNewImage('${file.name}')" title="Xóa">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    </div>
+                    ${index === 0 ? '<div class="main-image-badge">Ảnh chính mới</div>' : ''}
+                    <div class="image-name">${file.name}</div>
+                `;
+                preview.appendChild(imageItem);
+            };
+            reader.readAsDataURL(file);
+        });
     }
 
     async saveTour() {
@@ -537,12 +656,13 @@ class AdminTourEdit {
             console.log('Updating tour basic information...');
             const updatedTour = await apiClient.updateTour(this.tourId, formData);
 
-            // Handle image deletions
+            // Handle image deletions first
             if (this.imagesToDelete.length > 0) {
                 console.log('Deleting images:', this.imagesToDelete);
                 for (const imageUrl of this.imagesToDelete) {
                     try {
                         await apiClient.deleteTourImage(this.tourId, imageUrl);
+                        console.log('Successfully deleted image:', imageUrl);
                     } catch (error) {
                         console.error('Error deleting image:', imageUrl, error);
                         // Continue with other deletions even if one fails
@@ -566,6 +686,21 @@ class AdminTourEdit {
                 } catch (error) {
                     console.error('Error uploading images:', error);
                     this.showToast('Cập nhật tour thành công, nhưng có lỗi khi tải ảnh lên: ' + error.message, 'warning');
+                }
+            }            // Update main image if needed
+            if (this.existingImages.length > 0) {
+                try {
+                    // Use the first image in existingImages as main image
+                    const mainImageUrl = this.existingImages[0];
+                    console.log('Setting main image to:', mainImageUrl);
+                    await apiClient.setMainImage(this.tourId, mainImageUrl);
+                    
+                    // Update tour object with new main image
+                    this.tour.mainImageUrl = mainImageUrl;
+                    
+                } catch (error) {
+                    console.error('Error setting main image:', error);
+                    this.showToast('Cập nhật thành công nhưng có lỗi khi đặt ảnh chính: ' + error.message, 'warning');
                 }
             }
 
@@ -683,6 +818,13 @@ class AdminTourEdit {
         };
     }
 
+    updateSaveButtonState() {
+        if (this.saveTourBtn) {
+            this.saveTourBtn.disabled = this.isLoading || !this.hasChanges;
+            this.saveTourBtn.classList.toggle('loading', this.isLoading);
+        }
+    }
+
     // Utility methods
     getStatusColor(status) {
         const colors = {
@@ -747,6 +889,21 @@ class AdminTourEdit {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }    // Debug method for images
+    debugTourImages() {
+        console.log('=== Tour Image Debug Info ===');
+        console.log('Tour ID:', this.tourId);
+        console.log('Tour name:', this.tour?.name);
+        console.log('Backend mainImageUrl:', this.tour?.mainImageUrl);
+        console.log('Backend imageUrls:', this.tour?.imageUrls);
+        console.log('Processed existingImages:', this.existingImages);
+        console.log('New images to upload:', this.newImages.map(img => img.name));
+        console.log('Images to delete:', this.imagesToDelete);
+        
+        // Check which image should be considered main
+        const expectedMainImage = this.tour?.mainImageUrl || this.existingImages[0];
+        console.log('Expected main image:', expectedMainImage);
+        console.log('===========================');
     }
 }
 
