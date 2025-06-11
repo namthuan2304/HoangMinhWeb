@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Tour Mới - Travel Booking System</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-common.css">
+    <link rel="stylesheet" href="../assets/css/admin-tour-form.css">
+    
+    <!-- Ion Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>Travel Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <ion-icon name="grid-outline"></ion-icon>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Tour Management -->
+                    <li class="nav-item has-submenu open">
+                        <a href="#" class="nav-link" data-submenu="tours">
+                            <ion-icon name="map-outline"></ion-icon>
+                            <span>Quản lý Tours</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="tours-submenu">
+                            <li><a href="tours.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Tours</span>
+                            </a></li>
+                            <li><a href="tour-create.html" class="submenu-link active">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Tour Mới</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Booking Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="bookings">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>Quản lý Đặt Tour</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="bookings-submenu">
+                            <li><a href="bookings.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Đặt Tour</span>
+                            </a></li>
+                            <li><a href="booking-pending.html" class="submenu-link">
+                                <ion-icon name="hourglass-outline"></ion-icon>
+                                <span>Đang chờ xử lý</span>
+                            </a></li>
+                            <li><a href="booking-confirmed.html" class="submenu-link">
+                                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                                <span>Đã xác nhận</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- User Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="users">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <span>Quản lý Người dùng</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="users-submenu">
+                            <li><a href="users.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Người dùng</span>
+                            </a></li>
+                            <li><a href="user-create.html" class="submenu-link">
+                                <ion-icon name="person-add-outline"></ion-icon>
+                                <span>Thêm Người dùng</span>
+                            </a></li>
+                            <li><a href="user-roles.html" class="submenu-link">
+                                <ion-icon name="shield-outline"></ion-icon>
+                                <span>Phân quyền</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Other sidebar items (same as in tours.html) -->
+                    <!-- ... -->
+                </ul>
+            </nav>
+
+            <!-- User Profile in Sidebar -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">Admin</span>
+                        <span class="user-role">Quản trị viên</span>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" id="profileBtn" title="Hồ sơ">
+                            <ion-icon name="person-outline"></ion-icon>
+                        </button>
+                        <button class="btn-icon" id="sidebarLogoutBtn" title="Đăng xuất">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <h1 class="page-title">Thêm Tour Mới</h1>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="topbar-actions">
+                        <button class="btn btn-outline" onclick="history.back()">
+                            <ion-icon name="arrow-back-outline"></ion-icon>
+                            <span class="btn-text">Quay lại</span>
+                        </button>
+                        <button class="btn btn-success" id="saveDraftBtn">
+                            <ion-icon name="save-outline"></ion-icon>
+                            <span class="btn-text">Lưu nháp</span>
+                        </button>
+                        <button class="btn btn-primary" id="createTourBtn">
+                            <ion-icon name="add-outline"></ion-icon>
+                            <span class="btn-text">Tạo tour</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tour Create Content -->
+            <div class="admin-content">
+                <div class="container">
+                    <form id="tourCreateForm" class="tour-form">
+                        <!-- Basic Information -->
+                        <div class="form-card">
+                            <div class="card-header">
+                                <h3>
+                                    <ion-icon name="document-text-outline"></ion-icon>
+                                    Thông tin cơ bản
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="tourName">Tên tour <span class="required">*</span></label>
+                                        <input type="text" id="tourName" name="name" class="form-input" 
+                                               placeholder="Nhập tên tour du lịch..." required>
+                                        <div class="form-error" id="nameError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tourType">Loại tour <span class="required">*</span></label>
+                                        <select id="tourType" name="tourType" class="form-select" required>
+                                            <option value="">Chọn loại tour</option>
+                                            <option value="DOMESTIC">Tour trong nước</option>
+                                            <option value="INTERNATIONAL">Tour quốc tế</option>
+                                            <option value="ADVENTURE">Tour phiêu lưu</option>
+                                            <option value="CULTURAL">Tour văn hóa</option>
+                                        </select>
+                                        <div class="form-error" id="tourTypeError"></div>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="description">Mô tả tour</label>
+                                        <textarea id="description" name="description" class="form-textarea" rows="4"
+                                                 placeholder="Nhập mô tả chi tiết về tour du lịch..."></textarea>
+                                        <div class="form-error" id="descriptionError"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location and Schedule -->
+                        <div class="form-card">
+                            <div class="card-header">
+                                <h3>
+                                    <ion-icon name="location-outline"></ion-icon>
+                                    Địa điểm và Lịch trình
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="destination">Điểm đến <span class="required">*</span></label>
+                                        <input type="text" id="destination" name="destination" class="form-input" 
+                                               placeholder="Ví dụ: Hà Nội, Đà Nẵng, Paris..." required>
+                                        <div class="form-error" id="destinationError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="departureLocation">Điểm khởi hành</label>
+                                        <input type="text" id="departureLocation" name="departureLocation" class="form-input" 
+                                               placeholder="Ví dụ: TP. Hồ Chí Minh, Hà Nội...">
+                                        <div class="form-error" id="departureLocationError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="departureDate">Ngày khởi hành <span class="required">*</span></label>
+                                        <input type="date" id="departureDate" name="departureDate" class="form-input" required>
+                                        <div class="form-error" id="departureDateError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="returnDate">Ngày kết thúc</label>
+                                        <input type="date" id="returnDate" name="returnDate" class="form-input">
+                                        <div class="form-error" id="returnDateError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="durationDays">Số ngày <span class="required">*</span></label>
+                                        <input type="number" id="durationDays" name="durationDays" class="form-input" 
+                                               min="1" placeholder="Số ngày của tour" required>
+                                        <div class="form-error" id="durationDaysError"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing and Capacity -->
+                        <div class="form-card">
+                            <div class="card-header">
+                                <h3>
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                    Giá cả và Sức chứa
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="price">Giá tour (VNĐ) <span class="required">*</span></label>
+                                        <input type="number" id="price" name="price" class="form-input" 
+                                               min="0" step="1000" placeholder="Giá tour tính bằng VNĐ" required>
+                                        <div class="form-error" id="priceError"></div>
+                                        <small class="form-hint">Nhập giá tour cho một người</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="maxParticipants">Số người tối đa <span class="required">*</span></label>
+                                        <input type="number" id="maxParticipants" name="maxParticipants" class="form-input" 
+                                               min="1" placeholder="Số người tối đa" required>
+                                        <div class="form-error" id="maxParticipantsError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="status">Trạng thái tour</label>
+                                        <select id="status" name="status" class="form-select">
+                                            <option value="DRAFT">Bản nháp</option>
+                                            <option value="ACTIVE" selected>Hoạt động</option>
+                                            <option value="INACTIVE">Ngừng hoạt động</option>
+                                        </select>
+                                        <div class="form-error" id="statusError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="isFeatured" name="isFeatured">
+                                            <span class="checkmark"></span>
+                                            Tour nổi bật
+                                        </label>
+                                        <small class="form-hint">Tour sẽ được hiển thị trong danh sách nổi bật</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Information -->
+                        <div class="form-card">
+                            <div class="card-header">
+                                <h3>
+                                    <ion-icon name="list-outline"></ion-icon>
+                                    Thông tin chi tiết
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-group">
+                                    <label for="itinerary">Lịch trình tour</label>
+                                    <textarea id="itinerary" name="itinerary" class="form-textarea" rows="8"
+                                             placeholder="Nhập lịch trình chi tiết theo từng ngày...&#10;&#10;Ví dụ:&#10;**Ngày 1:** Khởi hành từ TP.HCM, tham quan...&#10;**Ngày 2:** Tham quan các điểm...&#10;**Ngày 3:** Trở về..."></textarea>
+                                    <div class="form-error" id="itineraryError"></div>
+                                    <small class="form-hint">Hỗ trợ định dạng Markdown để tạo kiểu cho văn bản</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="includes">Dịch vụ bao gồm</label>
+                                    <textarea id="includes" name="includes" class="form-textarea" rows="4"
+                                             placeholder="Các dịch vụ được bao gồm trong giá tour...&#10;&#10;Ví dụ:&#10;- Vé máy bay khứ hồi&#10;- Khách sạn 3-4 sao&#10>- Các bữa ăn theo chương trình&#10;- Xe đưa đón, hướng dẫn viên"></textarea>
+                                    <div class="form-error" id="includesError"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="excludes">Dịch vụ không bao gồm</label>
+                                    <textarea id="excludes" name="excludes" class="form-textarea" rows="4"
+                                             placeholder="Các dịch vụ không được bao gồm trong giá tour...&#10;&#10;Ví dụ:&#10>- Chi phí cá nhân&#10>- Bảo hiểm du lịch&#10>- Tiền tip cho hướng dẫn viên&#10>- Các bữa ăn ngoài chương trình"></textarea>
+                                    <div class="form-error" id="excludesError"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="termsConditions">Điều khoản và điều kiện</label>
+                                    <textarea id="termsConditions" name="termsConditions" class="form-textarea" rows="5"
+                                             placeholder="Các điều khoản và điều kiện của tour...&#10;&#10;Ví dụ:&#10>- Hủy tour trước 7 ngày: hoàn 100%&#10>- Hủy tour trước 3 ngày: hoàn 50%&#10>- Hủy tour trong 3 ngày: không hoàn tiền"></textarea>
+                                    <div class="form-error" id="termsConditionsError"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Images Upload -->
+                        <div class="form-card">
+                            <div class="card-header">
+                                <h3>
+                                    <ion-icon name="image-outline"></ion-icon>
+                                    Hình ảnh tour
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="upload-section">
+                                    <div class="upload-area" id="imageUploadArea">
+                                        <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                                        <div class="upload-placeholder" onclick="document.getElementById('imageInput').click()">
+                                            <ion-icon name="cloud-upload-outline"></ion-icon>
+                                            <p>Nhấp để chọn hình ảnh hoặc kéo thả vào đây</p>
+                                            <small>Hỗ trợ: JPG, PNG, GIF (tối đa 5MB mỗi file)</small>
+                                        </div>
+                                    </div>
+                                    <div class="images-preview" id="imagesPreview"></div>
+                                    <div class="form-error" id="imagesError"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" onclick="history.back()">
+                                <ion-icon name="arrow-back-outline"></ion-icon>
+                                Hủy bỏ
+                            </button>
+                            <button type="button" class="btn btn-success" id="saveDraftBtn2">
+                                <ion-icon name="save-outline"></ion-icon>
+                                Lưu nháp
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="createTourBtn2">
+                                <ion-icon name="add-outline"></ion-icon>
+                                Tạo tour
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner large"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/admin-tour-create.js"></script>
+    <script src="../assets/js/admin-sidebar.js"></script>
+</body>
+</html>

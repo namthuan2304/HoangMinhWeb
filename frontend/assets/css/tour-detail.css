@@ -104,18 +104,21 @@
 }
 
 .image-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .gallery-thumb {
-  aspect-ratio: 1;
+  width: 80px;
+  height: 80px;
   border-radius: var(--radius-15);
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
   transition: var(--transition);
+  object-fit: cover;
 }
 
 .gallery-thumb:hover,

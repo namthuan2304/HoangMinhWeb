@@ -158,9 +158,7 @@ class TourDetailManager {
                         ${images.length > 1 ? `
                             <div class="image-gallery">
                                 ${images.map((img, index) => `
-                                    <img src="${apiClient.getFullImageUrl(img)}" alt="${tour.name}" 
-                                         class="gallery-thumb ${index === 0 ? 'active' : ''}"
-                                         onclick="tourDetailManager.changeMainImage('${apiClient.getFullImageUrl(img)}', this)">
+                                    <img src="${apiClient.getFullImageUrl(img)}" alt="${tour.name}" class="gallery-thumb ${index === 0 ? 'active' : ''}" onclick="tourDetailManager.changeMainImage('${apiClient.getFullImageUrl(img)}', this)">
                                 `).join('')}
                             </div>
                         ` : ''}
