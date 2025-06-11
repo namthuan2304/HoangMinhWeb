@@ -479,10 +479,14 @@ class APIClient {
             console.error('Tour images upload error:', error);
             throw error;
         }
+    }    // Enhanced Tours Methods
+    async getToursForAdmin(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/tours/admin?${queryString}` : '/tours/admin';
+        return await this.request(endpoint);
     }
 
-    // Enhanced Tours Methods
-    async getToursForAdmin(params = {}) {
+    async getAllTours(params = {}) {
         const queryString = new URLSearchParams(params).toString();
         const endpoint = queryString ? `/tours/admin?${queryString}` : '/tours/admin';
         return await this.request(endpoint);
