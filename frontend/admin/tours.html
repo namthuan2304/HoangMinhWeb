@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tours - Travel Booking System</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-common.css">
+    <link rel="stylesheet" href="../assets/css/admin-tours.css">
+    
+    <!-- Ion Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <!-- ...existing sidebar content... -->
+            <div class="sidebar-header">
+                <div class="logo">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>Travel Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <ion-icon name="grid-outline"></ion-icon>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Tour Management -->
+                    <li class="nav-item has-submenu open">
+                        <a href="#" class="nav-link" data-submenu="tours">
+                            <ion-icon name="map-outline"></ion-icon>
+                            <span>Quản lý Tours</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="tours-submenu">
+                            <li><a href="tours.html" class="submenu-link active">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Tours</span>
+                            </a></li>
+                            <li><a href="tour-create.html" class="submenu-link">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Tour Mới</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- ...existing nav items... -->
+                </ul>
+            </nav>
+
+            <!-- User Profile in Sidebar -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">Admin</span>
+                        <span class="user-role">Quản trị viên</span>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" id="profileBtn" title="Hồ sơ">
+                            <ion-icon name="person-outline"></ion-icon>
+                        </button>
+                        <button class="btn-icon" id="sidebarLogoutBtn" title="Đăng xuất">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <h1 class="page-title">Quản lý Tours</h1>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="topbar-actions">
+                        <button class="btn btn-outline" id="refreshBtn">
+                            <ion-icon name="refresh-outline"></ion-icon>
+                            <span class="btn-text">Làm mới</span>
+                        </button>
+                        <button class="btn btn-success" id="addTourBtn">
+                            <ion-icon name="add-outline"></ion-icon>
+                            <span class="btn-text">Thêm Tour</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tours Content -->
+            <div class="admin-content">
+                <div class="container">
+                    <!-- Filters Section -->
+                    <div class="filters-section">
+                        <div class="filters-card">
+                            <div class="filters-header">
+                                <h3>Bộ lọc tìm kiếm</h3>
+                                <button class="btn btn-outline btn-sm" id="clearFiltersBtn">
+                                    <ion-icon name="close-outline"></ion-icon>
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                            <div class="filters-grid">
+                                <div class="filter-group">
+                                    <label for="searchInput">Tìm kiếm:</label>
+                                    <input type="text" id="searchInput" class="form-input" 
+                                           placeholder="Tìm theo tên tour, điểm đến...">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="statusFilter">Trạng thái:</label>
+                                    <select id="statusFilter" class="form-select">
+                                        <option value="">Tất cả trạng thái</option>
+                                        <option value="ACTIVE">Hoạt động</option>
+                                        <option value="INACTIVE">Ngừng hoạt động</option>
+                                        <option value="DRAFT">Bản nháp</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="categoryFilter">Danh mục:</label>
+                                    <select id="categoryFilter" class="form-select">
+                                        <option value="">Tất cả danh mục</option>
+                                        <option value="DOMESTIC">Tour trong nước</option>
+                                        <option value="INTERNATIONAL">Tour quốc tế</option>
+                                        <option value="ADVENTURE">Tour phiêu lưu</option>
+                                        <option value="CULTURAL">Tour văn hóa</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="priceRangeFilter">Khoảng giá:</label>
+                                    <select id="priceRangeFilter" class="form-select">
+                                        <option value="">Tất cả mức giá</option>
+                                        <option value="0-1000000">Dưới 1 triệu</option>
+                                        <option value="1000000-5000000">1-5 triệu</option>
+                                        <option value="5000000-10000000">5-10 triệu</option>
+                                        <option value="10000000-999999999">Trên 10 triệu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tours Table Section -->
+                    <div class="table-section">
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h3>Danh sách Tours</h3>
+                                <div class="table-actions">
+                                    <select id="itemsPerPage" class="form-select">
+                                        <option value="10">10 / trang</option>
+                                        <option value="25">25 / trang</option>
+                                        <option value="50">50 / trang</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="toursTableWrapper" class="table-wrapper">
+                                <!-- Tours table will be rendered here -->
+                            </div>
+                            
+                            <div id="paginationWrapper" class="pagination-wrapper">
+                                <!-- Pagination will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner large"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/admin-tours.js"></script>
+    <script src="../assets/js/admin-sidebar.js"></script>
+</body>
+</html>

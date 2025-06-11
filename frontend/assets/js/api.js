@@ -399,14 +399,57 @@ class APIClient {
         const formData = new FormData();
         images.forEach(image => formData.append('files', image));
 
-        return await this.request(`/tours/${tourId}/upload-images`, {
+        const url = `${this.baseURL}/tours/${tourId}/upload-images`;
+        const config = {
             method: 'POST',
             body: formData,
             headers: {
                 'Authorization': `Bearer ${this.token}`,
-                // Don't set Content-Type for FormData
+                // Don't set Content-Type for FormData - browser will set it automatically
             },
+        };
+
+        try {
+            const response = await fetch(url, config);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Tour images upload error:', error);
+            throw error;
+        }
+    }
+
+    // Enhanced Tours Methods
+    async getToursForAdmin(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/tours/admin?${queryString}` : '/tours/admin';
+        return await this.request(endpoint);
+    }
+
+    async updateTourStatus(tourId, status) {
+        return await this.request(`/tours/${tourId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
         });
+    }
+
+    async getToursByCategory(category, params = {}) {
+        const queryString = new URLSearchParams({...params, category}).toString();
+        return await this.request(`/tours/category?${queryString}`, { auth: false });
+    }
+
+    async getToursByPriceRange(minPrice, maxPrice, params = {}) {
+        const queryString = new URLSearchParams({...params, minPrice, maxPrice}).toString();
+        return await this.request(`/tours/price-range?${queryString}`, { auth: false });
+    }
+
+    async duplicateTour(tourId) {
+        return await this.request(`/tours/${tourId}/duplicate`, {
+            method: 'POST',
+        });
+    }
+
+    async getTourStatistics(tourId) {
+        return await this.request(`/tours/${tourId}/statistics`);
     }
 
     // Statistics Methods
@@ -529,20 +572,83 @@ class APIClient {
 
     // Helper method to create full URL for images and static resources
     getFullImageUrl(relativePath) {
-        if (!relativePath) return null;
+        console.log('getFullImageUrl called with:', relativePath);
+        
+        if (!relativePath) {
+            console.log('No path provided, returning null');
+            return null;
+        }
         
         // If already a full URL, return as is
         if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+            console.log('Already full URL:', relativePath);
             return relativePath;
         }
         
         // If it's a relative path starting with /, add server URL
         if (relativePath.startsWith('/')) {
-            return `${this.serverURL}${relativePath}`;
+            const fullUrl = `${this.serverURL}${relativePath}`;
+            console.log('Path starts with /, result:', fullUrl);
+            return fullUrl;
         }
         
-        // If it's a relative path without /, treat as local asset
-        return relativePath;
+        // If it's a relative path starting with "uploads/", add server URL and leading slash
+        if (relativePath.startsWith('uploads/')) {
+            const fullUrl = `${this.serverURL}/${relativePath}`;
+            console.log('Path starts with uploads/, result:', fullUrl);
+            return fullUrl;
+        }
+        
+        // If it's a relative path without /, treat as filename and add uploads path
+        const fullUrl = `${this.serverURL}/uploads/${relativePath}`;
+        console.log('Default case, result:', fullUrl);
+        return fullUrl;
+    }
+
+    // Helper method to get first valid image from tour images array (enhanced)
+    getTourImageUrl(tour) {
+        if (!tour) return this.getDefaultTourImage();
+        
+        // Check mainImageUrl first (primary image from backend)
+        if (tour.mainImageUrl) {
+            return this.getFullImageUrl(tour.mainImageUrl);
+        }
+        
+        // Handle different image field names
+        let images = tour.images || tour.imageUrls || tour.tourImages || [];
+        
+        // If images is a string, convert to array
+        if (typeof images === 'string') {
+            try {
+                images = JSON.parse(images);
+            } catch (e) {
+                images = [images];
+            }
+        }
+        
+        // If images is not an array, make it one
+        if (!Array.isArray(images)) {
+            images = images ? [images] : [];
+        }
+        
+        // Get first valid image
+        if (images.length > 0) {
+            const firstImage = images[0];
+            return this.getFullImageUrl(firstImage);
+        }
+        
+        // Check single image field
+        if (tour.image || tour.imageUrl) {
+            return this.getFullImageUrl(tour.image || tour.imageUrl);
+        }
+        
+        // Return default image
+        return this.getDefaultTourImage();
+    }
+
+    // Helper method to get default tour image
+    getDefaultTourImage() {
+        return '../assets/images/default-tour.jpg';
     }
 }
 

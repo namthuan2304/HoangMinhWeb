@@ -86,6 +86,46 @@ public class TourController {
     }
 
     /**
+     * Lấy danh sách tất cả tour cho admin (Admin only)
+     * IMPORTANT: This endpoint must come BEFORE /{id} to avoid routing conflicts
+     */
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Lấy danh sách tour cho admin với thông tin đầy đủ")
+    public ResponseEntity<Page<TourResponse>> getToursForAdmin(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) TourStatus status,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        
+        Sort sort = sortDir.equalsIgnoreCase("desc") 
+            ? Sort.by(sortBy).descending() 
+            : Sort.by(sortBy).ascending();
+        
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        // Use search method with admin access to get all tours including inactive ones
+        Page<TourResponse> tours = tourService.searchTours(
+            keyword, 
+            null, // tourType - allow all types for admin
+            status, 
+            minPrice, 
+            maxPrice, 
+            null, // startDate
+            null, // endDate
+            pageable
+        );
+        
+        return ResponseEntity.ok(tours);
+    }
+
+    /**
      * Lấy thông tin chi tiết tour (Public)
      */
     @GetMapping("/{id}")
