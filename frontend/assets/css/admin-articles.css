@@ -232,6 +232,20 @@
     border-radius: 6px;
     object-fit: cover;
     background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+}
+
+.article-thumbnail[src*="placeholder"] {
+    object-fit: contain;
+    padding: 2px;
+    background: #f8f9fa;
+}
+
+/* Image error handling */
+.article-thumbnail {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="40" viewBox="0 0 60 40"><rect width="60" height="40" fill="%23f3f4f6"/><text x="30" y="20" text-anchor="middle" dominant-baseline="middle" fill="%236b7280" font-size="8">IMG</text></svg>');
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .article-info {

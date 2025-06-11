@@ -225,6 +225,8 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
 }
 
 .radio-option:hover {
@@ -233,7 +235,12 @@
 }
 
 .radio-option input[type="radio"] {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    pointer-events: auto;
 }
 
 .radio-mark {
@@ -247,6 +254,15 @@
 
 .radio-option input[type="radio"]:checked + .radio-mark {
     border-color: var(--color-primary);
+}
+
+.radio-option input[type="radio"]:checked ~ .radio-content .radio-title {
+    color: var(--color-primary);
+}
+
+.radio-option.selected {
+    border-color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.05);
 }
 
 .radio-option input[type="radio"]:checked + .radio-mark::after {
@@ -404,6 +420,7 @@
     position: relative;
 }
 
+/* Tours Dropdown */
 .tours-dropdown {
     position: absolute;
     top: 100%;
@@ -417,6 +434,7 @@
     overflow-y: auto;
     z-index: 10;
     display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tours-dropdown.show {
@@ -442,6 +460,7 @@
     font-weight: 500;
     color: var(--color-text);
     margin-bottom: 2px;
+    font-size: 13px;
 }
 
 .tour-price {
@@ -449,6 +468,7 @@
     color: var(--color-primary);
 }
 
+/* Selected Tours */
 .selected-tours {
     margin-top: 12px;
 }
@@ -461,6 +481,7 @@
     background: var(--color-bg-light);
     border-radius: 6px;
     margin-bottom: 8px;
+    border: 1px solid var(--color-border);
 }
 
 .selected-tour:last-child {
@@ -470,6 +491,8 @@
 .selected-tour-name {
     font-size: 13px;
     color: var(--color-text);
+    flex: 1;
+    margin-right: 8px;
 }
 
 .remove-tour {
@@ -484,6 +507,11 @@
     justify-content: center;
     cursor: pointer;
     font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+.remove-tour:hover {
+    background: #dc2626;
 }
 
 /* Stats List */

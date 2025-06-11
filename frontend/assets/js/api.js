@@ -37,9 +37,7 @@ class APIClient {
         }
 
         return response.json();
-    }
-
-    // Generic request method
+    }    // Generic request method
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {
@@ -50,14 +48,23 @@ class APIClient {
             },
         };
 
+        console.log('API Request:', {
+            url,
+            method: config.method || 'GET',
+            headers: config.headers,
+            body: config.body
+        });
+
         try {
             const response = await fetch(url, config);
-            return await this.handleResponse(response);
+            const result = await this.handleResponse(response);
+            console.log('API Response:', result);
+            return result;
         } catch (error) {
             console.error('API Request Error:', error);
             throw error;
         }
-    }    // Authentication Methods
+    }// Authentication Methods
     async login(credentials) {
         try {
             const response = await this.request('/auth/signin', {
@@ -261,8 +268,18 @@ class APIClient {
         return await this.request(endpoint, { auth: false });
     }
 
+    async getAdminArticles(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/articles/admin?${queryString}` : '/articles/admin';
+        return await this.request(endpoint);
+    }
+
     async getArticle(slug) {
         return await this.request(`/articles/${slug}`, { auth: false });
+    }
+
+    async getArticleById(id) {
+        return await this.request(`/articles/admin/${id}`);
     }
 
     async createArticle(articleData) {
@@ -283,12 +300,39 @@ class APIClient {
         return await this.request(`/articles/${id}`, {
             method: 'DELETE',
         });
-    }
-
-    async publishArticle(id) {
+    }    async publishArticle(id) {
         return await this.request(`/articles/${id}/publish`, {
             method: 'POST',
         });
+    }
+
+    async unpublishArticle(id) {
+        return await this.request(`/articles/${id}/unpublish`, {
+            method: 'POST',
+        });
+    }
+
+    async uploadFeaturedImage(id, file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const url = `${this.baseURL}/articles/${id}/upload-featured-image`;
+        const config = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+                // Don't set Content-Type for FormData - browser will set it automatically
+            },
+        };
+
+        try {
+            const response = await fetch(url, config);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Featured image upload error:', error);
+            throw error;
+        }
     }
 
     // Additional Articles Methods
