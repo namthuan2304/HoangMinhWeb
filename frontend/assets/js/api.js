@@ -18,25 +18,24 @@ class APIClient {
         }
 
         return headers;
-    }
-
-    // Helper method để xử lý response
+    }    // Helper method để xử lý response
     async handleResponse(response) {
         if (response.status === 401) {
             // Token hết hạn, thử refresh
             const refreshed = await this.refreshAuthToken();
             if (!refreshed) {
                 this.logout();
-                throw new Error('Phiên đăng nhập đã hết hạn');
+                return { success: false, message: 'Phiên đăng nhập đã hết hạn' };
             }
         }
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({ message: 'Có lỗi xảy ra' }));
-            throw new Error(error.message || 'Request failed');
+            return { success: false, message: error.message || 'Request failed' };
         }
 
-        return response.json();
+        const data = await response.json();
+        return { success: true, data, message: 'Success' };
     }
 
     // Generic request method
@@ -48,16 +47,46 @@ class APIClient {
                 ...this.getHeaders(options.auth !== false),
                 ...options.headers,
             },
-        };
-
-        try {
+        };        try {
             const response = await fetch(url, config);
             return await this.handleResponse(response);
         } catch (error) {
             console.error('API Request Error:', error);
-            throw error;
+            return { success: false, message: error.message || 'Network error' };
         }
-    }    // Authentication Methods
+    }    // Generic HTTP Methods
+    async get(endpoint, options = {}) {
+        const params = options.params ? `?${new URLSearchParams(options.params).toString()}` : '';
+        return await this.request(`${endpoint}${params}`, {
+            method: 'GET',
+            ...options
+        });
+    }
+
+    async post(endpoint, data = null, options = {}) {
+        return await this.request(endpoint, {
+            method: 'POST',
+            body: data ? JSON.stringify(data) : undefined,
+            ...options
+        });
+    }
+
+    async put(endpoint, data = null, options = {}) {
+        return await this.request(endpoint, {
+            method: 'PUT',
+            body: data ? JSON.stringify(data) : undefined,
+            ...options
+        });
+    }
+
+    async delete(endpoint, options = {}) {
+        return await this.request(endpoint, {
+            method: 'DELETE',
+            ...options
+        });
+    }
+
+    // Authentication Methods
     async login(credentials) {
         try {
             const response = await this.request('/auth/signin', {
@@ -283,11 +312,45 @@ class APIClient {
         return await this.request(`/articles/${id}`, {
             method: 'DELETE',
         });
-    }
-
-    async publishArticle(id) {
+    }    async publishArticle(id) {
         return await this.request(`/articles/${id}/publish`, {
             method: 'POST',
+        });
+    }
+
+    async unpublishArticle(id) {
+        return await this.request(`/articles/${id}/unpublish`, {
+            method: 'POST',
+        });
+    }
+
+    // Admin Articles Methods
+    async getAllArticles(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/articles/admin?${queryString}` : '/articles/admin';
+        return await this.request(endpoint);
+    }
+
+    async getArticleById(id) {
+        return await this.request(`/articles/admin/${id}`);
+    }
+
+    async getMyArticles(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/articles/my-articles?${queryString}` : '/articles/my-articles';
+        return await this.request(endpoint);
+    }
+
+    async uploadArticleImage(id, file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        return await this.request(`/articles/${id}/upload-featured-image`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+            },
         });
     }
 

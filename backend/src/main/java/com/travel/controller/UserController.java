@@ -74,13 +74,19 @@ public class UserController {
 
     /**
      * Cập nhật thông tin user (Admin only)
-     */
-    @PutMapping("/{id}")
+     */    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cập nhật thông tin người dùng")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateProfileRequest request) {
+        
+        // Debug log
+        System.out.println("Updating user " + id + " with data: " + 
+            "fullName=" + request.getFullName() + 
+            ", role=" + request.getRole() + 
+            ", isActive=" + request.getIsActive());
+            
         UserResponse updatedUser = userService.updateUser(id, request);
         return ResponseEntity.ok(updatedUser);
     }

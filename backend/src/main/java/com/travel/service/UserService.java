@@ -75,9 +75,7 @@ public class UserService {
         User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với username: " + username));
         return modelMapper.map(user, UserResponse.class);
-    }
-
-    /**
+    }    /**
      * Cập nhật thông tin user (Admin)
      */    public UserResponse updateUser(Long id, UpdateProfileRequest request) {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
@@ -94,9 +92,14 @@ public class UserService {
         }
         if (request.getBirthDate() != null) {
             user.setBirthDate(request.getBirthDate());
-        }
-        if (request.getGender() != null) {
+        }        if (request.getGender() != null) {
             user.setGender(request.getGender());
+        }
+        if (request.getIsActive() != null) {
+            user.setIsActive(request.getIsActive());
+        }        if (request.getRole() != null) {
+            System.out.println("Updating user role from " + user.getRole() + " to " + request.getRole());
+            user.setRole(request.getRole());
         }
 
         User savedUser = userRepository.save(user);

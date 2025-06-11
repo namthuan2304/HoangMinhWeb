@@ -1,5 +1,6 @@
 package com.travel.dto.request;
 
+import com.travel.enums.UserRole;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -19,13 +20,15 @@ public class UpdateProfileRequest {
 
     @Size(max = 255, message = "Địa chỉ không được vượt quá 255 ký tự")
     private String address;    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
-    private LocalDate birthDate;
-
-    @Size(max = 10, message = "Giới tính không được vượt quá 10 ký tự")
+    private LocalDate birthDate;    @Size(max = 10, message = "Giới tính không được vượt quá 10 ký tự")
     private String gender;
 
+    private Boolean isActive;
+
+    private UserRole role;
+
     // Constructors
-    public UpdateProfileRequest() {}    public UpdateProfileRequest(String fullName, String phone, String address, LocalDate birthDate, String gender) {
+    public UpdateProfileRequest() {}public UpdateProfileRequest(String fullName, String phone, String address, LocalDate birthDate, String gender) {
         this.fullName = fullName;
         this.phone = phone;
         this.address = address;
@@ -62,13 +65,35 @@ public class UpdateProfileRequest {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
-    }
-
-    public String getGender() {
+    }    public String getGender() {
         return gender;
     }
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    // Helper method để set role từ string
+    public void setRole(String roleString) {
+        if (roleString != null) {
+            try {
+                this.role = UserRole.valueOf(roleString.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Ignore invalid role values
+                this.role = null;
+            }
+        }
     }
 }

@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Đặt Tour - Travel Booking System</title>
-      <!-- CSS Files -->
+    <title>Quản lý Bài viết - Travel Booking System</title>
+    
+    <!-- CSS Files -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/admin-common.css">
-    <link rel="stylesheet" href="../assets/css/admin-bookings.css">
+    <link rel="stylesheet" href="../assets/css/admin-articles.css">
     
     <!-- Ion Icons -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
@@ -59,12 +60,13 @@
 
                     <!-- Booking Management -->
                     <li class="nav-item has-submenu">
-                        <a href="#" class="nav-link active" data-submenu="bookings">
+                        <a href="#" class="nav-link" data-submenu="bookings">
                             <ion-icon name="calendar-outline"></ion-icon>
                             <span>Quản lý Đặt Tour</span>
                             <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
-                        </a>                        <ul class="submenu open" id="bookings-submenu">
-                            <li><a href="bookings.html" class="submenu-link active">
+                        </a>
+                        <ul class="submenu" id="bookings-submenu">
+                            <li><a href="bookings.html" class="submenu-link">
                                 <ion-icon name="list-outline"></ion-icon>
                                 <span>Danh sách Đặt Tour</span>
                             </a></li>
@@ -87,14 +89,14 @@
                     </li>
 
                     <!-- Article Management -->
-                    <li class="nav-item has-submenu">
-                        <a href="#" class="nav-link" data-submenu="articles">
+                    <li class="nav-item has-submenu active">
+                        <a href="#" class="nav-link active" data-submenu="articles">
                             <ion-icon name="document-text-outline"></ion-icon>
                             <span>Quản lý Bài viết</span>
                             <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
                         </a>
-                        <ul class="submenu" id="articles-submenu">
-                            <li><a href="articles.html" class="submenu-link">
+                        <ul class="submenu active" id="articles-submenu">
+                            <li><a href="articles.html" class="submenu-link active">
                                 <ion-icon name="list-outline"></ion-icon>
                                 <span>Danh sách Bài viết</span>
                             </a></li>
@@ -195,7 +197,7 @@
                     <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
                         <ion-icon name="menu-outline"></ion-icon>
                     </button>
-                    <h1 class="page-title">Quản lý Đặt Tour</h1>
+                    <h1 class="page-title">Quản lý Bài viết</h1>
                 </div>
                 
                 <div class="topbar-right">
@@ -204,120 +206,146 @@
                             <ion-icon name="refresh-outline"></ion-icon>
                             <span class="btn-text">Làm mới</span>
                         </button>
-                        <button class="btn btn-primary" id="exportBtn">
-                            <ion-icon name="download-outline"></ion-icon>
-                            <span class="btn-text">Xuất báo cáo</span>
+                        <button class="btn btn-primary" id="createArticleBtn">
+                            <ion-icon name="add-outline"></ion-icon>
+                            <span class="btn-text">Thêm Bài viết</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Bookings Content -->
+            <!-- Articles Content -->
             <div class="admin-content">
                 <div class="container">
-                    <!-- Filters -->
+                    <!-- Filters Section -->
                     <div class="filters-section">
-                        <div class="filters-card">
-                            <div class="filters-header">
-                                <h3>Bộ lọc</h3>
-                                <button class="btn btn-sm btn-outline" id="clearFiltersBtn">
-                                    <ion-icon name="refresh-outline"></ion-icon>
-                                    Xóa bộ lọc
-                                </button>
-                            </div>
-                            <div class="filters-grid">
-                                <div class="filter-group">
-                                    <label for="statusFilter">Trạng thái:</label>
-                                    <select id="statusFilter" class="form-select">
-                                        <option value="">Tất cả</option>
-                                        <option value="PENDING">Chờ xác nhận</option>
-                                        <option value="CONFIRMED">Đã xác nhận</option>
-                                        <option value="COMPLETED">Hoàn thành</option>
-                                        <option value="CANCELLED">Đã hủy</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="searchInput">Tìm kiếm:</label>
-                                    <input type="text" id="searchInput" class="form-input" placeholder="Tìm theo tên, email, mã đơn...">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="dateFromFilter">Từ ngày:</label>
-                                    <input type="date" id="dateFromFilter" class="form-input">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="dateToFilter">Đến ngày:</label>
-                                    <input type="date" id="dateToFilter" class="form-input">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Statistics Cards -->
-                    <div class="stats-section">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon pending">
-                                    <ion-icon name="hourglass-outline"></ion-icon>
-                                </div>
-                                <div class="stat-content">
-                                    <h3 class="stat-value" id="pendingCount">-</h3>
-                                    <p class="stat-label">Chờ xác nhận</p>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon confirmed">
-                                    <ion-icon name="checkmark-circle-outline"></ion-icon>
-                                </div>
-                                <div class="stat-content">
-                                    <h3 class="stat-value" id="confirmedCount">-</h3>
-                                    <p class="stat-label">Đã xác nhận</p>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon completed">
-                                    <ion-icon name="trophy-outline"></ion-icon>
-                                </div>
-                                <div class="stat-content">
-                                    <h3 class="stat-value" id="completedCount">-</h3>
-                                    <p class="stat-label">Hoàn thành</p>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon cancelled">
-                                    <ion-icon name="close-circle-outline"></ion-icon>
-                                </div>
-                                <div class="stat-content">
-                                    <h3 class="stat-value" id="cancelledCount">-</h3>
-                                    <p class="stat-label">Đã hủy</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bookings Table -->
-                    <div class="table-section">
-                        <div class="table-card">
-                            <div class="table-header">
-                                <h3>Danh sách đặt tour</h3>
-                                <div class="table-actions">
-                                    <select id="itemsPerPage" class="form-select">
-                                        <option value="10">10 / trang</option>
-                                        <option value="25">25 / trang</option>
-                                        <option value="50">50 / trang</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="table-wrapper" id="bookingsTableWrapper">
-                                <!-- Content will be loaded here -->
-                                <div class="loading-spinner">
-                                    <div class="spinner"></div>
-                                    <p>Đang tải danh sách đặt tour...</p>
+                        <div class="filters-row">
+                            <div class="filter-group">
+                                <label class="filter-label">Tìm kiếm:</label>
+                                <div class="search-input-wrapper">
+                                    <input type="text" id="searchInput" class="form-input" placeholder="Nhập từ khóa tìm kiếm...">
+                                    <ion-icon name="search-outline" class="search-icon"></ion-icon>
                                 </div>
                             </div>
                             
-                            <!-- Pagination -->
-                            <div class="pagination-wrapper" id="paginationWrapper">
-                                <!-- Pagination will be loaded here -->
+                            <div class="filter-group">
+                                <label class="filter-label">Trạng thái:</label>
+                                <select id="statusFilter" class="form-select">
+                                    <option value="">Tất cả</option>
+                                    <option value="true">Đã xuất bản</option>
+                                    <option value="false">Bản nháp</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="filter-label">Sắp xếp:</label>
+                                <select id="sortSelect" class="form-select">
+                                    <option value="createdAt,desc">Mới nhất</option>
+                                    <option value="createdAt,asc">Cũ nhất</option>
+                                    <option value="title,asc">Tiêu đề A-Z</option>
+                                    <option value="title,desc">Tiêu đề Z-A</option>
+                                    <option value="viewCount,desc">Lượt xem cao</option>
+                                    <option value="viewCount,asc">Lượt xem thấp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon published">
+                                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-value" id="publishedCount">-</h3>
+                                <p class="stat-label">Đã xuất bản</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon draft">
+                                <ion-icon name="document-outline"></ion-icon>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-value" id="draftCount">-</h3>
+                                <p class="stat-label">Bản nháp</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon total">
+                                <ion-icon name="library-outline"></ion-icon>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-value" id="totalCount">-</h3>
+                                <p class="stat-label">Tổng bài viết</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon views">
+                                <ion-icon name="eye-outline"></ion-icon>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-value" id="totalViews">-</h3>
+                                <p class="stat-label">Tổng lượt xem</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Articles Table -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>
+                                <ion-icon name="list-outline"></ion-icon>
+                                Danh sách Bài viết
+                            </h3>
+                            <div class="table-actions">
+                                <button class="btn btn-outline btn-sm" id="bulkDeleteBtn" style="display: none;">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                    <span>Xóa đã chọn</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-wrapper">
+                            <table class="data-table" id="articlesTable">
+                                <thead>
+                                    <tr>
+                                        <th class="checkbox-col">
+                                            <label class="checkbox-wrapper">
+                                                <input type="checkbox" id="selectAllCheckbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </th>
+                                        <th>Bài viết</th>
+                                        <th>Tác giả</th>
+                                        <th>Trạng thái</th>
+                                        <th>Lượt xem</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Ngày cập nhật</th>
+                                        <th class="actions-col">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="articlesTableBody">
+                                    <tr class="loading-row">
+                                        <td colspan="8" class="loading-cell">
+                                            <div class="loading-spinner"></div>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-wrapper" id="paginationWrapper">
+                            <div class="pagination-info">
+                                <span id="paginationInfo">Hiển thị 0 - 0 của 0 bài viết</span>
+                            </div>
+                            <div class="pagination" id="pagination">
+                                <!-- Pagination buttons will be generated here -->
                             </div>
                         </div>
                     </div>
@@ -332,12 +360,74 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner large"></div>
-        <p>Đang xử lý...</p>
+        <p>Đang tải dữ liệu...</p>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Xác nhận xóa</h3>
+                <button class="modal-close" id="deleteModalClose">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa bài viết này không?</p>
+                <p class="text-warning">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelDeleteBtn">Hủy</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Confirmation Modal -->
+    <div class="modal-overlay" id="bulkDeleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Xác nhận xóa nhiều bài viết</h3>
+                <button class="modal-close" id="bulkDeleteModalClose">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa <span id="selectedCount">0</span> bài viết đã chọn không?</p>
+                <p class="text-warning">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelBulkDeleteBtn">Hủy</button>
+                <button class="btn btn-danger" id="confirmBulkDeleteBtn">Xóa tất cả</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div class="modal-overlay" id="articleDetailModal">
+        <div class="modal large">
+            <div class="modal-header">
+                <h3>Chi tiết bài viết</h3>
+                <button class="modal-close" id="articleDetailModalClose">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body" id="articleDetailContent">
+                <!-- Article detail content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="closeDetailBtn">Đóng</button>
+                <button class="btn btn-primary" id="editFromDetailBtn">Chỉnh sửa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
-    <script src="../assets/js/admin-bookings.js"></script>
+    <script src="../assets/js/admin-articles.js"></script>
     <script src="../assets/js/admin-sidebar.js"></script>
 </body>
 </html>

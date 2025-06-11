@@ -820,3 +820,100 @@
         font-size: 1.5rem;
     }
 }
+
+/* Loading States */
+.loading-cell {
+    text-align: center;
+    padding: 4rem !important;
+    color: #6c757d;
+    vertical-align: middle;
+}
+
+.loading-cell .spinner {
+    margin: 0 auto 1.5rem auto;
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-cell .loading-text {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    animation: textFade 2s ease-in-out infinite;
+}
+
+/* Table Loading Skeleton */
+.table-skeleton {
+    padding: 1rem;
+}
+
+.skeleton-row {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f3f4;
+    align-items: center;
+}
+
+.skeleton-row .skeleton {
+    height: 20px;
+    border-radius: 4px;
+}
+
+.skeleton-row .skeleton:nth-child(1) { flex: 0 0 100px; }
+.skeleton-row .skeleton:nth-child(2) { flex: 0 0 150px; }
+.skeleton-row .skeleton:nth-child(3) { flex: 1; }
+.skeleton-row .skeleton:nth-child(4) { flex: 0 0 80px; }
+.skeleton-row .skeleton:nth-child(5) { flex: 0 0 120px; }
+
+/* Stats Loading */
+.stat-card.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card.loading .stat-value,
+.stat-card.loading .stat-label {
+    color: transparent;
+    background: #f0f0f0;
+    border-radius: 4px;
+    animation: skeleton 1.5s ease-in-out infinite;
+}
+
+.stat-card.loading .stat-value {
+    height: 2rem;
+    width: 60%;
+}
+
+.stat-card.loading .stat-label {
+    height: 1rem;
+    width: 80%;
+    margin-top: 0.5rem;
+}
+
+/* Button Loading State Enhanced */
+.btn.loading {
+    position: relative;
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
