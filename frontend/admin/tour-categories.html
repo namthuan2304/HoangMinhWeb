@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Danh mục Tour - Travel Booking System</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-common.css">
+    <link rel="stylesheet" href="../assets/css/admin-tour-categories.css">
+    
+    <!-- Ion Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>Travel Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <ion-icon name="grid-outline"></ion-icon>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Tour Management -->
+                    <li class="nav-item has-submenu open">
+                        <a href="#" class="nav-link" data-submenu="tours">
+                            <ion-icon name="map-outline"></ion-icon>
+                            <span>Quản lý Tours</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="tours-submenu">
+                            <li><a href="tours.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Tours</span>
+                            </a></li>
+                            <li><a href="tour-create.html" class="submenu-link">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Tour Mới</span>
+                            </a></li>
+                            <li><a href="tour-categories.html" class="submenu-link active">
+                                <ion-icon name="pricetags-outline"></ion-icon>
+                                <span>Danh mục Tours</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Booking Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="bookings">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>Quản lý Đặt Tour</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="bookings-submenu">
+                            <li><a href="bookings.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Đặt Tour</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- User Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="users">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <span>Quản lý Người dùng</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="users-submenu">
+                            <li><a href="users.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Người dùng</span>
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- User Profile in Sidebar -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">Admin</span>
+                        <span class="user-role">Quản trị viên</span>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" id="profileBtn" title="Hồ sơ">
+                            <ion-icon name="person-outline"></ion-icon>
+                        </button>
+                        <button class="btn-icon" id="sidebarLogoutBtn" title="Đăng xuất">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <h1 class="page-title">Quản lý Danh mục Tours</h1>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="topbar-actions">
+                        <button class="btn btn-primary" id="addCategoryBtn">
+                            <ion-icon name="add-outline"></ion-icon>
+                            <span class="btn-text">Thêm danh mục</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tour Categories Content -->
+            <div class="admin-content">
+                <div class="container">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <ion-icon name="pricetags-outline"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalCategories">0</h3>
+                                <p>Tổng danh mục</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <ion-icon name="eye-outline"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="activeCategories">0</h3>
+                                <p>Danh mục hoạt động</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <ion-icon name="map-outline"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="toursInCategories">0</h3>
+                                <p>Tours có danh mục</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <ion-icon name="trending-up-outline"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="popularCategory">-</h3>
+                                <p>Danh mục phổ biến</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Management -->
+                    <div class="categories-section">
+                        <div class="section-header">
+                            <h2>Danh sách Danh mục</h2>
+                            <div class="section-actions">
+                                <div class="search-box">
+                                    <ion-icon name="search-outline"></ion-icon>
+                                    <input type="text" id="searchInput" placeholder="Tìm kiếm danh mục...">
+                                </div>
+                                <select id="statusFilter" class="filter-select">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="ACTIVE">Hoạt động</option>
+                                    <option value="INACTIVE">Ngừng hoạt động</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Categories Grid -->
+                        <div class="categories-grid" id="categoriesGrid">
+                            <!-- Categories will be rendered here -->
+                        </div>
+
+                        <!-- Empty State -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <ion-icon name="pricetags-outline"></ion-icon>
+                            <h3>Chưa có danh mục nào</h3>
+                            <p>Bấm "Thêm danh mục" để tạo danh mục đầu tiên</p>
+                            <button class="btn btn-primary" onclick="adminTourCategories.showCreateModal()">
+                                <ion-icon name="add-outline"></ion-icon>
+                                Thêm danh mục
+                            </button>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-wrapper" id="paginationWrapper">
+                            <div class="pagination-info">
+                                <span id="paginationInfo">Hiển thị 0 - 0 của 0 danh mục</span>
+                            </div>
+                            <div class="pagination" id="pagination">
+                                <!-- Pagination buttons will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner large"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Create/Edit Category Modal -->
+    <div class="modal-overlay" id="categoryModalOverlay">
+        <div class="modal category-modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm Danh mục Mới</h3>
+                <button class="modal-close" id="modalCloseBtn">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label for="categoryName">Tên danh mục <span class="required">*</span></label>
+                        <input type="text" id="categoryName" name="name" class="form-input" 
+                               placeholder="Nhập tên danh mục..." required>
+                        <div class="form-error" id="nameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categorySlug">Slug (URL)</label>
+                        <input type="text" id="categorySlug" name="slug" class="form-input" 
+                               placeholder="Slug sẽ được tạo tự động..." readonly>
+                        <div class="form-hint">Slug được tạo tự động từ tên danh mục</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryDescription">Mô tả</label>
+                        <textarea id="categoryDescription" name="description" class="form-textarea" rows="3"
+                                 placeholder="Nhập mô tả cho danh mục..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryIcon">Icon</label>
+                        <div class="icon-selector" id="iconSelector">
+                            <div class="selected-icon" id="selectedIcon">
+                                <ion-icon name="pricetag-outline"></ion-icon>
+                            </div>
+                            <input type="hidden" id="categoryIcon" name="icon" value="pricetag-outline">
+                            <div class="icon-dropdown" id="iconDropdown">
+                                <div class="icon-option" data-icon="pricetag-outline">
+                                    <ion-icon name="pricetag-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="airplane-outline">
+                                    <ion-icon name="airplane-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="boat-outline">
+                                    <ion-icon name="boat-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="car-outline">
+                                    <ion-icon name="car-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="camera-outline">
+                                    <ion-icon name="camera-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="restaurant-outline">
+                                    <ion-icon name="restaurant-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="business-outline">
+                                    <ion-icon name="business-outline"></ion-icon>
+                                </div>
+                                <div class="icon-option" data-icon="library-outline">
+                                    <ion-icon name="library-outline"></ion-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryColor">Màu sắc</label>
+                        <div class="color-selector">
+                            <input type="color" id="categoryColor" name="color" value="#007bff">
+                            <div class="color-preview" id="colorPreview"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryStatus">Trạng thái</label>
+                        <select id="categoryStatus" name="status" class="form-select">
+                            <option value="ACTIVE">Hoạt động</option>
+                            <option value="INACTIVE">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="displayOrder">Thứ tự hiển thị</label>
+                        <input type="number" id="displayOrder" name="displayOrder" class="form-input" 
+                               value="0" min="0" placeholder="0">
+                        <div class="form-hint">Số thứ tự để sắp xếp danh mục (0 = cao nhất)</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelBtn">Hủy bỏ</button>
+                <button type="submit" class="btn btn-primary" id="saveBtn" form="categoryForm">
+                    <span class="btn-text">Lưu danh mục</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModalOverlay">
+        <div class="modal delete-modal">
+            <div class="modal-header">
+                <h3>Xác nhận xóa</h3>
+                <button class="modal-close" id="deleteModalCloseBtn">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-confirmation">
+                    <ion-icon name="warning-outline"></ion-icon>
+                    <p>Bạn có chắc chắn muốn xóa danh mục <strong id="deleteItemName"></strong>?</p>
+                    <p class="warning-text">Hành động này không thể hoàn tác!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Hủy bỏ</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    Xóa danh mục
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/admin-tour-categories.js"></script>
+    <script src="../assets/js/admin-sidebar.js"></script>
+</body>
+</html>

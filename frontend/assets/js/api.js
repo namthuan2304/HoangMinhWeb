@@ -661,6 +661,54 @@ class APIClient {
         return await this.request(`/tours/${tourId}/set-main-image?imageUrl=${encodeURIComponent(imageUrl)}`, {
             method: 'POST',
         });
+   }
+
+    // Categories Management APIs
+    async getCategories(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/categories?${queryString}` : '/categories';
+        return await this.request(endpoint, { auth: false });
+    }
+
+    async getCategoriesForAdmin(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/categories/admin?${queryString}` : '/categories/admin';
+        return await this.request(endpoint);
+    }
+
+    async getCategoryById(id) {
+        return await this.request(`/categories/${id}`, { auth: false });
+    }
+
+    async createCategory(categoryData) {
+        return await this.request('/categories', {
+            method: 'POST',
+            body: JSON.stringify(categoryData),
+        });
+    }
+
+    async updateCategory(id, categoryData) {
+        return await this.request(`/categories/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(categoryData),
+        });
+    }
+
+    async deleteCategory(id) {
+        return await this.request(`/categories/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    async getCategoryStatistics() {
+        return await this.request('/categories/statistics');
+    }
+
+    async updateCategoryStatus(categoryId, status) {
+        return await this.request(`/categories/${categoryId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
+        });
     }
 }
 
