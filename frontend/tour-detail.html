@@ -237,19 +237,63 @@
 
     <!-- Additional script to ensure proper initialization -->
     <script>
-        // Ensure proper method binding after all scripts load
-        window.addEventListener('load', () => {
-            // Double-check that tourDetailManager is available
-            if (window.tourDetailManager) {
-                console.log('TourDetailManager loaded successfully');
-            } else {
-                console.error('TourDetailManager not found');
-                // Try to create it manually if needed
+        // Ensure TourDetailManager is available before trying to use it
+        function initializeTourDetailManager() {
+            console.log('Checking TourDetailManager availability...');
+            
+            if (typeof TourDetailManager !== 'undefined') {
+                console.log('TourDetailManager class found, creating instance...');
+                
                 try {
-                    window.tourDetailManager = new TourDetailManager();
+                    if (!window.tourDetailManager) {
+                        window.tourDetailManager = new TourDetailManager();
+                        console.log('TourDetailManager instance created successfully');
+                    }
+                    
+                    // Bind global methods for onclick handlers
+                    window.editReview = (reviewId) => window.tourDetailManager.editReview(reviewId);
+                    window.deleteReview = (reviewId) => window.tourDetailManager.deleteReview(reviewId);
+                    window.showReviewForm = () => window.tourDetailManager.showReviewForm();
+                    window.hideReviewForm = () => window.tourDetailManager.hideReviewForm();
+                    window.changeMainImage = (src, thumbElement) => window.tourDetailManager.changeMainImage(src, thumbElement);
+                    window.showBookingModal = () => window.tourDetailManager.showBookingModal();
+                    window.toggleWishlist = () => window.tourDetailManager.toggleWishlist();
+                    
+                    console.log('Global methods bound successfully');
+                    return true;
                 } catch (error) {
-                    console.error('Failed to create TourDetailManager:', error);
+                    console.error('Failed to create TourDetailManager instance:', error);
+                    return false;
                 }
+            } else {
+                console.error('TourDetailManager class not found');
+                return false;
+            }
+        }
+
+        // Try initialization on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM Content Loaded - trying initialization...');
+            
+            // Wait a bit for all scripts to load
+            setTimeout(() => {
+                if (!initializeTourDetailManager()) {
+                    console.log('First attempt failed, retrying...');
+                    
+                    // Retry after a longer delay
+                    setTimeout(() => {
+                        initializeTourDetailManager();
+                    }, 1000);
+                }
+            }, 100);
+        });
+
+        // Also try on window load as backup
+        window.addEventListener('load', () => {
+            console.log('Window loaded - backup initialization...');
+            
+            if (!window.tourDetailManager) {
+                initializeTourDetailManager();
             }
         });
     </script>

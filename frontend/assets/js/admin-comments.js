@@ -179,20 +179,19 @@ class AdminComments {
         });
     }
 
-    async loadStats() {
-        try {
+    async loadStats() {        try {
             // Load total comments
-            const totalResponse = await window.apiClient.get('/api/comments/admin?size=1');
+            const totalResponse = await window.apiClient.get('/comments/admin?size=1');
             const totalComments = totalResponse.totalElements || 0;
             document.getElementById('totalComments').textContent = totalComments;
 
             // Load pending comments
-            const pendingResponse = await window.apiClient.get('/api/comments/admin?isApproved=false&size=1');
+            const pendingResponse = await window.apiClient.get('/comments/admin?isApproved=false&size=1');
             const pendingComments = pendingResponse.totalElements || 0;
             document.getElementById('pendingComments').textContent = pendingComments;
 
             // Load approved comments
-            const approvedResponse = await window.apiClient.get('/api/comments/admin?isApproved=true&size=1');
+            const approvedResponse = await window.apiClient.get('/comments/admin?isApproved=true&size=1');
             const approvedComments = approvedResponse.totalElements || 0;
             document.getElementById('approvedComments').textContent = approvedComments;
 
@@ -224,7 +223,7 @@ class AdminComments {
                 params.append('search', this.currentFilters.search);
             }
 
-            const response = await window.apiClient.get(`/api/comments/admin?${params}`);
+            const response = await window.apiClient.get(`/comments/admin?${params}`);
             
             this.comments = response.content || [];
             this.totalPages = response.totalPages || 0;

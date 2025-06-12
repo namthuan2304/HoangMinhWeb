@@ -1728,29 +1728,47 @@
   display: block;
 }
 
-.star-rating-input {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
 .star-input {
   font-size: 2.5rem;
   color: var(--cultured-2);
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  display: inline-block;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .star-input:hover,
 .star-input.hover {
   color: #fbbf24;
-  transform: scale(1.2);
+  transform: scale(1.1);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
 .star-input.selected {
   color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+.star-input:active {
+  transform: scale(0.95);
+}
+
+.star-rating-input {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+/* Ensure stars are clickable */
+.star-rating-input .star-input {
+  pointer-events: all;
+  touch-action: manipulation;
 }
 
 .rating-feedback {

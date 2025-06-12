@@ -198,6 +198,22 @@
                 
                 <div class="topbar-right">
                     <div class="topbar-actions">
+                        <!-- Status Filter Tabs -->
+                        <div class="status-filter-container">
+                            <button class="status-filter-btn active-all" data-status="">
+                                <i class="fas fa-list me-1"></i> Tất cả
+                            </button>
+                            <button class="status-filter-btn" data-status="pending">
+                                <i class="fas fa-clock me-1"></i> Chờ duyệt
+                            </button>
+                            <button class="status-filter-btn" data-status="approved">
+                                <i class="fas fa-check-circle me-1"></i> Đã duyệt
+                            </button>
+                            <button class="status-filter-btn" data-status="rejected">
+                                <i class="fas fa-times-circle me-1"></i> Đã từ chối
+                            </button>
+                        </div>
+                        
                         <button class="btn btn-outline" id="refreshBtn">
                             <ion-icon name="refresh-outline"></ion-icon>
                             <span class="btn-text">Làm mới</span>

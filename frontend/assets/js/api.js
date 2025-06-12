@@ -20,66 +20,66 @@ class APIClient {
         return headers;
     }    // Helper method để xử lý response
     async handleResponse(response) {
-        if (response.status === 401) {
-            // Token hết hạn, thử refresh
-            const refreshed = await this.refreshAuthToken();
-            if (!refreshed) {
-                this.logout();
-                throw new Error('Phiên đăng nhập đã hết hạn');
-            }
-        }
-
         if (!response.ok) {
-            let errorData;
+            let errorMessage = 'Đã xảy ra lỗi';
+            
             try {
-                errorData = await response.json();
-            } catch (e) {
-                errorData = { message: 'Có lỗi xảy ra' };
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (parseError) {
+                // If can't parse JSON error response
+                if (response.status >= 500) {
+                    errorMessage = 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.';
+                } else if (response.status === 404) {
+                    errorMessage = 'Không tìm thấy dữ liệu.';
+                } else if (response.status === 403) {
+                    errorMessage = 'Bạn không có quyền thực hiện thao tác này.';
+                } else if (response.status === 401) {
+                    errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+                } else {
+                    errorMessage = `Lỗi HTTP ${response.status}`;
+                }
             }
             
-            // Enhanced error handling for different HTTP status codes
-            const error = new Error(errorData.message || 'Request failed');
-            error.status = response.status;
-            error.response = { 
-                status: response.status,
-                data: errorData 
-            };
-            
-            // Special handling for duplicate entry errors
-            if (response.status === 409 || 
-                (errorData.message && errorData.message.toLowerCase().includes('duplicate'))) {
-                error.isDuplicateError = true;
-            }
-            
-            throw error;
+            throw new Error(errorMessage);
         }
 
-        return response.json();
-    }// Generic request method
+        try {
+            return await response.json();
+        } catch (error) {
+            // Handle empty response or non-JSON response
+            console.warn('Response is not valid JSON:', error);
+            return null;
+        }
+    }    // Generic request method
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {
-            ...options,
+            method: options.method || 'GET',
             headers: {
-                ...this.getHeaders(options.auth !== false),
-                ...options.headers,
+                'Content-Type': 'application/json',
+                ...this.getHeaders(),
+                ...options.headers
             },
+            ...options
         };
 
-        console.log('API Request:', {
-            url,
-            method: config.method || 'GET',
-            headers: config.headers,
-            body: config.body
-        });
-
-        try {
+        if (options.body && config.method !== 'GET') {
+            config.body = options.body;
+        }        try {
+            console.log(`API ${config.method} Request:`, url, options.body);
             const response = await fetch(url, config);
             const result = await this.handleResponse(response);
-            console.log('API Response:', result);
+            console.log(`API ${config.method} Response:`, result);
             return result;
         } catch (error) {
             console.error('API Request Error:', error);
+            
+            // Add network error handling
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+            }
+            
             throw error;
         }
     }// Authentication Methods
@@ -294,17 +294,17 @@ class APIClient {
         return await this.request(`/comments/${id}/reject`, {
             method: 'POST',
         });
-    }
-
-    // Alias method for consistency with admin-comments.js
+    }    // Alias method for consistency with admin-comments.js
     async get(endpoint) {
         return await this.request(endpoint);
-    }
-
-    async post(endpoint, data = {}) {
+    }    async post(endpoint, data = {}) {
         return await this.request(endpoint, {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(data)
+        });
+    }    async delete(endpoint) {
+        return await this.request(endpoint, {
+            method: 'DELETE'
         });
     }
 

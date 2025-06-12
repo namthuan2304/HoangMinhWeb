@@ -319,64 +319,109 @@
     color: #721c24;
 }
 
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+/* Enhanced Status Badge Styles */
+.badge-pending {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #000;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
 }
 
-.btn-icon {
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
+.badge-approved {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
 }
 
-.btn-icon:hover {
+.badge-rejected {
+    background: linear-gradient(135deg, #dc3545, #b02a3b);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* Progress Bars for Stats */
+.progress-container {
+    margin-top: 1rem;
+}
+
+.progress-bar-pending {
+    background: linear-gradient(90deg, #ffc107, #e0a800);
+}
+
+.progress-bar-approved {
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+}
+
+.progress-bar-rejected {
+    background: linear-gradient(90deg, #dc3545, #b02a3b);
+}
+
+/* Enhanced Comment Row Styles */
+.comment-row {
+    transition: all 0.3s ease;
+}
+
+.comment-row:hover {
+    background-color: rgba(0, 123, 255, 0.05);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.btn-view {
-    background: #e3f2fd;
-    color: #1976d2;
+.comment-row.table-active {
+    background-color: rgba(0, 123, 255, 0.1);
 }
 
-.btn-view:hover {
-    background: #bbdefb;
+.comment-content {
+    max-width: 300px;
 }
 
-.btn-approve {
-    background: #e8f5e8;
-    color: #2e7d32;
+.comment-text {
+    line-height: 1.5;
+    color: #333;
 }
 
-.btn-approve:hover {
-    background: #c8e6c9;
+.comment-meta {
+    font-size: 0.85rem;
+    color: #666;
 }
 
-.btn-reject {
-    background: #ffebee;
-    color: #c62828;
+.comment-meta i {
+    width: 12px;
+    margin-right: 4px;
 }
 
-.btn-reject:hover {
-    background: #ffcdd2;
+/* Action Buttons Enhancement */
+.btn-group .btn {
+    transition: all 0.2s ease;
+    border: none;
+    margin-right: 2px;
 }
 
-.btn-delete {
-    background: #ffebee;
-    color: #d32f2f;
+.btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.btn-delete:hover {
-    background: #ffcdd2;
+.approve-btn {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+}
+
+.reject-btn {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #000;
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #dc3545, #b02a3b);
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #17a2b8, #117a8b);
 }
 
 /* Pagination */
@@ -623,9 +668,15 @@
     border-width: 4px;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.loading-state {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
 }
 
 /* Button Variants */
@@ -656,56 +707,133 @@
     border-color: #bd2130;
 }
 
+/* Status Filter Enhancements */
+.status-filter-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.status-filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 25px;
+    background: white;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.status-filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-filter-btn.active-all {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-color: #007bff;
+}
+
+.status-filter-btn.active-pending {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #000;
+    border-color: #ffc107;
+}
+
+.status-filter-btn.active-approved {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border-color: #28a745;
+}
+
+.status-filter-btn.active-rejected {
+    background: linear-gradient(135deg, #dc3545, #b02a3b);
+    color: white;
+    border-color: #dc3545;
+}
+
+/* Bulk Actions Enhancement */
+.bulk-actions {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    display: none;
+}
+
+.bulk-actions.active {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bulk-actions .btn {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+/* Modal Enhancements */
+.modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #eee;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+    border-radius: 0 0 16px 16px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .search-filter {
-        flex-direction: column;
-    }
-    
-    .filter-group {
-        flex-direction: column;
-    }
-    
-    .form-select {
-        min-width: auto;
-    }
-    
-    .table-header {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-    
-    .table-actions {
-        justify-content: center;
-    }
-    
-    .pagination-wrapper {
-        flex-direction: column;
         gap: 1rem;
     }
     
-    .action-buttons {
-        justify-content: center;
+    .stat-card {
+        padding: 1rem;
     }
     
-    .modal {
-        width: 95%;
-        margin: 1rem;
+    .comment-content {
+        max-width: 200px;
     }
     
-    .modal-footer {
-        flex-direction: column;
-        gap: 1rem;
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
     }
     
-    .modal-actions {
-        width: 100%;
-        justify-content: center;
+    .status-filter-container {
+        gap: 0.5rem;
+    }
+    
+    .status-filter-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -723,4 +851,56 @@
     .comment-meta {
         grid-template-columns: 1fr;
     }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .stat-card {
+        background: #2d3748;
+        color: white;
+    }
+    
+    .comment-row {
+        background: #2d3748;
+        color: white;
+    }
+    
+    .comment-row:hover {
+        background-color: rgba(74, 85, 104, 0.3);
+    }
+    
+    .loading-state {
+        background: #2d3748;
+        color: white;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

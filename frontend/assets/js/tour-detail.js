@@ -480,13 +480,24 @@ class TourDetailManager {
             // Show loading
             reviewsGrid.innerHTML = '<div class="loading-placeholder"><p>Đang tải đánh giá...</p></div>';
 
-            // Fetch reviews
-            const response = await apiClient.getCommentsByTour(this.tourId, {
-                page: page,
-                size: this.reviewsPerPage,
-                sortBy: 'createdAt',
-                sortDir: 'desc'
-            });
+            // Fetch reviews with better error handling
+            let response;
+            try {
+                response = await apiClient.getCommentsByTour(this.tourId, {
+                    page: page,
+                    size: this.reviewsPerPage,
+                    sortBy: 'createdAt',
+                    sortDir: 'desc'
+                });
+            } catch (apiError) {
+                console.error('API Error getting comments:', apiError);
+                // Show empty state instead of error for better UX
+                response = {
+                    content: [],
+                    number: 0,
+                    totalPages: 0
+                };
+            }
 
             this.reviews = response.content || [];
             this.currentPage = response.number || 0;
@@ -499,14 +510,25 @@ class TourDetailManager {
             this.renderReviews();
             this.renderReviewsPagination();
 
-            // Load rating breakdown
+            // Load rating breakdown with fallback
             await this.loadRatingBreakdown();
 
         } catch (error) {
             console.error('Error loading reviews:', error);
             const reviewsGrid = document.getElementById('reviewsGrid');
             if (reviewsGrid) {
-                reviewsGrid.innerHTML = '<div class="error-message"><p>Không thể tải đánh giá. Vui lòng thử lại sau.</p></div>';
+                reviewsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <ion-icon name="warning-outline" class="empty-state-icon"></ion-icon>
+                        <h4 class="empty-state-title">Không thể tải đánh giá</h4>
+                        <p class="empty-state-description">
+                            Có lỗi xảy ra khi tải đánh giá. Vui lòng thử lại sau.
+                        </p>
+                        <button class="btn btn-primary" onclick="tourDetailManager.loadReviews()">
+                            Thử lại
+                        </button>
+                    </div>
+                `;
             }
         }
     }
@@ -634,23 +656,18 @@ class TourDetailManager {
 
         console.log('Found review:', review); // Debug log
 
-        // Show form with existing data
+        // Show form first
         this.showReviewForm();
         
-        // Wait a bit for the form to be rendered and initialized
-        setTimeout(() => {
-            this.populateEditForm(review);
-        }, 500); // Increased timeout further to ensure form is fully rendered
+        // Then populate with review data
+        this.populateEditForm(review);
     }
 
     showReviewForm() {
-        console.log('Showing review form...'); // Debug log
+        console.log('Showing review form...');
         
         const overlay = document.getElementById('reviewFormOverlay');
         const writeBtn = document.getElementById('writeReviewBtn');
-        
-        console.log('Overlay found:', !!overlay); // Debug log
-        console.log('Write button:', writeBtn); // Debug log
         
         // Don't show form if button is disabled (but allow for editing)
         if (writeBtn && writeBtn.disabled && !writeBtn.classList.contains('edit-mode')) {
@@ -660,645 +677,243 @@ class TourDetailManager {
         
         if (overlay) {
             overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            console.log('Form overlay activated'); // Debug log
-            
-            // Force display style as well
             overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            console.log('Form overlay activated');
             
             // Initialize form after showing
             setTimeout(() => {
-                this.initializeEnhancedReviewForm();
+                this.initializeReviewForm();
             }, 100);
         } else {
             console.error('Review form overlay not found!');
         }
     }
 
-    populateEditForm(review) {
-        console.log('Populating edit form with review:', review); // Debug log
+    initializeReviewForm() {
+        console.log('Initializing review form...');
         
-        // Make sure the form is visible first
-        const overlay = document.getElementById('reviewFormOverlay');
-        if (!overlay || !overlay.classList.contains('active')) {
-            console.error('Form overlay is not active!');
-            // Try to show it again
-            if (overlay) {
-                overlay.classList.add('active');
-                overlay.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-        }
+        // Setup star rating
+        this.setupStarRating();
         
-        // Populate form content
-        const contentElement = document.getElementById('reviewContent');
-        if (contentElement) {
-            contentElement.value = review.content;
-            console.log('Content populated:', review.content);
-        } else {
-            console.error('Review content element not found');
-        }
+        // Setup form submission
+        this.setupFormSubmission();
         
-        // Set rating stars
+        // Setup overlay close
+        this.setupOverlayClose();
+    }
+
+    setupStarRating() {
         const stars = document.querySelectorAll('.star-input');
         const starRatingInput = document.getElementById('starRatingInput');
         const ratingFeedback = document.getElementById('ratingFeedback');
+        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
         
+        console.log('Setting up star rating...');
         console.log('Stars found:', stars.length);
-        console.log('Star rating input:', !!starRatingInput);
+        console.log('Rating input:', !!starRatingInput);
         console.log('Rating feedback:', !!ratingFeedback);
         
-        if (stars && stars.length > 0) {
-            // Clear all stars first
-            stars.forEach(star => star.classList.remove('selected', 'hover'));
-            
-            // Set selected stars
-            stars.forEach((star, index) => {
-                if (index < review.rating) {
-                    star.classList.add('selected');
-                }
-            });
-            
-            // Store the rating
-            if (starRatingInput) {
-                starRatingInput.setAttribute('data-selected-rating', review.rating.toString());
-                console.log('Rating set to:', review.rating);
-            }
-            
-            // Update feedback text
-            const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
-            if (ratingFeedback) {
-                ratingFeedback.textContent = ratingTexts[review.rating - 1] || 'Chọn số sao';
-                console.log('Rating feedback set to:', ratingTexts[review.rating - 1]);
-            }
+        if (!stars.length || !starRatingInput || !ratingFeedback) {
+            console.error('Star rating elements not found');
+            return;
         }
 
-        // Change form to edit mode
+        // Initialize rating to 0
+        starRatingInput.setAttribute('data-selected-rating', '0');
+        
+        // Add event listeners directly without cloning
+        stars.forEach((star, index) => {
+            const rating = index + 1;
+            
+            // Remove any existing event listeners first
+            star.onmouseenter = null;
+            star.onmouseleave = null;
+            star.onclick = null;
+            
+            // Add new event listeners
+            star.onmouseenter = () => {
+                console.log('Mouse enter star:', rating);
+                this.highlightStars(stars, rating);
+                ratingFeedback.textContent = ratingTexts[index];
+            };
+
+            star.onmouseleave = () => {
+                const currentRating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
+                this.highlightStars(stars, currentRating);
+                
+                if (currentRating > 0) {
+                    ratingFeedback.textContent = ratingTexts[currentRating - 1];
+                } else {
+                    ratingFeedback.textContent = 'Chọn số sao';
+                }
+            };
+
+            star.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('Star clicked! Rating:', rating);
+                
+                // Store rating
+                starRatingInput.setAttribute('data-selected-rating', rating.toString());
+                
+                // Update visual display
+                this.highlightStars(stars, rating);
+                ratingFeedback.textContent = ratingTexts[rating - 1];
+                
+                console.log('Rating selected and stored:', rating);
+            };
+
+            // Add touch support for mobile
+            star.ontouchstart = (e) => {
+                e.preventDefault();
+                star.onclick(e);
+            };
+        });
+
+        console.log('Star rating setup completed');
+    }
+
+    setupFormSubmission() {
         const form = document.getElementById('reviewForm');
-        if (form) {
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Cập nhật đánh giá';
-                console.log('Submit button updated for edit mode');
-            }
-            
-            // Store editing state
-            form.dataset.editing = review.id.toString();
-            console.log('Form editing ID set to:', review.id);
-            
-            // Update form title
-            const formTitle = document.querySelector('.form-title');
-            if (formTitle) {
-                formTitle.innerHTML = '<ion-icon name="create-outline"></ion-icon> Chỉnh sửa đánh giá';
-                console.log('Form title updated for edit mode');
-            }
-        } else {
+        if (!form) {
             console.error('Review form not found');
+            return;
+        }
+
+        // Remove existing event listener
+        form.onsubmit = null;
+        
+        // Add fresh event listener
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            this.handleFormSubmission();
+        };
+
+        console.log('Form submission setup completed');
+    }
+
+    setupOverlayClose() {
+        const overlay = document.getElementById('reviewFormOverlay');
+        if (!overlay) return;
+
+        // Remove existing event listener
+        overlay.onclick = null;
+        
+        // Add fresh event listener
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                this.hideReviewForm();
+            }
+        };
+    }
+
+    setFormRating(rating) {
+        console.log('Setting form rating to:', rating);
+        
+        const stars = document.querySelectorAll('.star-input');
+        const starRatingInput = document.getElementById('starRatingInput');
+        const ratingFeedback = document.getElementById('ratingFeedback');
+        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
+        
+        if (!stars.length || !starRatingInput || !ratingFeedback) {
+            console.error('Form rating elements not found');
+            return;
+        }
+
+        // Store rating
+        starRatingInput.setAttribute('data-selected-rating', rating.toString());
+        
+        // Update visual display
+        this.highlightStars(stars, rating);
+        
+        // Update feedback text
+        if (rating > 0) {
+            ratingFeedback.textContent = ratingTexts[rating - 1];
+        } else {
+            ratingFeedback.textContent = 'Chọn số sao';
         }
         
-        console.log('Edit form populated successfully'); // Debug log
+        console.log('Form rating set successfully:', rating);
+    }
+
+    populateEditForm(review) {
+        console.log('Populating edit form with review:', review);
+        
+        // Wait for form to be ready
+        setTimeout(() => {
+            // Set content
+            const contentElement = document.getElementById('reviewContent');
+            if (contentElement) {
+                contentElement.value = review.content;
+            }
+            
+            // Set rating
+            this.setFormRating(review.rating);
+            
+            // Update form for edit mode
+            this.updateFormForEdit(review.id);
+            
+            console.log('Edit form populated successfully');
+        }, 150);
+    }
+
+    updateFormForEdit(reviewId) {
+        const form = document.getElementById('reviewForm');
+        const submitBtn = form?.querySelector('button[type="submit"]');
+        const formTitle = document.querySelector('.form-title');
+        
+        if (form) {
+            form.dataset.editing = reviewId.toString();
+        }
+        
+        if (submitBtn) {
+            submitBtn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Cập nhật đánh giá';
+        }
+        
+        if (formTitle) {
+            formTitle.innerHTML = '<ion-icon name="create-outline"></ion-icon> Chỉnh sửa đánh giá';
+        }
     }
 
     resetReviewForm() {
         const form = document.getElementById('reviewForm');
-        const stars = document.querySelectorAll('.star-input');
-        const ratingFeedback = document.getElementById('ratingFeedback');
+        const contentElement = document.getElementById('reviewContent');
         const submitBtn = form?.querySelector('button[type="submit"]');
-        const starRatingInput = document.getElementById('starRatingInput');
         const formTitle = document.querySelector('.form-title');
         
-        if (form) {
-            form.reset();
-            delete form.dataset.editing;
-        }
-        if (stars) stars.forEach(star => star.classList.remove('selected', 'hover'));
-        if (ratingFeedback) ratingFeedback.textContent = 'Chọn số sao';
+        // Clear form data
+        if (contentElement) contentElement.value = '';
+        if (form) delete form.dataset.editing;
+        
+        // Reset rating
+        this.setFormRating(0);
+        
+        // Reset form UI
         if (submitBtn) {
             submitBtn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Gửi đánh giá';
         }
-        if (starRatingInput) starRatingInput.setAttribute('data-selected-rating', '0');
+        
         if (formTitle) {
             formTitle.innerHTML = '<ion-icon name="star-outline"></ion-icon> Viết đánh giá';
         }
         
-        console.log('Form reset completed'); // Debug log
+        console.log('Form reset completed');
     }
 
     hideReviewForm() {
-        console.log('Hiding review form...'); // Debug log
+        console.log('Hiding review form...');
         
         const overlay = document.getElementById('reviewFormOverlay');
         
         if (overlay) {
             overlay.classList.remove('active');
-            overlay.style.display = 'none'; // Force hide
+            overlay.style.display = 'none';
             document.body.style.overflow = '';
-            console.log('Form overlay hidden');
         }
 
         this.resetReviewForm();
-    }
-
-    async loadRelatedTours() {
-        try {
-            const relatedGrid = document.getElementById('relatedToursGrid');
-            if (!relatedGrid || !this.currentTour) return;
-
-            // Use the backend's related tours endpoint
-            const relatedTours = await apiClient.getRelatedTours(this.currentTour.id, 3);
-
-            if (relatedTours && relatedTours.length > 0) {
-                this.renderRelatedTours(relatedTours);
-            } else {
-                relatedGrid.innerHTML = '<p>Không có tour liên quan.</p>';
-            }
-
-        } catch (error) {
-            console.error('Error loading related tours:', error);
-            const relatedGrid = document.getElementById('relatedToursGrid');
-            if (relatedGrid) {
-                relatedGrid.innerHTML = '<p>Không thể tải tour liên quan.</p>';
-            }
-        }
-    }
-
-    renderRelatedTours(tours) {
-        const relatedGrid = document.getElementById('relatedToursGrid');
-        if (!relatedGrid) return;        const html = tours.map(tour => `
-            <div class="related-tour-card">
-                <div class="tour-image">
-                    <img src="${apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(tour.imageUrls?.[0]) || './assets/images/packege-1.jpg'}" 
-                         alt="${tour.name}">
-                </div>
-                <div class="tour-content">
-                    <h4><a href="tour-detail.html?id=${tour.id}">${tour.name}</a></h4>
-                    <div class="tour-rating">
-                        ${this.generateStarRating(tour.ratingAverage || 0)}
-                        <span>(${tour.totalBookings || 0})</span>
-                    </div>
-                    <div class="tour-price">${this.formatPrice(tour.price)}₫</div>
-                </div>
-            </div>
-        `).join('');
-
-        relatedGrid.innerHTML = html;
-    }
-
-    generateStarRating(rating) {
-        const clampedRating = Math.max(0, Math.min(5, rating)); // Clamp between 0-5
-        const fullStars = Math.floor(clampedRating);
-        const hasHalfStar = clampedRating % 1 >= 0.5;
-        let html = '';
-
-        // Full stars
-        for (let i = 0; i < fullStars; i++) {
-            html += '<ion-icon name="star"></ion-icon>';
-        }
-
-        // Half star
-        if (hasHalfStar) {
-            html += '<ion-icon name="star-half"></ion-icon>';
-        }
-
-        // Empty stars
-        const emptyStars = 5 - Math.ceil(clampedRating);
-        for (let i = 0; i < emptyStars; i++) {
-            html += '<ion-icon name="star-outline"></ion-icon>';
-        }
-
-        return html;
-    }
-
-    formatPrice(price) {
-        return new Intl.NumberFormat('vi-VN').format(price);
-    }
-
-    formatDate(dateString) {
-        if (!dateString) return 'Chưa xác định';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
-    }
-
-    formatTermsConditions(termsConditions) {
-        if (!termsConditions) return '<p>Chưa có điều khoản.</p>';
-        
-        // Split by lines and format each line
-        const lines = termsConditions.split('\n').filter(line => line.trim());
-        
-        if (lines.length === 0) return '<p>Chưa có điều khoản.</p>';
-        
-        return lines.map(line => {
-            const trimmedLine = line.trim();
-            
-            // Check if it's a header (all caps or starts with number)
-            if (trimmedLine.match(/^\d+\./) || trimmedLine === trimmedLine.toUpperCase()) {
-                return `<h4>${trimmedLine}</h4>`;
-            }
-            
-            // Check if it's a list item
-            if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
-                return `<ul><li>${trimmedLine.substring(1).trim()}</li></ul>`;
-            }
-            
-            // Regular paragraph
-            return `<p>${trimmedLine}</p>`;
-        }).join('');
-    }
-
-    showError(message) {
-        const wrapper = document.getElementById('tourDetailWrapper');
-        if (wrapper) {
-            wrapper.innerHTML = `
-                <div class="error-state">
-                    <ion-icon name="alert-circle-outline"></ion-icon>
-                    <h3>Có lỗi xảy ra</h3>
-                    <p>${message}</p>
-                    <a href="tours.html" class="btn btn-primary">Về trang danh sách tour</a>
-                </div>
-            `;
-        }
-    }
-
-    showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        
-        setTimeout(() => toast.classList.add('show'), 100);
-        setTimeout(() => toast.classList.remove('show'), 4000);
-    }
-
-    getAvailabilityInfo(tour) {
-        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
-        
-        if (tour.status !== 'ACTIVE') {
-            return '<span class="unavailable">Tour không khả dụng</span>';
-        }
-        
-        if (availableSlots <= 0) {
-            return '<span class="sold-out">Đã hết chỗ</span>';
-        }
-        
-        if (availableSlots <= 5) {
-            return `<span class="limited-slots">Chỉ còn ${availableSlots} chỗ</span>`;
-        }
-        
-        return `<span class="available-slots">Còn ${availableSlots} chỗ</span>`;
-    }
-
-    renderBookingButton(tour) {
-        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
-        const isAvailable = tour.status === 'ACTIVE' && availableSlots > 0;
-        
-        if (!isAvailable) {
-            return `
-                <button class="btn btn-secondary btn-large" disabled>
-                    <ion-icon name="close-outline"></ion-icon>
-                    <span>Không khả dụng</span>
-                </button>
-            `;
-        }
-        
-        return `
-            <button class="btn btn-primary btn-large" onclick="tourDetailManager.showBookingModal()">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <span data-translate="book_now">Đặt ngay</span>
-            </button>
-        `;
-    }
-
-    initializeTabs() {
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tabId = btn.getAttribute('data-tab');
-
-                // Remove active class from all tabs and panes
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabPanes.forEach(p => p.classList.remove('active'));
-
-                // Add active class to clicked tab and corresponding pane
-                btn.classList.add('active');
-                const targetPane = document.getElementById(tabId);
-                if (targetPane) {
-                    targetPane.classList.add('active');
-                }
-
-                // Load reviews when reviews tab is clicked
-                if (tabId === 'reviews' && this.currentTour) {
-                    this.loadReviews();
-                    // Also load rating breakdown immediately
-                    this.loadRatingBreakdown();
-                }
-            });
-        });
-    }
-
-    // Add method to update reviews tab count after review actions
-    updateReviewsTabCount(newCount) {
-        const reviewsTab = document.querySelector('[data-tab="reviews"]');
-        if (reviewsTab) {
-            reviewsTab.textContent = `Đánh giá (${newCount})`;
-        }
-    }
-
-    async submitReview(reviewData) {
-        try {
-            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Đang gửi...';
-            }
-
-            await apiClient.createComment(reviewData);
-            
-            this.showToast('Đánh giá của bạn đã được gửi thành công!', 'success');
-            this.hideReviewForm();
-            
-            // Reload reviews and update tab count
-            await this.loadReviews();
-            
-            // Get updated comment count and refresh tab
-            try {
-                const ratingData = await apiClient.getTourRating(this.tourId);
-                this.updateReviewsTabCount(ratingData.totalComments || 0);
-            } catch (error) {
-                console.error('Error updating review count:', error);
-            }
-
-        } catch (error) {
-            console.error('Error submitting review:', error);
-            let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá';
-            
-            if (error.message.includes('đã bình luận')) {
-                errorMessage = 'Bạn đã đánh giá tour này rồi';
-            }
-            
-            this.showToast(errorMessage, 'error');
-        } finally {
-            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Gửi đánh giá';
-            }
-        }
-    }
-
-    async updateReview(reviewId, reviewData) {
-        try {
-            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Đang cập nhật...';
-            }
-
-            await apiClient.updateComment(reviewId, reviewData);
-            
-            this.showToast('Đánh giá của bạn đã được cập nhật thành công!', 'success');
-            this.hideReviewForm();
-            
-            // Reload reviews and update tab count
-            await this.loadReviews();
-            
-            // Get updated comment count and refresh tab
-            try {
-                const ratingData = await apiClient.getTourRating(this.tourId);
-                this.updateReviewsTabCount(ratingData.totalComments || 0);
-            } catch (error) {
-                console.error('Error updating review count:', error);
-            }
-
-        } catch (error) {
-            console.error('Error updating review:', error);
-            this.showToast('Có lỗi xảy ra khi cập nhật đánh giá', 'error');
-        } finally {
-            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Cập nhật đánh giá';
-            }
-        }
-    }
-
-    async deleteReview(reviewId) {
-        if (!confirm('Bạn có chắc muốn xóa đánh giá này?')) return;
-
-        try {
-            await apiClient.deleteComment(reviewId);
-            this.showToast('Đã xóa đánh giá thành công', 'success');
-            
-            // Reload reviews and update tab count
-            await this.loadReviews();
-            
-            // Get updated comment count and refresh tab
-            try {
-                const ratingData = await apiClient.getTourRating(this.tourId);
-                this.updateReviewsTabCount(ratingData.totalComments || 0);
-            } catch (error) {
-                console.error('Error updating review count:', error);
-            }
-            
-        } catch (error) {
-            console.error('Error deleting review:', error);
-            this.showToast('Có lỗi xảy ra khi xóa đánh giá', 'error');
-        }
-    }
-
-    renderReviewsPagination() {
-        const pagination = document.getElementById('reviewsPagination');
-        if (!pagination || this.totalPages <= 1) {
-            pagination.style.display = 'none';
-            return;
-        }
-
-        pagination.style.display = 'block';
-        
-        let html = '<div class="pagination-controls">';
-        
-        // Previous button
-        if (this.currentPage > 0) {
-            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage - 1})">
-                        <ion-icon name="chevron-back-outline"></ion-icon> Trước
-                     </button>`;
-        }
-
-        // Page numbers
-        const startPage = Math.max(0, this.currentPage - 2);
-        const endPage = Math.min(this.totalPages - 1, this.currentPage + 2);
-
-        for (let i = startPage; i <= endPage; i++) {
-            const isActive = i === this.currentPage;
-            html += `<button class="btn ${isActive ? 'btn-primary' : 'btn-outline'}" 
-                            onclick="tourDetailManager.loadReviews(${i})">${i + 1}</button>`;
-        }
-
-        // Next button
-        if (this.currentPage < this.totalPages - 1) {
-            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage + 1})">
-                        Sau <ion-icon name="chevron-forward-outline"></ion-icon>
-                     </button>`;
-        }
-
-        html += '</div>';
-        pagination.innerHTML = html;
-    }
-
-    getTimeAgo(date) {
-        const now = new Date();
-        const diffInSeconds = Math.floor((now - date) / 1000);
-        
-        if (diffInSeconds < 60) {
-            return 'Vừa xong';
-        }
-        
-        const diffInMinutes = Math.floor(diffInSeconds / 60);
-        if (diffInMinutes < 60) {
-            return `${diffInMinutes} phút trước`;
-        }
-        
-        const diffInHours = Math.floor(diffInMinutes / 60);
-        if (diffInHours < 24) {
-            return `${diffInHours} giờ trước`;
-        }
-        
-        const diffInDays = Math.floor(diffInHours / 24);
-        if (diffInDays < 30) {
-            return `${diffInDays} ngày trước`;
-        }
-        
-        const diffInMonths = Math.floor(diffInDays / 30);
-        if (diffInMonths < 12) {
-            return `${diffInMonths} tháng trước`;
-        }
-        
-        const diffInYears = Math.floor(diffInMonths / 12);
-        return `${diffInYears} năm trước`;
-    }
-
-    initializeEnhancedReviewForm() {
-        const stars = document.querySelectorAll('.star-input');
-        const ratingFeedback = document.getElementById('ratingFeedback');
-        const form = document.getElementById('reviewForm');
-        const starRatingInput = document.getElementById('starRatingInput');
-        
-        if (!stars.length || !ratingFeedback || !form || !starRatingInput) {
-            console.error('Review form elements not found');
-            return;
-        }
-        
-        let selectedRating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
-        const ratingTexts = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Xuất sắc'];
-
-        console.log('Initializing form with rating:', selectedRating); // Debug log
-
-        // Remove existing event listeners by cloning nodes to avoid conflicts
-        const formClone = form.cloneNode(true);
-        form.parentNode.replaceChild(formClone, form);
-        
-        // Get references to the new elements
-        const newForm = document.getElementById('reviewForm');
-        const newStars = document.querySelectorAll('.star-input');
-        const newRatingFeedback = document.getElementById('ratingFeedback');
-        const newStarRatingInput = document.getElementById('starRatingInput');
-
-        // Re-initialize rating from the cloned form
-        selectedRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
-
-        // Initialize star interactions on new elements
-        newStars.forEach((star, index) => {
-            const rating = index + 1;
-            
-            star.addEventListener('mouseover', () => {
-                newStars.forEach((s, i) => {
-                    if (i <= index) {
-                        s.classList.add('hover');
-                    } else {
-                        s.classList.remove('hover');
-                    }
-                });
-                newRatingFeedback.textContent = ratingTexts[index];
-            });
-
-            star.addEventListener('mouseout', () => {
-                newStars.forEach(s => s.classList.remove('hover'));
-                const currentRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
-                if (currentRating > 0) {
-                    newRatingFeedback.textContent = ratingTexts[currentRating - 1];
-                } else {
-                    newRatingFeedback.textContent = 'Chọn số sao';
-                }
-            });
-
-            star.addEventListener('click', () => {
-                selectedRating = rating;
-                
-                newStars.forEach((s, i) => {
-                    if (i < selectedRating) {
-                        s.classList.add('selected');
-                    } else {
-                        s.classList.remove('selected');
-                    }
-                });
-                
-                newRatingFeedback.textContent = ratingTexts[selectedRating - 1];
-                newStarRatingInput.setAttribute('data-selected-rating', selectedRating.toString());
-                
-                console.log('Selected rating:', selectedRating); // Debug log
-            });
-        });
-
-        // Handle form submission on new form
-        newForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const currentRating = parseInt(newStarRatingInput.getAttribute('data-selected-rating') || '0');
-            
-            console.log('Submitting form with rating:', currentRating); // Debug log
-            
-            if (currentRating === 0) {
-                this.showToast('Vui lòng chọn số sao đánh giá', 'warning');
-                return;
-            }
-
-            const content = document.getElementById('reviewContent').value.trim();
-            if (!content) {
-                this.showToast('Vui lòng nhập nội dung đánh giá', 'warning');
-                return;
-            }
-
-            const reviewData = {
-                tourId: this.tourId,
-                rating: currentRating,
-                content: content
-            };
-
-            const editingId = newForm.dataset.editing;
-            console.log('Editing ID:', editingId); // Debug log
-            
-            if (editingId) {
-                await this.updateReview(editingId, reviewData);
-            } else {
-                await this.submitReview(reviewData);
-            }
-        });
-
-        // Handle overlay click to close
-        const overlay = document.getElementById('reviewFormOverlay');
-        if (overlay) {
-            // Remove existing listeners
-            const newOverlay = overlay.cloneNode(true);
-            overlay.parentNode.replaceChild(newOverlay, overlay);
-            
-            newOverlay.addEventListener('click', (e) => {
-                if (e.target === newOverlay) {
-                    this.hideReviewForm();
-                }
-            });
-        }
     }
 
     async loadRatingBreakdown() {
@@ -1309,7 +924,7 @@ class TourDetailManager {
             this.renderEnhancedRatingBreakdown(ratingData);
         } catch (error) {
             console.error('Error loading rating breakdown:', error);
-            // Show fallback breakdown
+            // Always show fallback breakdown to prevent UI breaking
             this.renderEnhancedRatingBreakdown({
                 totalComments: 0,
                 averageRating: 0,
@@ -1517,11 +1132,470 @@ class TourDetailManager {
         // Implement wishlist functionality
         this.showToast('Tính năng yêu thích sẽ được triển khai sớm!', 'info');
     }
+
+    async loadRelatedTours() {
+        try {
+            const relatedGrid = document.getElementById('relatedToursGrid');
+            if (!relatedGrid || !this.currentTour) return;
+
+            // Use the backend's related tours endpoint
+            const relatedTours = await apiClient.getRelatedTours(this.currentTour.id, 3);
+
+            if (relatedTours && relatedTours.length > 0) {
+                this.renderRelatedTours(relatedTours);
+            } else {
+                relatedGrid.innerHTML = '<p>Không có tour liên quan.</p>';
+            }
+
+        } catch (error) {
+            console.error('Error loading related tours:', error);
+            const relatedGrid = document.getElementById('relatedToursGrid');
+            if (relatedGrid) {
+                relatedGrid.innerHTML = '<p>Không thể tải tour liên quan.</p>';
+            }
+        }
+    }
+
+    renderRelatedTours(tours) {
+        const relatedGrid = document.getElementById('relatedToursGrid');
+        if (!relatedGrid) return;
+        
+        const html = tours.map(tour => `
+            <div class="related-tour-card">
+                <div class="tour-image">
+                    <img src="${apiClient.getFullImageUrl(tour.mainImageUrl) || apiClient.getFullImageUrl(tour.imageUrls?.[0]) || './assets/images/packege-1.jpg'}" 
+                         alt="${tour.name}">
+                </div>
+                <div class="tour-content">
+                    <h4><a href="tour-detail.html?id=${tour.id}">${tour.name}</a></h4>
+                    <div class="tour-rating">
+                        ${this.generateStarRating(tour.ratingAverage || 0)}
+                        <span>(${tour.totalBookings || 0})</span>
+                    </div>
+                    <div class="tour-price">${this.formatPrice(tour.price)}₫</div>
+                </div>
+            </div>
+        `).join('');
+
+        relatedGrid.innerHTML = html;
+    }
+
+    generateStarRating(rating) {
+        const clampedRating = Math.max(0, Math.min(5, rating)); // Clamp between 0-5
+        const fullStars = Math.floor(clampedRating);
+        const hasHalfStar = clampedRating % 1 >= 0.5;
+        let html = '';
+
+        // Full stars
+        for (let i = 0; i < fullStars; i++) {
+            html += '<ion-icon name="star"></ion-icon>';
+        }
+
+        // Half star
+        if (hasHalfStar) {
+            html += '<ion-icon name="star-half"></ion-icon>';
+        }
+
+        // Empty stars
+        const emptyStars = 5 - Math.ceil(clampedRating);
+        for (let i = 0; i < emptyStars; i++) {
+            html += '<ion-icon name="star-outline"></ion-icon>';
+        }
+
+        return html;
+    }
+
+    formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN').format(price);
+    }
+
+    formatDate(dateString) {
+        if (!dateString) return 'Chưa xác định';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
+    }
+
+    formatTermsConditions(termsConditions) {
+        if (!termsConditions) return '<p>Chưa có điều khoản.</p>';
+        
+        // Split by lines and format each line
+        const lines = termsConditions.split('\n').filter(line => line.trim());
+        
+        if (lines.length === 0) return '<p>Chưa có điều khoản.</p>';
+        
+        return lines.map(line => {
+            const trimmedLine = line.trim();
+            
+            // Check if it's a header (all caps or starts with number)
+            if (trimmedLine.match(/^\d+\./) || trimmedLine === trimmedLine.toUpperCase()) {
+                return `<h4>${trimmedLine}</h4>`;
+            }
+            
+            // Check if it's a list item
+            if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
+                return `<ul><li>${trimmedLine.substring(1).trim()}</li></ul>`;
+            }
+            
+            // Regular paragraph
+            return `<p>${trimmedLine}</p>`;
+        }).join('');
+    }
+
+    showError(message) {
+        const wrapper = document.getElementById('tourDetailWrapper');
+        if (wrapper) {
+            wrapper.innerHTML = `
+                <div class="error-state">
+                    <ion-icon name="alert-circle-outline"></ion-icon>
+                    <h3>Có lỗi xảy ra</h3>
+                    <p>${message}</p>
+                    <a href="tours.html" class="btn btn-primary">Về trang danh sách tour</a>
+                </div>
+            `;
+        }
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    getAvailabilityInfo(tour) {
+        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
+        
+        if (tour.status !== 'ACTIVE') {
+            return '<span class="unavailable">Tour không khả dụng</span>';
+        }
+        
+        if (availableSlots <= 0) {
+            return '<span class="sold-out">Đã hết chỗ</span>';
+        }
+        
+        if (availableSlots <= 5) {
+            return `<span class="limited-slots">Chỉ còn ${availableSlots} chỗ</span>`;
+        }
+        
+        return `<span class="available-slots">Còn ${availableSlots} chỗ</span>`;
+    }
+
+    renderBookingButton(tour) {
+        const availableSlots = tour.maxParticipants - (tour.currentParticipants || 0);
+        const isAvailable = tour.status === 'ACTIVE' && availableSlots > 0;
+        
+        if (!isAvailable) {
+            return `
+                <button class="btn btn-secondary btn-large" disabled>
+                    <ion-icon name="close-outline"></ion-icon>
+                    <span>Không khả dụng</span>
+                </button>
+            `;
+        }
+        
+        return `
+            <button class="btn btn-primary btn-large" onclick="tourDetailManager.showBookingModal()">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span data-translate="book_now">Đặt ngay</span>
+            </button>
+        `;
+    }
+
+    initializeTabs() {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+
+                // Remove active class from all tabs and panes
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding pane
+                btn.classList.add('active');
+                const targetPane = document.getElementById(tabId);
+                if (targetPane) {
+                    targetPane.classList.add('active');
+                }
+
+                // Load reviews when reviews tab is clicked
+                if (tabId === 'reviews' && this.currentTour) {
+                    this.loadReviews();
+                    // Also load rating breakdown immediately
+                    this.loadRatingBreakdown();
+                }
+            });
+        });
+    }
+
+    // Add method to update reviews tab count after review actions
+    updateReviewsTabCount(newCount) {
+        const reviewsTab = document.querySelector('[data-tab="reviews"]');
+        if (reviewsTab) {
+            reviewsTab.textContent = `Đánh giá (${newCount})`;
+        }
+    }
+
+    async submitReview(reviewData) {
+        try {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang gửi...';
+            }
+
+            await apiClient.createComment(reviewData);
+            
+            this.showToast('Đánh giá của bạn đã được gửi thành công!', 'success');
+            this.hideReviewForm();
+            
+            // Reload reviews and update tab count with error handling
+            try {
+                await this.loadReviews();
+                
+                // Get updated comment count and refresh tab
+                const ratingData = await apiClient.getTourRating(this.tourId);
+                this.updateReviewsTabCount(ratingData.totalComments || 0);
+            } catch (reloadError) {
+                console.error('Error reloading reviews after submit:', reloadError);
+                // Still show success message but manual refresh might be needed
+                this.showToast('Đánh giá đã gửi. Trang sẽ tự động tải lại...', 'info');
+                setTimeout(() => window.location.reload(), 2000);
+            }
+
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá';
+            
+            // Handle specific error cases
+            if (error.message) {
+                if (error.message.includes('đã bình luận') || error.message.includes('already commented')) {
+                    errorMessage = 'Bạn đã đánh giá tour này rồi';
+                } else if (error.message.includes('500') || error.message.includes('hệ thống')) {
+                    errorMessage = 'Lỗi server. Vui lòng thử lại sau';
+                } else if (error.message.includes('401') || error.message.includes('unauthorized')) {
+                    errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại';
+                }
+            }
+            
+            this.showToast(errorMessage, 'error');
+        } finally {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gửi đánh giá';
+            }
+        }
+    }
+
+    async updateReview(reviewId, reviewData) {
+        try {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang cập nhật...';
+            }
+
+            await apiClient.updateComment(reviewId, reviewData);
+            
+            this.showToast('Đánh giá của bạn đã được cập nhật thành công!', 'success');
+            this.hideReviewForm();
+            
+            // Reload reviews and update tab count with error handling
+            try {
+                await this.loadReviews();
+                
+                const ratingData = await apiClient.getTourRating(this.tourId);
+                this.updateReviewsTabCount(ratingData.totalComments || 0);
+            } catch (reloadError) {
+                console.error('Error reloading reviews after update:', reloadError);
+                this.showToast('Đánh giá đã cập nhật. Trang sẽ tự động tải lại...', 'info');
+                setTimeout(() => window.location.reload(), 2000);
+            }
+
+        } catch (error) {
+            console.error('Error updating review:', error);
+            let errorMessage = 'Có lỗi xảy ra khi cập nhật đánh giá';
+            
+            if (error.message && error.message.includes('500')) {
+                errorMessage = 'Lỗi server. Vui lòng thử lại sau';
+            }
+            
+            this.showToast(errorMessage, 'error');
+        } finally {
+            const submitBtn = document.querySelector('#reviewForm button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Cập nhật đánh giá';
+            }
+        }
+    }
+
+    async deleteReview(reviewId) {
+        if (!confirm('Bạn có chắc muốn xóa đánh giá này?')) return;
+
+        try {
+            await apiClient.deleteComment(reviewId);
+            this.showToast('Đã xóa đánh giá thành công', 'success');
+            
+            // Reload reviews and update tab count with error handling
+            try {
+                await this.loadReviews();
+                
+                const ratingData = await apiClient.getTourRating(this.tourId);
+                this.updateReviewsTabCount(ratingData.totalComments || 0);
+            } catch (reloadError) {
+                console.error('Error reloading reviews after delete:', reloadError);
+                this.showToast('Đánh giá đã xóa. Trang sẽ tự động tải lại...', 'info');
+                setTimeout(() => window.location.reload(), 2000);
+            }
+            
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            let errorMessage = 'Có lỗi xảy ra khi xóa đánh giá';
+            
+            if (error.message && error.message.includes('500')) {
+                errorMessage = 'Lỗi server. Vui lòng thử lại sau';
+            }
+            
+            this.showToast(errorMessage, 'error');
+        }
+    }
+
+    renderReviewsPagination() {
+        const pagination = document.getElementById('reviewsPagination');
+        if (!pagination || this.totalPages <= 1) {
+            pagination.style.display = 'none';
+            return;
+        }
+
+        pagination.style.display = 'block';
+        
+        let html = '<div class="pagination-controls">';
+        
+        // Previous button
+        if (this.currentPage > 0) {
+            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage - 1})">
+                        <ion-icon name="chevron-back-outline"></ion-icon> Trước
+                     </button>`;
+        }
+
+        // Page numbers
+        const startPage = Math.max(0, this.currentPage - 2);
+        const endPage = Math.min(this.totalPages - 1, this.currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === this.currentPage;
+            html += `<button class="btn ${isActive ? 'btn-primary' : 'btn-outline'}" 
+                            onclick="tourDetailManager.loadReviews(${i})">${i + 1}</button>`;
+        }
+
+        // Next button
+        if (this.currentPage < this.totalPages - 1) {
+            html += `<button class="btn btn-outline" onclick="tourDetailManager.loadReviews(${this.currentPage + 1})">
+                        Sau <ion-icon name="chevron-forward-outline"></ion-icon>
+                     </button>`;
+        }
+
+        html += '</div>';
+        pagination.innerHTML = html;
+    }
+
+    getTimeAgo(date) {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) {
+            return 'Vừa xong';
+        }
+        
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} phút trước`;
+        }
+        
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} giờ trước`;
+        }
+        
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 30) {
+            return `${diffInDays} ngày trước`;
+        }
+        
+        const diffInMonths = Math.floor(diffInDays / 30);
+        if (diffInMonths < 12) {
+            return `${diffInMonths} tháng trước`;
+        }
+        
+        const diffInYears = Math.floor(diffInMonths / 12);
+        return `${diffInYears} năm trước`;
+    }
+
+    highlightStars(stars, rating) {
+        stars.forEach((star, index) => {
+            star.classList.remove('selected', 'hover');
+            if (index < rating) {
+                star.classList.add('selected');
+            }
+        });
+    }
+
+    async handleFormSubmission() {
+        const starRatingInput = document.getElementById('starRatingInput');
+        const contentElement = document.getElementById('reviewContent');
+        const form = document.getElementById('reviewForm');
+        
+        const rating = parseInt(starRatingInput.getAttribute('data-selected-rating') || '0');
+        const content = contentElement.value.trim();
+        
+        console.log('Form submission - rating:', rating, 'content length:', content.length);
+        
+        // Validation
+        if (rating === 0) {
+            this.showToast('Vui lòng chọn số sao đánh giá', 'warning');
+            return;
+        }
+
+        if (!content) {
+            this.showToast('Vui lòng nhập nội dung đánh giá', 'warning');
+            return;
+        }
+
+        // Prepare data
+        const reviewData = {
+            tourId: this.tourId,
+            rating: rating,
+            content: content
+        };
+
+        const editingId = form.dataset.editing;
+        
+        // Submit or update
+        if (editingId) {
+            await this.updateReview(editingId, reviewData);
+        } else {
+            await this.submitReview(reviewData);
+        }
+    }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.tourDetailManager = new TourDetailManager();
+    console.log('DOM loaded, initializing TourDetailManager...');
+    try {
+        window.tourDetailManager = new TourDetailManager();
+        console.log('TourDetailManager created successfully');
+    } catch (error) {
+        console.error('Failed to create TourDetailManager:', error);
+    }
 });
 
 // Export for use in other files
@@ -1529,22 +1603,5 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = TourDetailManager;
 }
 
-// Make sure all methods are properly bound to the class instance
-window.addEventListener('DOMContentLoaded', () => {
-    // Create a single global instance
-    if (!window.tourDetailManager) {
-        window.tourDetailManager = new TourDetailManager();
-    }
-    
-    // Ensure all methods are bound to the instance
-    const manager = window.tourDetailManager;
-    
-    // Bind methods to prevent scope issues
-    window.editReview = (reviewId) => manager.editReview(reviewId);
-    window.deleteReview = (reviewId) => manager.deleteReview(reviewId);
-    window.showReviewForm = () => manager.showReviewForm();
-    window.hideReviewForm = () => manager.hideReviewForm();
-    window.changeMainImage = (src, thumbElement) => manager.changeMainImage(src, thumbElement);
-    window.showBookingModal = () => manager.showBookingModal();
-    window.toggleWishlist = () => manager.toggleWishlist();
-});
+// Make sure class is available globally
+window.TourDetailManager = TourDetailManager;
