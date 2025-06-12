@@ -71,9 +71,7 @@ class BookingsManager {
                 }
             });
         }
-    }
-
-    async loadBookings() {
+    }    async loadBookings() {
         const wrapper = document.getElementById('bookingsWrapper');
         if (!wrapper) return;
 
@@ -106,9 +104,7 @@ class BookingsManager {
             console.error('Error loading bookings:', error);
             this.renderError();
         }
-    }
-
-    renderBookings() {
+    }    renderBookings() {
         const wrapper = document.getElementById('bookingsWrapper');
         if (!wrapper) return;
 
@@ -121,20 +117,84 @@ class BookingsManager {
             <div class="bookings-grid">
                 ${this.bookings.map(booking => this.renderBookingCard(booking)).join('')}
             </div>
-        `;
+        `;        wrapper.innerHTML = html;
+        
+        // Lazy load tour images after a short delay to allow DOM to settle
+        setTimeout(() => {
+            this.loadTourImages();
+        }, 100);
+    }async loadTourImages() {
+        // Find all tour images that need to be loaded
+        const images = document.querySelectorAll('.booking-tour-image[data-tour-id]:not([data-loaded])');
+        
+        if (images.length === 0) return;
 
-        wrapper.innerHTML = html;
-    }    renderBookingCard(booking) {
+        // Create array of promises to load tour data
+        const imageLoadPromises = Array.from(images).map(async (img) => {
+            const tourId = img.getAttribute('data-tour-id');
+            if (!tourId) return;
+
+            try {
+                const tour = await apiClient.getTour(tourId);
+                if (tour && (tour.mainImageUrl || (tour.imageUrls && tour.imageUrls.length > 0))) {
+                    const imageUrl = apiClient.getFullImageUrl(tour.mainImageUrl) || 
+                                   apiClient.getFullImageUrl(tour.imageUrls[0]);
+                    if (imageUrl && imageUrl !== img.src) {
+                        // Create a new image to preload
+                        const preloadImg = new Image();
+                        preloadImg.onload = () => {
+                            img.src = imageUrl;
+                            img.setAttribute('data-loaded', 'true');
+                            img.style.opacity = '1';
+                        };
+                        preloadImg.onerror = () => {
+                            img.setAttribute('data-loaded', 'true');
+                        };
+                        preloadImg.src = imageUrl;
+                    } else {
+                        img.setAttribute('data-loaded', 'true');
+                    }
+                } else {
+                    img.setAttribute('data-loaded', 'true');
+                }
+            } catch (error) {
+                console.error(`Error loading image for tour ${tourId}:`, error);
+                img.setAttribute('data-loaded', 'true'); // Mark as loaded to avoid retry
+            }
+        });
+
+        // Wait for all images to load (or fail)
+        await Promise.allSettled(imageLoadPromises);
+    }renderBookingCard(booking) {
         const statusClass = this.getStatusClass(booking.status);
         const statusText = this.getStatusText(booking.status);
         const formattedPrice = this.formatPrice(booking.totalAmount);
-        // Sử dụng mainImageUrl từ tour hoặc ảnh mặc định
-        const tourImage = './assets/images/packege-1.jpg'; // Ảnh mặc định
+        
+        // Sử dụng ảnh mặc định làm placeholder, sẽ được thay thế bằng lazy loading
+        let tourImage = './assets/images/packege-1.jpg';
+        
+        // Nếu booking có thông tin tour và tour có hình ảnh
+        if (booking.tour) {
+            tourImage = apiClient.getFullImageUrl(booking.tour.mainImageUrl) || 
+                       apiClient.getFullImageUrl(booking.tour.imageUrls?.[0]) || 
+                       './assets/images/packege-1.jpg';
+        } else if (booking.tourMainImageUrl) {
+            // Nếu booking trực tiếp có tourMainImageUrl
+            tourImage = apiClient.getFullImageUrl(booking.tourMainImageUrl);
+        } else if (booking.tourImageUrl) {
+            // Fallback cho tourImageUrl
+            tourImage = apiClient.getFullImageUrl(booking.tourImageUrl);
+        }
 
         return `
             <div class="booking-card">
                 <div class="booking-card-header">
-                    <img src="${tourImage}" alt="${booking.tourName || 'Tour'}" class="booking-tour-image">
+                    <img src="${tourImage}" 
+                         alt="${booking.tourName || 'Tour'}" 
+                         class="booking-tour-image"
+                         data-tour-id="${booking.tourId}"
+                         onerror="this.src='./assets/images/packege-1.jpg'"
+                         onload="this.style.opacity='1'">
                     
                     <div class="booking-tour-info">
                         <h3>${booking.tourName || 'Tên tour không có sẵn'}</h3>
