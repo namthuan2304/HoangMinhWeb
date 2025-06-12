@@ -271,12 +271,41 @@ class APIClient {
         return await this.request(`/comments/${id}`, {
             method: 'DELETE',
         });
-    }
-
-    async getUserComments(params = {}) {
+    }    async getUserComments(params = {}) {
         const queryString = new URLSearchParams(params).toString();
         const endpoint = queryString ? `/comments/my-comments?${queryString}` : '/comments/my-comments';
         return await this.request(endpoint);
+    }
+
+    // Admin Comments Methods
+    async getAllComments(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/comments/admin?${queryString}` : '/comments/admin';
+        return await this.request(endpoint);
+    }
+
+    async approveComment(id) {
+        return await this.request(`/comments/${id}/approve`, {
+            method: 'POST',
+        });
+    }
+
+    async rejectComment(id) {
+        return await this.request(`/comments/${id}/reject`, {
+            method: 'POST',
+        });
+    }
+
+    // Alias method for consistency with admin-comments.js
+    async get(endpoint) {
+        return await this.request(endpoint);
+    }
+
+    async post(endpoint, data = {}) {
+        return await this.request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
     }
 
     // Articles Methods
