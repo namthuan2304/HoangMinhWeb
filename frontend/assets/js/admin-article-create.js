@@ -212,7 +212,7 @@ class AdminArticleCreate {
         const container = document.getElementById('tagsList');
         container.innerHTML = Array.from(this.tags).map(tag => `
             <span class="tag-item">
-                <span>${tag}</span>
+                <span class="tag-text">${tag}</span>
                 <button type="button" class="tag-remove" onclick="adminArticleCreate.removeTag('${tag}')">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>

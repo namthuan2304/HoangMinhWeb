@@ -103,12 +103,15 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     /**
      * Tìm article theo ID và chưa bị xóa
      */
-    Optional<Article> findByIdAndDeletedAtIsNull(Long id);
-
-    /**
+    Optional<Article> findByIdAndDeletedAtIsNull(Long id);    /**
      * Tìm article theo slug và đã xuất bản
      */
     Optional<Article> findBySlugAndIsPublishedTrueAndDeletedAtIsNull(String slug);
+
+    /**
+     * Tìm article theo slug và chưa bị xóa
+     */
+    Optional<Article> findBySlugAndDeletedAtIsNull(String slug);
 
     /**
      * Lấy tất cả article chưa bị xóa

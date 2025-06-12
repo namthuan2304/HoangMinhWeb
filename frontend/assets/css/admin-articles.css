@@ -291,11 +291,12 @@
 .tag {
     display: inline-block;
     padding: 2px 8px;
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
     border-radius: 12px;
     font-size: 11px;
-    color: var(--color-text-light);
+    font-weight: 500;
 }
 
 /* Author Cell */

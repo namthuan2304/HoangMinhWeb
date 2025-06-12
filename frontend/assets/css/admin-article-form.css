@@ -365,6 +365,7 @@
     padding: 8px;
     background: white;
     transition: all 0.2s ease;
+    min-height: 80px;
 }
 
 .tags-input-wrapper:focus-within {
@@ -383,7 +384,7 @@
 .tags-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     margin-top: 8px;
 }
 
@@ -391,28 +392,46 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 8px;
-    background: var(--color-primary);
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    background: #2563eb;
+}
+
+.tag-text {
+    line-height: 1;
 }
 
 .tag-remove {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 10px;
-    transition: background 0.2s ease;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin: 0;
 }
 
 .tag-remove:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.tag-remove ion-icon {
+    font-size: 12px;
 }
 
 /* Tours Selector */

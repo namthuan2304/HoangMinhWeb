@@ -342,14 +342,23 @@ public class ArticleService {
             .distinct()
             .sorted()
             .collect(Collectors.toList());
-    }
-
-    /**
+    }    /**
      * Tăng lượt xem bài viết
      */
     public void incrementViewCount(Long id) {
         Article article = articleRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết với ID: " + id));
+        
+        article.incrementViewCount();
+        articleRepository.save(article);
+    }
+
+    /**
+     * Tăng lượt xem bài viết theo slug
+     */
+    public void incrementViewCountBySlug(String slug) {
+        Article article = articleRepository.findBySlugAndDeletedAtIsNull(slug)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết với slug: " + slug));
         
         article.incrementViewCount();
         articleRepository.save(article);
