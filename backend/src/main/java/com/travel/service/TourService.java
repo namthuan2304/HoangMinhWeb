@@ -353,6 +353,13 @@ public class TourService {
     }
 
     /**
+     * Lấy danh sách tours đang hoạt động
+     */
+    public List<Tour> getActiveTours() {
+        return tourRepository.findByStatusAndDeletedAtIsNull(TourStatus.ACTIVE);
+    }
+
+    /**
      * Lấy số tours mới trong tháng
      */
     public long getNewToursThisMonth() {

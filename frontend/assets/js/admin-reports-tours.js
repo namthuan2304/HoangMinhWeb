@@ -392,12 +392,10 @@ class AdminReportsTours {
             const tours = await this.fetchTopTours();
             const tbody = document.querySelector('#topToursTable tbody');
             
-            if (!tbody) return;
-
-            tbody.innerHTML = tours.map(tour => `
+            if (!tbody) return;            tbody.innerHTML = tours.map(tour => `
                 <tr>
                     <td>
-                        <div class="tour-info">
+                        <div class="tour-info" style="cursor: pointer;" onclick="window.open('../tour-detail.html?id=${tour.id}', '_blank')" title="Click để xem chi tiết tour">
                             <div class="tour-image">
                                 ${tour.image ? `<img src="${tour.image}" alt="${tour.name}">` : 
                                   `<ion-icon name="image-outline"></ion-icon>`}
@@ -435,12 +433,10 @@ class AdminReportsTours {
             const tours = await this.fetchRecentTours();
             const tbody = document.querySelector('#recentToursTable tbody');
             
-            if (!tbody) return;
-
-            tbody.innerHTML = tours.map(tour => `
+            if (!tbody) return;            tbody.innerHTML = tours.map(tour => `
                 <tr>
                     <td>
-                        <div class="tour-info">
+                        <div class="tour-info" style="cursor: pointer;" onclick="window.open('../tour-detail.html?id=${tour.id}', '_blank')" title="Click để xem chi tiết tour">
                             <div class="tour-image">
                                 ${tour.image ? `<img src="${tour.image}" alt="${tour.name}">` : 
                                   `<ion-icon name="image-outline"></ion-icon>`}
@@ -459,9 +455,6 @@ class AdminReportsTours {
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="adminReportsTours.viewTour(${tour.id})" title="Xem chi tiết">
-                                <ion-icon name="eye-outline"></ion-icon>
-                            </button>
                             <button class="btn-icon" onclick="adminReportsTours.editTour(${tour.id})" title="Chỉnh sửa">
                                 <ion-icon name="create-outline"></ion-icon>
                             </button>
@@ -640,13 +633,7 @@ class AdminReportsTours {
         } catch (error) {
             console.error('Error refreshing trend chart:', error);
         }
-    }
-
-    // Tour action methods
-    viewTour(tourId) {
-        window.location.href = `tour-detail.html?id=${tourId}`;
-    }
-
+    }    // Tour action methods
     editTour(tourId) {
         window.location.href = `tour-edit.html?id=${tourId}`;
     }

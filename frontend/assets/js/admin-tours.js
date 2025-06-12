@@ -375,9 +375,7 @@ class AdminTours {
 
     navigateToAddTour() {
         window.location.href = 'tour-create.html';
-    }
-
-    async toggleTourStatus(tourId, currentStatus) {
+    }    async toggleTourStatus(tourId, currentStatus) {
         try {
             const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
             const actionText = newStatus === 'ACTIVE' ? 'kích hoạt' : 'ngừng hoạt động';
@@ -388,7 +386,7 @@ class AdminTours {
 
             this.showLoading(true);
             
-            await apiClient.updateTour(tourId, { status: newStatus });
+            await apiClient.updateTourStatus(tourId, newStatus);
             
             this.showToast(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} tour thành công!`, 'success');
             this.loadTours();

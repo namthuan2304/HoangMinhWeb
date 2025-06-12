@@ -539,12 +539,9 @@ class APIClient {
         const queryString = new URLSearchParams(params).toString();
         const endpoint = queryString ? `/tours/admin?${queryString}` : '/tours/admin';
         return await this.request(endpoint);
-    }
-
-    async updateTourStatus(tourId, status) {
-        return await this.request(`/tours/${tourId}/status`, {
+    }    async updateTourStatus(tourId, status) {
+        return await this.request(`/tours/${tourId}/status?status=${encodeURIComponent(status)}`, {
             method: 'PUT',
-            body: JSON.stringify({ status }),
         });
     }
 

@@ -278,6 +278,13 @@ public class UserService {
     }
 
     /**
+     * Lấy số users không hoạt động
+     */
+    public long getInactiveUsers() {
+        return userRepository.countByIsActiveFalseAndDeletedAtIsNull();
+    }
+
+    /**
      * Lấy tỷ lệ users hoạt động
      */
     public double getActiveUserRate() {
