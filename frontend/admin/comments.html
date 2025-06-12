@@ -249,15 +249,23 @@
                                 <h3 class="stat-value" id="pendingComments">-</h3>
                                 <p class="stat-label">Chờ duyệt</p>
                             </div>
-                        </div>
-
-                        <div class="stat-card">
+                        </div>                        <div class="stat-card">
                             <div class="stat-icon approved">
                                 <ion-icon name="checkmark-circle-outline"></ion-icon>
                             </div>
                             <div class="stat-content">
                                 <h3 class="stat-value" id="approvedComments">-</h3>
                                 <p class="stat-label">Đã duyệt</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon rejected">
+                                <ion-icon name="close-circle-outline"></ion-icon>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-value" id="rejectedComments">-</h3>
+                                <p class="stat-label">Đã từ chối</p>
                             </div>
                         </div>
 
@@ -280,11 +288,11 @@
                                 <input type="text" id="searchInput" placeholder="Tìm kiếm bình luận...">
                             </div>
                             
-                            <div class="filter-group">
-                                <select id="statusFilter" class="form-select">
+                            <div class="filter-group">                                <select id="statusFilter" class="form-select">
                                     <option value="">Tất cả trạng thái</option>
-                                    <option value="true">Đã duyệt</option>
-                                    <option value="false">Chờ duyệt</option>
+                                    <option value="PENDING">Chờ duyệt</option>
+                                    <option value="APPROVED">Đã duyệt</option>
+                                    <option value="REJECTED">Đã từ chối</option>
                                 </select>
                                 
                                 <select id="ratingFilter" class="form-select">
@@ -392,9 +400,56 @@
                 <button class="modal-close" id="commentDetailModalClose">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
-            </div>
-            <div class="modal-body" id="commentDetailContent">
-                <!-- Comment detail content will be loaded here -->
+            </div>            <div class="modal-body" id="commentDetailContent">
+                <div class="comment-detail-grid">
+                    <div class="detail-section">
+                        <h4>Thông tin người dùng</h4>
+                        <div class="detail-item">
+                            <label>Tên:</label>
+                            <span id="modalUserName">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email:</label>
+                            <span id="modalUserEmail">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Thông tin tour</h4>
+                        <div class="detail-item">
+                            <label>Tên tour:</label>
+                            <span id="modalTourName">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Điểm đến:</label>
+                            <span id="modalDestination">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Nội dung bình luận</h4>
+                        <div class="detail-item">
+                            <label>Đánh giá:</label>
+                            <div id="modalRating" class="rating-stars">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Nội dung:</label>
+                            <div id="modalContent" class="comment-content">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Ngày tạo:</label>
+                            <span id="modalCreatedAt">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Trạng thái:</label>
+                            <span id="modalStatus" class="status-badge">-</span>
+                        </div>
+                        <div class="detail-item" id="modalRejectReasonSection" style="display: none;">
+                            <label>Lý do từ chối:</label>
+                            <div id="modalRejectReason" class="reject-reason">-</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" id="closeDetailBtn">Đóng</button>

@@ -1,16 +1,16 @@
 package com.travel.dto.response;
 
+import com.travel.enums.CommentStatus;
 import java.time.LocalDateTime;
 
 /**
  * DTO response thông tin bình luận
  */
-public class CommentResponse {
-
-    private Long id;
+public class CommentResponse {    private Long id;
     private String content;
     private Integer rating;
-    private Boolean isApproved;
+    private CommentStatus status;
+    private String rejectReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -42,18 +42,24 @@ public class CommentResponse {
 
     public Integer getRating() {
         return rating;
-    }
-
-    public void setRating(Integer rating) {
+    }    public void setRating(Integer rating) {
         this.rating = rating;
     }
 
-    public Boolean getIsApproved() {
-        return isApproved;
+    public CommentStatus getStatus() {
+        return status;
     }
 
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setStatus(CommentStatus status) {
+        this.status = status;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -5,6 +5,7 @@ import com.travel.dto.response.CommentResponse;
 import com.travel.entity.Comment;
 import com.travel.entity.Tour;
 import com.travel.entity.User;
+import com.travel.enums.CommentStatus;
 import com.travel.exception.ResourceNotFoundException;
 import com.travel.repository.CommentRepository;
 import com.travel.repository.TourRepository;
@@ -70,31 +71,36 @@ public class CommentService {
         updateTourRatingAverage(tour);
 
         return mapToCommentResponse(savedComment);
-    }
-
-    /**
+    }    /**
      * Lấy bình luận theo tour với phân trang
      */
     public Page<CommentResponse> getCommentsByTour(Long tourId, Pageable pageable) {
         Tour tour = tourRepository.findByIdAndDeletedAtIsNull(tourId)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour"));
 
-        Page<Comment> comments = commentRepository.findByTourAndIsApprovedTrueAndDeletedAtIsNull(tour, pageable);
+        Page<Comment> comments = commentRepository.findByTourAndApproved(tour, pageable);
         return comments.map(this::mapToCommentResponse);
     }
 
     /**
      * Lấy tất cả bình luận (Admin)
      */
-    public Page<CommentResponse> getAllComments(Boolean isApproved, Pageable pageable) {
+    public Page<CommentResponse> getAllComments(CommentStatus status, Pageable pageable) {
         Page<Comment> comments;
-        
-        if (isApproved != null) {
-            comments = commentRepository.findByIsApprovedAndDeletedAtIsNull(isApproved, pageable);
+          if (status != null) {
+            comments = commentRepository.findByStatusAndDeletedAtIsNull(status, pageable);
         } else {
             comments = commentRepository.findByDeletedAtIsNull(pageable);
         }
         
+        return comments.map(this::mapToCommentResponse);
+    }
+
+    /**
+     * Lấy bình luận theo trạng thái (Admin)
+     */
+    public Page<CommentResponse> getCommentsByStatus(CommentStatus status, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByStatusAndDeletedAtIsNull(status, pageable);
         return comments.map(this::mapToCommentResponse);
     }
 
@@ -113,7 +119,7 @@ public class CommentService {
         // Cập nhật nội dung
         comment.setContent(request.getContent());
         comment.setRating(request.getRating());
-        comment.setIsApproved(true); // Reset về chờ duyệt sau khi sửa
+        comment.setStatus(CommentStatus.PENDING); // Reset về chờ duyệt sau khi sửa
 
         Comment savedComment = commentRepository.save(comment);
 
@@ -160,9 +166,7 @@ public class CommentService {
         updateTourRatingAverage(comment.getTour());
 
         return mapToCommentResponse(savedComment);
-    }
-
-    /**
+    }    /**
      * Từ chối bình luận (Admin)
      */
     public CommentResponse rejectComment(Long id) {
@@ -170,6 +174,22 @@ public class CommentService {
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bình luận"));
 
         comment.reject();
+        Comment savedComment = commentRepository.save(comment);
+
+        // Cập nhật rating trung bình của tour
+        updateTourRatingAverage(comment.getTour());
+
+        return mapToCommentResponse(savedComment);
+    }
+
+    /**
+     * Từ chối bình luận với lý do (Admin)
+     */
+    public CommentResponse rejectComment(Long id, String reason) {
+        Comment comment = commentRepository.findByIdAndDeletedAtIsNull(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bình luận"));
+
+        comment.reject(reason);
         Comment savedComment = commentRepository.save(comment);
 
         // Cập nhật rating trung bình của tour
@@ -195,7 +215,7 @@ public class CommentService {
         Tour tour = tourRepository.findByIdAndDeletedAtIsNull(tourId)
             .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour"));
 
-        return commentRepository.countByTourAndIsApprovedTrueAndDeletedAtIsNull(tour);
+        return commentRepository.countByTourAndApproved(tour);
     }
 
     /**
@@ -205,13 +225,14 @@ public class CommentService {
         Double averageRating = commentRepository.getAverageRatingByTour(tour);
         tour.setRatingAverage(averageRating != null ? averageRating : 0.0);
         tourRepository.save(tour);
-    }
-
-    /**
+    }    /**
      * Map Comment entity to CommentResponse DTO
      */
     private CommentResponse mapToCommentResponse(Comment comment) {
         CommentResponse response = modelMapper.map(comment, CommentResponse.class);
+          // Map status fields
+        response.setStatus(comment.getStatus());
+        response.setRejectReason(comment.getRejectReason());
         
         // Map user info
         CommentResponse.UserInfo userInfo = new CommentResponse.UserInfo();
@@ -247,14 +268,12 @@ public class CommentService {
      */
     public Map<String, Long> getRatingBreakdown(Long tourId) {
         Tour tour = tourRepository.findByIdAndDeletedAtIsNull(tourId)
-            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour"));
-
-        Map<String, Long> breakdown = new HashMap<>();
-        breakdown.put("fiveStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 5));
-        breakdown.put("fourStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 4));
-        breakdown.put("threeStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 3));
-        breakdown.put("twoStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 2));
-        breakdown.put("oneStarCount", commentRepository.countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(tour, 1));
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour"));        Map<String, Long> breakdown = new HashMap<>();
+        breakdown.put("fiveStarCount", commentRepository.countByTourAndRatingAndApproved(tour, 5));
+        breakdown.put("fourStarCount", commentRepository.countByTourAndRatingAndApproved(tour, 4));
+        breakdown.put("threeStarCount", commentRepository.countByTourAndRatingAndApproved(tour, 3));
+        breakdown.put("twoStarCount", commentRepository.countByTourAndRatingAndApproved(tour, 2));
+        breakdown.put("oneStarCount", commentRepository.countByTourAndRatingAndApproved(tour, 1));
         
         return breakdown;
     }

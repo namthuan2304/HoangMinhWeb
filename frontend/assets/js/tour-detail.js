@@ -641,9 +641,7 @@ class TourDetailManager {
                 </div>
             </div>
         `;
-    }
-
-    async editReview(reviewId) {
+    }    async editReview(reviewId) {
         console.log('Editing review:', reviewId); // Debug log
         
         // Find the review
@@ -655,6 +653,12 @@ class TourDetailManager {
         }
 
         console.log('Found review:', review); // Debug log
+
+        // Set edit mode flag
+        const writeBtn = document.getElementById('writeReviewBtn');
+        if (writeBtn) {
+            writeBtn.classList.add('edit-mode');
+        }
 
         // Show form first
         this.showReviewForm();
@@ -875,13 +879,12 @@ class TourDetailManager {
         if (formTitle) {
             formTitle.innerHTML = '<ion-icon name="create-outline"></ion-icon> Chỉnh sửa đánh giá';
         }
-    }
-
-    resetReviewForm() {
+    }    resetReviewForm() {
         const form = document.getElementById('reviewForm');
         const contentElement = document.getElementById('reviewContent');
         const submitBtn = form?.querySelector('button[type="submit"]');
         const formTitle = document.querySelector('.form-title');
+        const writeBtn = document.getElementById('writeReviewBtn');
         
         // Clear form data
         if (contentElement) contentElement.value = '';
@@ -899,18 +902,27 @@ class TourDetailManager {
             formTitle.innerHTML = '<ion-icon name="star-outline"></ion-icon> Viết đánh giá';
         }
         
+        // Remove edit mode flag
+        if (writeBtn) {
+            writeBtn.classList.remove('edit-mode');
+        }
+        
         console.log('Form reset completed');
-    }
-
-    hideReviewForm() {
+    }hideReviewForm() {
         console.log('Hiding review form...');
         
         const overlay = document.getElementById('reviewFormOverlay');
+        const writeBtn = document.getElementById('writeReviewBtn');
         
         if (overlay) {
             overlay.classList.remove('active');
             overlay.style.display = 'none';
             document.body.style.overflow = '';
+        }
+
+        // Remove edit mode flag
+        if (writeBtn) {
+            writeBtn.classList.remove('edit-mode');
         }
 
         this.resetReviewForm();

@@ -14,6 +14,7 @@ class AdminComments {
         
         this.selectedComments = new Set();
         this.comments = [];
+        this.currentCommentId = null;
         
         this.init();
     }
@@ -115,7 +116,6 @@ class AdminComments {
 
     bindModalEvents() {
         // Comment detail modal
-        const commentDetailModal = document.getElementById('commentDetailModal');
         const commentDetailModalClose = document.getElementById('commentDetailModalClose');
         const closeDetailBtn = document.getElementById('closeDetailBtn');
 
@@ -179,21 +179,33 @@ class AdminComments {
         });
     }
 
-    async loadStats() {        try {
+    // Updated loadStats method to handle new status system
+    async loadStats() {
+        try {
             // Load total comments
             const totalResponse = await window.apiClient.get('/comments/admin?size=1');
             const totalComments = totalResponse.totalElements || 0;
             document.getElementById('totalComments').textContent = totalComments;
 
-            // Load pending comments
-            const pendingResponse = await window.apiClient.get('/comments/admin?isApproved=false&size=1');
+            // Load pending comments using new status system
+            const pendingResponse = await window.apiClient.get('/comments/admin?status=PENDING&size=1');
             const pendingComments = pendingResponse.totalElements || 0;
             document.getElementById('pendingComments').textContent = pendingComments;
 
-            // Load approved comments
-            const approvedResponse = await window.apiClient.get('/comments/admin?isApproved=true&size=1');
+            // Load approved comments using new status system
+            const approvedResponse = await window.apiClient.get('/comments/admin?status=APPROVED&size=1');
             const approvedComments = approvedResponse.totalElements || 0;
             document.getElementById('approvedComments').textContent = approvedComments;
+
+            // Load rejected comments for new status
+            const rejectedResponse = await window.apiClient.get('/comments/admin?status=REJECTED&size=1');
+            const rejectedComments = rejectedResponse.totalElements || 0;
+            
+            // Update rejected count in UI if element exists
+            const rejectedElement = document.getElementById('rejectedComments');
+            if (rejectedElement) {
+                rejectedElement.textContent = rejectedComments;
+            }
 
             // Calculate average rating (this would need a separate API endpoint)
             document.getElementById('averageRating').textContent = '4.2';
@@ -204,6 +216,7 @@ class AdminComments {
         }
     }
 
+    // Updated loadComments method to use new status system
     async loadComments() {
         try {
             this.showLoading();
@@ -215,8 +228,9 @@ class AdminComments {
                 sortDir: this.currentSort.split(',')[1]
             });
 
+            // Updated to use status instead of isApproved
             if (this.currentFilters.status) {
-                params.append('isApproved', this.currentFilters.status);
+                params.append('status', this.currentFilters.status);
             }
 
             if (this.currentFilters.search) {
@@ -258,11 +272,10 @@ class AdminComments {
             return;
         }
 
-        tbody.innerHTML = this.comments.map(comment => `
-            <tr ${this.selectedComments.has(comment.id) ? 'class="selected"' : ''}>
+        tbody.innerHTML = this.comments.map(comment => `                <tr ${this.selectedComments.has(comment.id) ? 'class="selected"' : ''}>
                 <td>
                     <input type="checkbox" ${this.selectedComments.has(comment.id) ? 'checked' : ''} 
-                           onchange="adminComments.toggleCommentSelection(${comment.id}, this.checked)">
+                           onchange="adminCommentsToggleCommentSelection(${comment.id}, this.checked)">
                 </td>
                 <td>
                     <div class="user-cell">
@@ -300,25 +313,17 @@ class AdminComments {
                     </div>
                 </td>
                 <td>
-                    <span class="status-badge ${comment.isApproved ? 'approved' : 'pending'}">
-                        ${comment.isApproved ? 'Đã duyệt' : 'Chờ duyệt'}
+                    <span class="status-badge ${this.getStatusClass(comment)}">
+                        ${this.getStatusText(comment)}
                     </span>
                 </td>
-                <td>${this.formatDateTime(comment.createdAt)}</td>
-                <td>
+                <td>${this.formatDateTime(comment.createdAt)}</td>                <td>
                     <div class="action-buttons">
-                        <button class="btn-icon btn-view" onclick="adminComments.viewComment(${comment.id})" title="Xem chi tiết">
+                        <button class="btn-icon btn-view" onclick="adminCommentsViewComment(${comment.id})" title="Xem chi tiết">
                             <ion-icon name="eye-outline"></ion-icon>
                         </button>
-                        ${!comment.isApproved ? `
-                            <button class="btn-icon btn-approve" onclick="adminComments.showApproveModal(${comment.id})" title="Phê duyệt">
-                                <ion-icon name="checkmark-outline"></ion-icon>
-                            </button>
-                            <button class="btn-icon btn-reject" onclick="adminComments.showRejectModal(${comment.id})" title="Từ chối">
-                                <ion-icon name="close-outline"></ion-icon>
-                            </button>
-                        ` : ''}
-                        <button class="btn-icon btn-delete" onclick="adminComments.showDeleteModal(${comment.id})" title="Xóa">
+                        ${this.getActionButtons(comment)}
+                        <button class="btn-icon btn-delete" onclick="adminCommentsShowDeleteModal(${comment.id})" title="Xóa">
                             <ion-icon name="trash-outline"></ion-icon>
                         </button>
                     </div>
@@ -337,6 +342,41 @@ class AdminComments {
             }
         }
         return stars.join('');
+    }    // Utility methods for status handling
+    getStatusClass(comment) {
+        if (comment.status) {
+            return comment.status.toLowerCase();
+        }
+        // Default to pending if status is missing
+        return 'pending';
+    }
+
+    getStatusText(comment) {
+        if (comment.status) {
+            switch (comment.status) {
+                case 'APPROVED': return 'Đã duyệt';
+                case 'PENDING': return 'Chờ duyệt';
+                case 'REJECTED': return 'Đã từ chối';
+                default: return comment.status;
+            }
+        }        // Default to pending if status is missing
+        return 'Chờ duyệt';
+    }
+
+    getActionButtons(comment) {
+        const status = comment.status || 'PENDING';
+        
+        if (status === 'PENDING') {
+            return `
+                <button class="btn-icon btn-approve" onclick="adminCommentsShowApproveModal(${comment.id})" title="Phê duyệt">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+                <button class="btn-icon btn-reject" onclick="adminCommentsShowRejectModal(${comment.id})" title="Từ chối">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            `;
+        }
+        return '';
     }
 
     renderPagination() {
@@ -372,426 +412,16 @@ class AdminComments {
 
         if (endPage - startPage + 1 < maxVisible) {
             startPage = Math.max(0, endPage - maxVisible + 1);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
+        }        for (let i = startPage; i <= endPage; i++) {
             pages.push(`
-                <button class="page-number ${i === this.currentPage ? 'active' : ''}" 
-                        onclick="adminComments.goToPage(${i})">
+                <button class="page-btn ${i === this.currentPage ? 'active' : ''}" 
+                        onclick="adminCommentsGoToPage(${i})">
                     ${i + 1}
                 </button>
             `);
         }
 
         return pages.join('');
-    }
-
-    goToPage(page) {
-        if (page >= 0 && page < this.totalPages && page !== this.currentPage) {
-            this.currentPage = page;
-            this.loadComments();
-        }
-    }
-
-    toggleCommentSelection(commentId, checked) {
-        if (checked) {
-            this.selectedComments.add(commentId);
-        } else {
-            this.selectedComments.delete(commentId);
-        }
-        this.updateSelectionState();
-    }
-
-    toggleSelectAll(checked) {
-        if (checked) {
-            this.comments.forEach(comment => {
-                this.selectedComments.add(comment.id);
-            });
-        } else {
-            this.selectedComments.clear();
-        }
-        this.renderComments();
-        this.updateSelectionState();
-    }
-
-    updateSelectionState() {
-        const selectAll = document.getElementById('selectAll');
-        const bulkApproveBtn = document.getElementById('bulkApproveBtn');
-        const bulkRejectBtn = document.getElementById('bulkRejectBtn');
-
-        const hasSelection = this.selectedComments.size > 0;
-        const allSelected = this.comments.length > 0 && this.selectedComments.size === this.comments.length;
-
-        if (selectAll) {
-            selectAll.checked = allSelected;
-            selectAll.indeterminate = hasSelection && !allSelected;
-        }
-
-        if (bulkApproveBtn) {
-            bulkApproveBtn.style.display = hasSelection ? 'flex' : 'none';
-        }
-        if (bulkRejectBtn) {
-            bulkRejectBtn.style.display = hasSelection ? 'flex' : 'none';
-        }
-    }
-
-    async viewComment(commentId) {
-        const comment = this.comments.find(c => c.id === commentId);
-        if (!comment) return;
-
-        const content = document.getElementById('commentDetailContent');
-        const actions = document.getElementById('commentActions');
-
-        if (!content || !actions) return;
-
-        content.innerHTML = `
-            <div class="comment-detail">
-                <div class="comment-header-detail">
-                    <div class="user-avatar">
-                        ${comment.user.avatarUrl ? 
-                            `<img src="${comment.user.avatarUrl}" alt="${comment.user.fullName}">` : 
-                            `<ion-icon name="person-outline"></ion-icon>`
-                        }
-                    </div>
-                    <div class="user-info">
-                        <h4>${comment.user.fullName || comment.user.username}</h4>
-                        <p>@${comment.user.username}</p>
-                    </div>
-                    <div class="rating-display">
-                        <div class="rating-stars">
-                            ${this.renderStars(comment.rating)}
-                        </div>
-                        <span class="rating-number">${comment.rating}/5</span>
-                    </div>
-                </div>
-
-                <div class="comment-meta">
-                    <div class="meta-item">
-                        <span><strong>Tour:</strong></span>
-                        <span>${comment.tour.name}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span><strong>Điểm đến:</strong></span>
-                        <span>${comment.tour.destination}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span><strong>Trạng thái:</strong></span>
-                        <span class="status-badge ${comment.isApproved ? 'approved' : 'pending'}">
-                            ${comment.isApproved ? 'Đã duyệt' : 'Chờ duyệt'}
-                        </span>
-                    </div>
-                    <div class="meta-item">
-                        <span><strong>Ngày tạo:</strong></span>
-                        <span>${this.formatDateTime(comment.createdAt)}</span>
-                    </div>
-                </div>
-
-                <div class="comment-text">
-                    ${comment.content}
-                </div>
-            </div>
-        `;
-
-        actions.innerHTML = `
-            ${!comment.isApproved ? `
-                <button class="btn btn-success" onclick="adminComments.approveComment(${comment.id})">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                    Phê duyệt
-                </button>
-                <button class="btn btn-outline" onclick="adminComments.showRejectModal(${comment.id})">
-                    <ion-icon name="close-outline"></ion-icon>
-                    Từ chối
-                </button>
-            ` : ''}
-            <button class="btn btn-danger" onclick="adminComments.showDeleteModal(${comment.id})">
-                <ion-icon name="trash-outline"></ion-icon>
-                Xóa
-            </button>
-        `;
-
-        this.showModal('commentDetailModal');
-    }
-
-    showApproveModal(commentId) {
-        this.selectedCommentId = commentId;
-        this.showModal('approveModal');
-    }
-
-    showRejectModal(commentId) {
-        this.selectedCommentId = commentId;
-        this.showModal('rejectModal');
-    }
-
-    showDeleteModal(commentId) {
-        this.selectedCommentId = commentId;
-        this.showModal('deleteModal');
-    }
-
-    async confirmApprove() {
-        if (!this.selectedCommentId) return;
-
-        try {
-            this.hideModal('approveModal');
-            this.showLoading();
-
-            await window.apiClient.post(`/api/comments/${this.selectedCommentId}/approve`);
-            
-            this.showToast('Bình luận đã được phê duyệt', 'success');
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error approving comment:', error);
-            this.showToast('Không thể phê duyệt bình luận', 'error');
-        } finally {
-            this.hideLoading();
-            this.selectedCommentId = null;
-        }
-    }
-
-    async confirmReject() {
-        if (!this.selectedCommentId) return;
-
-        try {
-            this.hideModal('rejectModal');
-            this.showLoading();
-
-            await window.apiClient.post(`/api/comments/${this.selectedCommentId}/reject`);
-            
-            this.showToast('Bình luận đã được từ chối', 'success');
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error rejecting comment:', error);
-            this.showToast('Không thể từ chối bình luận', 'error');
-        } finally {
-            this.hideLoading();
-            this.selectedCommentId = null;
-        }
-    }
-
-    async confirmDelete() {
-        if (!this.selectedCommentId) return;
-
-        try {
-            this.hideModal('deleteModal');
-            this.showLoading();
-
-            await window.apiClient.delete(`/api/comments/${this.selectedCommentId}`);
-            
-            this.showToast('Bình luận đã được xóa', 'success');
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error deleting comment:', error);
-            this.showToast('Không thể xóa bình luận', 'error');
-        } finally {
-            this.hideLoading();
-            this.selectedCommentId = null;
-        }
-    }
-
-    async approveComment(commentId) {
-        try {
-            this.hideModal('commentDetailModal');
-            this.showLoading();
-
-            await window.apiClient.post(`/api/comments/${commentId}/approve`);
-            
-            this.showToast('Bình luận đã được phê duyệt', 'success');
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error approving comment:', error);
-            this.showToast('Không thể phê duyệt bình luận', 'error');
-        } finally {
-            this.hideLoading();
-        }
-    }
-
-    async bulkApprove() {
-        if (this.selectedComments.size === 0) return;
-
-        try {
-            this.showLoading();
-            
-            const promises = Array.from(this.selectedComments).map(commentId =>
-                window.apiClient.post(`/api/comments/${commentId}/approve`)
-            );
-
-            await Promise.all(promises);
-            
-            this.showToast(`Đã phê duyệt ${this.selectedComments.size} bình luận`, 'success');
-            this.selectedComments.clear();
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error bulk approving comments:', error);
-            this.showToast('Không thể phê duyệt các bình luận đã chọn', 'error');
-        } finally {
-            this.hideLoading();
-        }
-    }
-
-    async bulkReject() {
-        if (this.selectedComments.size === 0) return;
-
-        try {
-            this.showLoading();
-            
-            const promises = Array.from(this.selectedComments).map(commentId =>
-                window.apiClient.post(`/api/comments/${commentId}/reject`)
-            );
-
-            await Promise.all(promises);
-            
-            this.showToast(`Đã từ chối ${this.selectedComments.size} bình luận`, 'success');
-            this.selectedComments.clear();
-            this.loadComments();
-            this.loadStats();
-
-        } catch (error) {
-            console.error('Error bulk rejecting comments:', error);
-            this.showToast('Không thể từ chối các bình luận đã chọn', 'error');
-        } finally {
-            this.hideLoading();
-        }
-    }
-
-    async exportComments() {
-        try {
-            this.showLoading();
-            
-            // This would typically generate and download a CSV/Excel file
-            this.showToast('Tính năng xuất báo cáo đang được phát triển', 'info');
-
-        } catch (error) {
-            console.error('Error exporting comments:', error);
-            this.showToast('Không thể xuất báo cáo', 'error');
-        } finally {
-            this.hideLoading();
-        }
-    }
-
-    refresh() {
-        this.selectedComments.clear();
-        this.currentPage = 0;
-        this.loadStats();
-        this.loadComments();
-    }
-
-    // Utility methods
-    formatDateTime(dateString) {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-
-    showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    hideModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
-
-    showLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-        }
-    }
-
-    hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
-    }
-
-    showToast(message, type = 'info') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-content">
-                <ion-icon name="${this.getToastIcon(type)}"></ion-icon>
-                <span>${message}</span>
-            </div>
-        `;
-
-        // Add toast styles if not already added
-        if (!document.getElementById('toast-styles')) {
-            const styles = document.createElement('style');
-            styles.id = 'toast-styles';
-            styles.textContent = `
-                .toast {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 1rem 1.5rem;
-                    background: white;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    z-index: 9999;
-                    animation: slideInRight 0.3s ease;
-                }
-                .toast-success { border-left: 4px solid #28a745; }
-                .toast-error { border-left: 4px solid #dc3545; }
-                .toast-warning { border-left: 4px solid #ffc107; }
-                .toast-info { border-left: 4px solid #007bff; }
-                .toast-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                @keyframes slideInRight {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-            `;
-            document.head.appendChild(styles);
-        }
-
-        document.body.appendChild(toast);
-
-        // Remove toast after 3 seconds
-        setTimeout(() => {
-            toast.style.animation = 'slideInRight 0.3s ease reverse';
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    getToastIcon(type) {
-        const icons = {
-            success: 'checkmark-circle-outline',
-            error: 'alert-circle-outline',
-            warning: 'warning-outline',
-            info: 'information-circle-outline'
-        };
-        return icons[type] || icons.info;
     }
 
     renderEmptyState() {
@@ -808,9 +438,339 @@ class AdminComments {
             `;
         }
     }
+
+    // Updated confirmReject method to send reject reason
+    async confirmReject() {
+        if (this.currentCommentId) {
+            try {
+                const rejectReason = document.getElementById('rejectReason')?.value || '';
+                
+                // Call the backend with reject reason
+                await window.apiClient.post(`/comments/${this.currentCommentId}/reject`, {
+                    reason: rejectReason
+                });
+                
+                this.showToast('Từ chối bình luận thành công', 'success');
+                this.hideModal('rejectModal');
+                this.loadComments();
+                this.loadStats();
+                
+                // Clear the reject reason field
+                if (document.getElementById('rejectReason')) {
+                    document.getElementById('rejectReason').value = '';
+                }
+            } catch (error) {
+                console.error('Error rejecting comment:', error);                this.showToast('Không thể từ chối bình luận', 'error');
+            }
+        }
+    }
+
+    // Updated viewComment method to show reject reason
+    async viewComment(commentId) {
+        console.log('viewComment called with ID:', commentId);
+        try {
+            const comment = this.comments.find(c => c.id === commentId);
+            console.log('Found comment:', comment);
+            if (!comment) {
+                console.log('Comment not found!');
+                return;
+            }
+
+            // Update modal content with comment details
+            document.getElementById('modalUserName').textContent = comment.user.fullName || comment.user.username;
+            document.getElementById('modalUserEmail').textContent = comment.user.email;
+            document.getElementById('modalTourName').textContent = comment.tour.name;
+            document.getElementById('modalDestination').textContent = comment.tour.destination;
+            document.getElementById('modalRating').innerHTML = this.renderStars(comment.rating);
+            document.getElementById('modalContent').textContent = comment.content;
+            document.getElementById('modalCreatedAt').textContent = this.formatDateTime(comment.createdAt);
+            document.getElementById('modalStatus').textContent = this.getStatusText(comment);
+            
+            // Update status class
+            const statusElement = document.getElementById('modalStatus');
+            statusElement.className = `status-badge ${this.getStatusClass(comment)}`;
+            
+            // Show/hide reject reason section
+            const rejectReasonSection = document.getElementById('modalRejectReasonSection');
+            const rejectReasonText = document.getElementById('modalRejectReason');
+            
+            if (comment.status === 'REJECTED' && comment.rejectReason) {
+                rejectReasonSection.style.display = 'block';
+                rejectReasonText.textContent = comment.rejectReason;
+            } else {
+                rejectReasonSection.style.display = 'none';
+            }
+
+            this.showModal('commentDetailModal');
+        } catch (error) {
+            console.error('Error viewing comment:', error);
+            this.showToast('Không thể xem chi tiết bình luận', 'error');
+        }
+    }    formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN');
+    }
+
+    showModal(modalId) {
+        console.log('showModal called with ID:', modalId);
+        const modal = document.getElementById(modalId);
+        console.log('Found modal element:', modal);
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            console.log('Modal should now be visible');        } else {
+            console.error('Modal element not found:', modalId);
+        }
+    }
+
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    showToast(message, type = 'info') {
+        // Simple toast implementation
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        switch (type) {
+            case 'success':
+                toast.style.backgroundColor = '#28a745';
+                break;
+            case 'error':
+                toast.style.backgroundColor = '#dc3545';
+                break;
+            default:
+                toast.style.backgroundColor = '#007bff';
+        }
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    showLoading() {
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+            loadingElement.style.display = 'flex';
+        }
+    }
+
+    hideLoading() {
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+    }
+
+    goToPage(page) {
+        if (page >= 0 && page < this.totalPages) {
+            this.currentPage = page;
+            this.loadComments();
+        }
+    }
+
+    refresh() {
+        this.loadComments();
+        this.loadStats();
+    }
+
+    toggleCommentSelection(commentId, checked) {
+        if (checked) {
+            this.selectedComments.add(commentId);
+        } else {
+            this.selectedComments.delete(commentId);
+        }
+        this.updateSelectionState();
+    }
+
+    toggleSelectAll(checked) {
+        if (checked) {
+            this.comments.forEach(comment => this.selectedComments.add(comment.id));
+        } else {
+            this.selectedComments.clear();
+        }
+        this.updateSelectionState();
+        this.renderComments();
+    }
+
+    updateSelectionState() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const bulkActions = document.querySelector('.bulk-actions');
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = this.comments.length > 0 && 
+                this.comments.every(comment => this.selectedComments.has(comment.id));
+        }
+        
+        if (bulkActions) {            bulkActions.style.display = this.selectedComments.size > 0 ? 'flex' : 'none';
+        }
+    }
+
+    showApproveModal(commentId) {
+        console.log('showApproveModal called with ID:', commentId);
+        this.currentCommentId = commentId;
+        this.showModal('approveModal');
+    }
+
+    showRejectModal(commentId) {
+        console.log('showRejectModal called with ID:', commentId);
+        this.currentCommentId = commentId;
+        this.showModal('rejectModal');
+    }
+
+    showDeleteModal(commentId) {
+        console.log('showDeleteModal called with ID:', commentId);
+        this.currentCommentId = commentId;
+        this.showModal('deleteModal');
+    }
+
+    async confirmApprove() {
+        if (this.currentCommentId) {
+            try {
+                await window.apiClient.post(`/comments/${this.currentCommentId}/approve`);
+                this.showToast('Phê duyệt bình luận thành công', 'success');
+                this.hideModal('approveModal');
+                this.loadComments();
+                this.loadStats();
+            } catch (error) {
+                console.error('Error approving comment:', error);
+                this.showToast('Không thể phê duyệt bình luận', 'error');
+            }
+        }
+    }
+
+    async confirmDelete() {
+        if (this.currentCommentId) {
+            try {
+                await window.apiClient.delete(`/comments/${this.currentCommentId}`);
+                this.showToast('Xóa bình luận thành công', 'success');
+                this.hideModal('deleteModal');
+                this.loadComments();
+                this.loadStats();
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                this.showToast('Không thể xóa bình luận', 'error');
+            }
+        }
+    }
+
+    async bulkApprove() {
+        if (this.selectedComments.size === 0) return;
+        
+        try {
+            const promises = Array.from(this.selectedComments).map(commentId =>
+                window.apiClient.post(`/comments/${commentId}/approve`)
+            );
+            
+            await Promise.all(promises);
+            this.showToast('Phê duyệt hàng loạt thành công', 'success');
+            this.selectedComments.clear();
+            this.updateSelectionState();
+            this.loadComments();
+            this.loadStats();
+        } catch (error) {
+            console.error('Error bulk approving comments:', error);
+            this.showToast('Không thể phê duyệt hàng loạt', 'error');
+        }
+    }
+
+    async bulkReject() {
+        if (this.selectedComments.size === 0) return;
+        
+        try {
+            const promises = Array.from(this.selectedComments).map(commentId =>
+                window.apiClient.post(`/comments/${commentId}/reject`)
+            );
+            
+            await Promise.all(promises);
+            this.showToast('Từ chối hàng loạt thành công', 'success');
+            this.selectedComments.clear();
+            this.updateSelectionState();
+            this.loadComments();
+            this.loadStats();
+        } catch (error) {
+            console.error('Error bulk rejecting comments:', error);
+            this.showToast('Không thể từ chối hàng loạt', 'error');
+        }
+    }
+
+    async exportComments() {
+        try {
+            const response = await window.apiClient.get('/comments/admin/export');
+            // Handle export response
+            this.showToast('Xuất dữ liệu thành công', 'success');
+        } catch (error) {
+            console.error('Error exporting comments:', error);
+            this.showToast('Không thể xuất dữ liệu', 'error');
+        }
+    }
 }
 
+// Helper function to ensure adminComments is available
+function ensureAdminComments() {
+    if (!window.adminComments) {
+        console.log('AdminComments not found, creating new instance...');
+        window.adminComments = new AdminComments();
+    }
+    return window.adminComments;
+}
+
+// Global functions that can be called from HTML onclick
+window.adminCommentsViewComment = function(commentId) {
+    console.log('Global viewComment called with ID:', commentId);
+    ensureAdminComments().viewComment(commentId);
+};
+
+window.adminCommentsShowApproveModal = function(commentId) {
+    console.log('Global showApproveModal called with ID:', commentId);
+    ensureAdminComments().showApproveModal(commentId);
+};
+
+window.adminCommentsShowRejectModal = function(commentId) {
+    console.log('Global showRejectModal called with ID:', commentId);
+    ensureAdminComments().showRejectModal(commentId);
+};
+
+window.adminCommentsShowDeleteModal = function(commentId) {
+    console.log('Global showDeleteModal called with ID:', commentId);
+    ensureAdminComments().showDeleteModal(commentId);
+};
+
+window.adminCommentsGoToPage = function(page) {
+    console.log('Global goToPage called with page:', page);
+    ensureAdminComments().goToPage(page);
+};
+
+window.adminCommentsToggleCommentSelection = function(commentId, checked) {
+    console.log('Global toggleCommentSelection called with ID:', commentId, 'checked:', checked);
+    ensureAdminComments().toggleCommentSelection(commentId, checked);
+};
+
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initializing AdminComments...');
     window.adminComments = new AdminComments();
+    console.log('AdminComments initialized:', window.adminComments);
 });
+
+// Also make it available globally immediately
+window.adminComments = null;

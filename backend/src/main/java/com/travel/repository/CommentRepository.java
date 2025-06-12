@@ -3,6 +3,7 @@ package com.travel.repository;
 import com.travel.entity.Comment;
 import com.travel.entity.Tour;
 import com.travel.entity.User;
+import com.travel.enums.CommentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,12 +18,10 @@ import java.util.Optional;
  * Repository cho entity Comment
  */
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-
-    /**
+public interface CommentRepository extends JpaRepository<Comment, Long> {    /**
      * Tìm comment theo tour có phân trang
      */
-    @Query("SELECT c FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.isApproved = true ORDER BY c.createdAt DESC")
+    @Query("SELECT c FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.status = 'APPROVED' ORDER BY c.createdAt DESC")
     Page<Comment> findByTourAndApproved(@Param("tour") Tour tour, Pageable pageable);
 
     /**
@@ -34,25 +33,25 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     /**
      * Tìm comment chưa được duyệt
      */
-    @Query("SELECT c FROM Comment c WHERE c.deletedAt IS NULL AND c.isApproved = false ORDER BY c.createdAt DESC")
+    @Query("SELECT c FROM Comment c WHERE c.deletedAt IS NULL AND c.status = 'PENDING' ORDER BY c.createdAt DESC")
     List<Comment> findPendingComments();
 
     /**
      * Tính rating trung bình của tour
      */
-    @Query("SELECT AVG(c.rating) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.isApproved = true")
+    @Query("SELECT AVG(c.rating) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.status = 'APPROVED'")
     Double getAverageRatingByTour(@Param("tour") Tour tour);
 
     /**
      * Đếm số comment theo tour
      */
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.isApproved = true")
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.status = 'APPROVED'")
     long countByTourAndApproved(@Param("tour") Tour tour);
 
     /**
      * Đếm số comment theo rating
      */
-    @Query("SELECT c.rating, COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.isApproved = true GROUP BY c.rating")
+    @Query("SELECT c.rating, COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.status = 'APPROVED' GROUP BY c.rating")
     List<Object[]> countByRatingAndTour(@Param("tour") Tour tour);
 
     /**
@@ -70,38 +69,32 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     /**
      * Tìm comment theo ID và chưa bị xóa
      */
-    Optional<Comment> findByIdAndDeletedAtIsNull(Long id);
-
-    /**
+    Optional<Comment> findByIdAndDeletedAtIsNull(Long id);    /**
      * Lấy tất cả comment chưa bị xóa
      */
     Page<Comment> findByDeletedAtIsNull(Pageable pageable);
 
     /**
-     * Tìm comment theo trạng thái approved
-     */
-    Page<Comment> findByIsApprovedAndDeletedAtIsNull(Boolean isApproved, Pageable pageable);
-
-    /**
      * Kiểm tra user đã comment tour chưa
      */
     boolean existsByUserAndTourAndDeletedAtIsNull(User user, Tour tour);    /**
-     * Đếm comment theo tour và approved
-     */
-    long countByTourAndIsApprovedTrueAndDeletedAtIsNull(Tour tour);
-
-    /**
-     * Tìm comment theo tour và approved với phân trang
-     */
-    Page<Comment> findByTourAndIsApprovedTrueAndDeletedAtIsNull(Tour tour, Pageable pageable);
-
-    /**
      * Tìm comment theo user và chưa bị xóa với phân trang
      */
     Page<Comment> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
 
     /**
-     * Đếm số bình luận theo tour và rating
+     * Tìm comment theo status
      */
-    long countByTourAndRatingAndIsApprovedTrueAndDeletedAtIsNull(Tour tour, Integer rating);
+    @Query("SELECT c FROM Comment c WHERE c.deletedAt IS NULL AND c.status = :status ORDER BY c.createdAt DESC")
+    Page<Comment> findByStatusAndDeletedAtIsNull(@Param("status") CommentStatus status, Pageable pageable);    /**
+     * Đếm comment theo status
+     */
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.status = :status")
+    long countByStatusAndDeletedAtIsNull(@Param("status") CommentStatus status);
+
+    /**
+     * Đếm số bình luận theo tour và rating (chỉ approved)
+     */
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.deletedAt IS NULL AND c.tour = :tour AND c.rating = :rating AND c.status = 'APPROVED'")
+    long countByTourAndRatingAndApproved(@Param("tour") Tour tour, @Param("rating") Integer rating);
 }

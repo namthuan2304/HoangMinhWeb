@@ -3,6 +3,7 @@ package com.travel.controller;
 import com.travel.dto.request.CommentRequest;
 import com.travel.dto.response.CommentResponse;
 import com.travel.dto.response.MessageResponse;
+import com.travel.enums.CommentStatus;
 import com.travel.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -86,12 +87,11 @@ public class CommentController {
 
     /**
      * Lấy tất cả bình luận (Admin)
-     */
-    @GetMapping("/admin")
+     */    @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lấy tất cả bình luận (Admin)")
     public ResponseEntity<Page<CommentResponse>> getAllComments(
-            @RequestParam(required = false) Boolean isApproved,
+            @RequestParam(required = false) CommentStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -102,7 +102,7 @@ public class CommentController {
             : Sort.by(sortBy).ascending();
         
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<CommentResponse> comments = commentService.getAllComments(isApproved, pageable);
+        Page<CommentResponse> comments = commentService.getAllComments(status, pageable);
         
         return ResponseEntity.ok(comments);
     }
@@ -163,16 +163,21 @@ public class CommentController {
     public ResponseEntity<CommentResponse> approveComment(@PathVariable Long id) {
         CommentResponse approvedComment = commentService.approveComment(id);
         return ResponseEntity.ok(approvedComment);
-    }
-
-    /**
+    }    /**
      * Từ chối bình luận (Admin)
      */
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Từ chối bình luận")
-    public ResponseEntity<CommentResponse> rejectComment(@PathVariable Long id) {
-        CommentResponse rejectedComment = commentService.rejectComment(id);
+    public ResponseEntity<CommentResponse> rejectComment(
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason) {
+        CommentResponse rejectedComment;
+        if (reason != null && !reason.trim().isEmpty()) {
+            rejectedComment = commentService.rejectComment(id, reason.trim());
+        } else {
+            rejectedComment = commentService.rejectComment(id);
+        }
         return ResponseEntity.ok(rejectedComment);
     }
 }
