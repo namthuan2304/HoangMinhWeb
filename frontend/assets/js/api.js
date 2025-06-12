@@ -18,9 +18,7 @@ class APIClient {
         }
 
         return headers;
-    }
-
-    // Helper method để xử lý response
+    }    // Helper method để xử lý response
     async handleResponse(response) {
         if (response.status === 401) {
             // Token hết hạn, thử refresh
@@ -32,12 +30,32 @@ class APIClient {
         }
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: 'Có lỗi xảy ra' }));
-            throw new Error(error.message || 'Request failed');
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                errorData = { message: 'Có lỗi xảy ra' };
+            }
+            
+            // Enhanced error handling for different HTTP status codes
+            const error = new Error(errorData.message || 'Request failed');
+            error.status = response.status;
+            error.response = { 
+                status: response.status,
+                data: errorData 
+            };
+            
+            // Special handling for duplicate entry errors
+            if (response.status === 409 || 
+                (errorData.message && errorData.message.toLowerCase().includes('duplicate'))) {
+                error.isDuplicateError = true;
+            }
+            
+            throw error;
         }
 
         return response.json();
-    }    // Generic request method
+    }// Generic request method
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {
@@ -333,11 +351,32 @@ class APIClient {
             console.error('Featured image upload error:', error);
             throw error;
         }
-    }
-
-    // Additional Articles Methods
+    }    // Additional Articles Methods
     async getArticleTags() {
         return await this.request('/articles/tags', { auth: false });
+    }
+
+    async uploadImage(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const url = `${this.baseURL}/upload/image`;
+        const config = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+                // Don't set Content-Type for FormData - browser will set it automatically
+            },
+        };
+
+        try {
+            const response = await fetch(url, config);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Image upload error:', error);
+            throw error;
+        }
     }
 
     async trackArticleView(articleId) {

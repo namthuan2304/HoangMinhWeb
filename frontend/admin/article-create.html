@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/admin-common.css">
     <link rel="stylesheet" href="../assets/css/admin-article-form.css">
-      <!-- Quill Editor (Alternative to TinyMCE) -->
+    
+    <!-- Quill Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     
@@ -213,13 +214,9 @@
                             <ion-icon name="arrow-back-outline"></ion-icon>
                             <span class="btn-text">Quay lại</span>
                         </button>
-                        <button class="btn btn-secondary" id="saveDraftBtn">
+                        <button class="btn btn-secondary" id="saveAndPublishBtn">
                             <ion-icon name="document-outline"></ion-icon>
                             <span class="btn-text">Lưu nháp</span>
-                        </button>
-                        <button class="btn btn-primary" id="publishBtn">
-                            <ion-icon name="checkmark-circle-outline"></ion-icon>
-                            <span class="btn-text">Xuất bản</span>
                         </button>
                     </div>
                 </div>
@@ -241,27 +238,25 @@
                                         </h3>
                                     </div>
                                     
-                                    <div class="section-content">
-                                        <div class="form-group">
-                                            <label for="title" class="form-label required">Tiêu đề bài viết</label>
-                                            <input type="text" id="title" name="title" class="form-input" 
-                                                   placeholder="Nhập tiêu đề bài viết..." required>
-                                            <div class="form-error" id="titleError"></div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="title" class="form-label required">Tiêu đề bài viết</label>
+                                        <input type="text" id="title" name="title" class="form-input" 
+                                               placeholder="Nhập tiêu đề bài viết..." required>
+                                        <div class="form-error" id="titleError"></div>
+                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="slug" class="form-label">Slug (URL)</label>
-                                            <input type="text" id="slug" name="slug" class="form-input" 
-                                                   placeholder="slug-bai-viet" readonly>
-                                            <div class="form-help">Slug sẽ được tự động tạo từ tiêu đề</div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="slug" class="form-label">Slug (URL)</label>
+                                        <input type="text" id="slug" name="slug" class="form-input" 
+                                               placeholder="slug-bai-viet" readonly>
+                                        <div class="form-help">Slug sẽ được tự động tạo từ tiêu đề</div>
+                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="summary" class="form-label">Tóm tắt</label>
-                                            <textarea id="summary" name="summary" class="form-textarea" rows="3"
-                                                      placeholder="Nhập tóm tắt ngắn gọn về bài viết..."></textarea>
-                                            <div class="form-help">Tối đa 500 ký tự</div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="summary" class="form-label">Tóm tắt</label>
+                                        <textarea id="summary" name="summary" class="form-textarea" rows="3"
+                                                  placeholder="Nhập tóm tắt ngắn gọn về bài viết..."></textarea>
+                                        <div class="form-help">Tối đa 500 ký tự</div>
                                     </div>
                                 </div>
 
@@ -274,12 +269,11 @@
                                         </h3>
                                     </div>
                                     
-                                    <div class="section-content">                                        <div class="form-group">
-                                            <label for="content" class="form-label required">Nội dung</label>
-                                            <div id="contentEditor" class="quill-editor"></div>
-                                            <textarea id="content" name="content" style="display: none;" required></textarea>
-                                            <div class="form-error" id="contentError"></div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="content" class="form-label required">Nội dung</label>
+                                        <div id="contentEditor" class="quill-editor"></div>
+                                        <textarea id="content" name="content" style="display: none;" required></textarea>
+                                        <div class="form-error" id="contentError"></div>
                                     </div>
                                 </div>
 
@@ -290,7 +284,7 @@
                                             <ion-icon name="search-outline"></ion-icon>
                                             Tối ưu SEO
                                         </h3>
-                                        <button type="button" class="section-toggle collapsed" data-target="seoSection">
+                                        <button type="button" class="section-toggle" data-target="seoSection">
                                             <ion-icon name="chevron-down-outline"></ion-icon>
                                         </button>
                                     </div>
@@ -322,6 +316,45 @@
 
                             <!-- Sidebar Section -->
                             <div class="sidebar-section">
+                                <!-- Publish Settings -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <h3>
+                                            <ion-icon name="settings-outline"></ion-icon>
+                                            Cài đặt xuất bản
+                                        </h3>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Trạng thái</label>
+                                        <div class="status-selector">
+                                            <label class="radio-option selected">
+                                                <input type="radio" name="status" value="draft" checked>
+                                                <span class="radio-mark"></span>
+                                                <div class="radio-content">
+                                                    <span class="radio-title">Bản nháp</span>
+                                                    <span class="radio-desc">Chưa công khai</span>
+                                                </div>
+                                            </label>
+                                            <label class="radio-option">
+                                                <input type="radio" name="status" value="published">
+                                                <span class="radio-mark"></span>
+                                                <div class="radio-content">
+                                                    <span class="radio-title">Xuất bản</span>
+                                                    <span class="radio-desc">Hiển thị công khai</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="article-actions">
+                                        <button type="button" class="btn btn-outline btn-block" id="previewBtn">
+                                            <ion-icon name="eye-outline"></ion-icon>
+                                            <span>Xem trước</span>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <!-- Featured Image -->
                                 <div class="form-section">
                                     <div class="section-header">
@@ -331,25 +364,23 @@
                                         </h3>
                                     </div>
                                     
-                                    <div class="section-content">
-                                        <div class="image-upload">
-                                            <div class="image-preview" id="imagePreview">
-                                                <div class="image-placeholder">
-                                                    <ion-icon name="image-outline"></ion-icon>
-                                                    <span>Chọn ảnh đại diện</span>
-                                                </div>
+                                    <div class="image-upload">
+                                        <div class="image-preview" id="imagePreview">
+                                            <div class="image-placeholder">
+                                                <ion-icon name="image-outline"></ion-icon>
+                                                <span>Chọn ảnh đại diện</span>
                                             </div>
-                                            <input type="file" id="featuredImage" accept="image/*" style="display: none;">
-                                            <div class="image-actions">
-                                                <button type="button" class="btn btn-outline btn-sm" id="selectImageBtn">
-                                                    <ion-icon name="cloud-upload-outline"></ion-icon>
-                                                    <span>Chọn ảnh</span>
-                                                </button>
-                                                <button type="button" class="btn btn-danger btn-sm" id="removeImageBtn" style="display: none;">
-                                                    <ion-icon name="trash-outline"></ion-icon>
-                                                    <span>Xóa</span>
-                                                </button>
-                                            </div>
+                                        </div>
+                                        <input type="file" id="featuredImage" accept="image/*" style="display: none;">
+                                        <div class="image-actions">
+                                            <button type="button" class="btn btn-outline btn-sm" id="selectImageBtn">
+                                                <ion-icon name="cloud-upload-outline"></ion-icon>
+                                                <span>Chọn ảnh</span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" id="removeImageBtn" style="display: none;">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                                <span>Xóa</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -363,59 +394,13 @@
                                         </h3>
                                     </div>
                                     
-                                    <div class="section-content">
-                                        <div class="form-group">
-                                            <div class="tags-input-wrapper">
-                                                <input type="text" id="tagsInput" class="form-input" 
-                                                       placeholder="Nhập tag và nhấn Enter...">
-                                                <div class="tags-list" id="tagsList"></div>
-                                            </div>
-                                            <div class="form-help">Nhấn Enter để thêm tag</div>
+                                    <div class="form-group">
+                                        <div class="tags-input-wrapper">
+                                            <input type="text" id="tagsInput" class="form-input" 
+                                                   placeholder="Nhập tag và nhấn Enter...">
+                                            <div class="tags-list" id="tagsList"></div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Related Tours -->
-                                <div class="form-section">
-                                    <div class="section-header">
-                                        <h3>
-                                            <ion-icon name="map-outline"></ion-icon>
-                                            Tours liên quan
-                                        </h3>
-                                    </div>
-                                    
-                                    <div class="section-content">
-                                        <div class="form-group">
-                                            <div class="tours-selector">
-                                                <input type="text" id="toursSearch" class="form-input" 
-                                                       placeholder="Tìm kiếm tours...">
-                                                <div class="tours-dropdown" id="toursDropdown"></div>
-                                                <div class="selected-tours" id="selectedTours"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Quick Actions -->
-                                <div class="form-section">
-                                    <div class="section-header">
-                                        <h3>
-                                            <ion-icon name="flash-outline"></ion-icon>
-                                            Thao tác nhanh
-                                        </h3>
-                                    </div>
-                                    
-                                    <div class="section-content">
-                                        <div class="article-actions">
-                                            <button type="button" class="btn btn-outline btn-block" id="previewBtn" disabled>
-                                                <ion-icon name="eye-outline"></ion-icon>
-                                                <span>Xem trước</span>
-                                            </button>
-                                            <button type="button" class="btn btn-outline btn-block" id="clearFormBtn">
-                                                <ion-icon name="refresh-outline"></ion-icon>
-                                                <span>Làm mới form</span>
-                                            </button>
-                                        </div>
+                                        <div class="form-help">Nhấn Enter để thêm tag</div>
                                     </div>
                                 </div>
                             </div>
@@ -432,32 +417,7 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner large"></div>
-        <p>Đang xử lý...</p>
-    </div>
-
-    <!-- Tours Selection Modal -->
-    <div class="modal-overlay" id="toursModal">
-        <div class="modal large">
-            <div class="modal-header">
-                <h3>Chọn Tours liên quan</h3>
-                <button class="modal-close" id="toursModalClose">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="tours-search">
-                    <input type="text" id="modalToursSearch" class="form-input" 
-                           placeholder="Tìm kiếm tours...">
-                </div>
-                <div class="tours-list" id="modalToursList">
-                    <!-- Tours will be loaded here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="closeToursModal">Đóng</button>
-                <button class="btn btn-primary" id="confirmToursSelection">Xác nhận</button>
-            </div>
-        </div>
+        <p>Đang tạo bài viết...</p>
     </div>
 
     <!-- Toast Container -->

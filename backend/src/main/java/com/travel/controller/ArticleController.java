@@ -301,4 +301,14 @@ public class ArticleController {
         articleService.incrementViewCount(id);
         return ResponseEntity.ok(new MessageResponse("View tracked successfully"));
     }
+
+    /**
+     * Track lượt xem bài viết theo slug (Public)
+     */
+    @PostMapping("/slug/{slug}/view")
+    @Operation(summary = "Track lượt xem bài viết theo slug")
+    public ResponseEntity<MessageResponse> trackViewBySlug(@PathVariable String slug) {
+        articleService.incrementViewCountBySlug(slug);
+        return ResponseEntity.ok(new MessageResponse("View tracked successfully"));
+    }
 }

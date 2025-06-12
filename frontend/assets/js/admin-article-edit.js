@@ -5,7 +5,6 @@ class AdminArticleEdit {
         this.articleId = null;
         this.originalArticle = null;
         this.quill = null;
-        this.selectedTours = new Set();
         this.tags = new Set();
         this.featuredImageFile = null;
         this.currentFeaturedImage = null;
@@ -47,7 +46,6 @@ class AdminArticleEdit {
             this.initQuillEditor();
             this.populateForm(article);
             this.bindEvents();
-            this.loadTours();
         } catch (error) {
             console.error('Error loading article:', error);
             this.showToast('Có lỗi xảy ra khi tải bài viết: ' + error.message, 'error');
@@ -115,9 +113,6 @@ class AdminArticleEdit {
         if (article.tags && Array.isArray(article.tags)) {
             article.tags.forEach(tag => this.tags.add(tag));
             this.renderTags();
-        }        if (article.relatedTours && Array.isArray(article.relatedTours)) {
-            article.relatedTours.forEach(tourId => this.selectedTours.add(tourId));
-            this.renderSelectedTours();
         }
 
         this.displayArticleStats(article);
@@ -148,32 +143,27 @@ class AdminArticleEdit {
         document.getElementById('summary').addEventListener('input', () => this.markFormDirty());
         document.getElementById('metaTitle').addEventListener('input', () => this.markFormDirty());
         document.getElementById('metaDescription').addEventListener('input', () => this.markFormDirty());
-        document.getElementById('metaKeywords').addEventListener('input', () => this.markFormDirty());        // Radio button events với xử lý đúng
+        document.getElementById('metaKeywords').addEventListener('input', () => this.markFormDirty());        // Radio button events
         document.querySelectorAll('input[name="status"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
-                console.log('Radio changed:', e.target.value);
                 this.updateRadioStyles();
+                this.updateSaveButtonText();
                 this.markFormDirty();
             });
         });
 
-        // Thêm event listener cho label để đảm bảo click hoạt động
+        // Label click events for radio buttons
         document.querySelectorAll('.radio-option').forEach(label => {
             label.addEventListener('click', (e) => {
-                // Ngăn double-click
                 if (e.target.type === 'radio') return;
                 
                 const radio = label.querySelector('input[type="radio"]');
                 if (radio && !radio.checked) {
-                    // Uncheck tất cả radio khác trong cùng group
                     document.querySelectorAll('input[name="status"]').forEach(r => {
                         r.checked = false;
                     });
                     
-                    // Check radio được click
                     radio.checked = true;
-                    
-                    // Trigger change event
                     radio.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
@@ -203,19 +193,20 @@ class AdminArticleEdit {
             }
         });
 
-        document.getElementById('toursSearch').addEventListener('input', 
-            this.debounce(() => this.searchTours(), 300));
-
         window.addEventListener('beforeunload', (e) => {
             if (this.isFormDirty) {
                 e.preventDefault();
                 e.returnValue = '';
-            }        });
+            }
+        });
 
         this.bindModalEvents();
         
-        // Cập nhật radio styles sau khi bind events
-        setTimeout(() => this.updateRadioStyles(), 100);
+        // Initialize radio styles and button text
+        setTimeout(() => {
+            this.updateRadioStyles();
+            this.updateSaveButtonText();
+        }, 100);
     }
 
     bindModalEvents() {
@@ -324,134 +315,15 @@ class AdminArticleEdit {
         `).join('');
     }
 
-    async loadTours() {
-        try {
-            const response = await window.apiClient.getTours({ size: 1000 });
-            if (response.success && response.data && response.data.content) {
-                this.allTours = response.data.content || [];
-            } else if (response.content) {
-                this.allTours = response.content || [];
-            } else if (Array.isArray(response)) {
-                this.allTours = response;
-            } else {
-                this.allTours = [];
-            }
-            this.renderSelectedTours();
-        } catch (error) {
-            console.error('Error loading tours:', error);
-            this.allTours = [];
-        }
-    }
-
-    searchTours() {
-        const query = document.getElementById('toursSearch').value.toLowerCase();
-        if (!query || !this.allTours) {
-            this.hideToursDropdown();
-            return;
-        }
-
-        const filtered = this.allTours.filter(tour => 
-            (tour.title && tour.title.toLowerCase().includes(query)) ||
-            (tour.destination && tour.destination.toLowerCase().includes(query))
-        ).slice(0, 5);
-
-        this.renderToursDropdown(filtered);
-        if (filtered.length > 0) {
-            this.showToursDropdown();
-        }
-    }
-
-    renderToursDropdown(tours) {
-        const dropdown = document.getElementById('toursDropdown');
-        
-        if (!tours || tours.length === 0) {
-            dropdown.innerHTML = '<div class="tour-option">Không tìm thấy tour nào</div>';
-            return;
-        }
-
-        dropdown.innerHTML = tours.map(tour => `
-            <div class="tour-option" onclick="adminArticleEdit.selectTour(${tour.id})">
-                <div class="tour-name">${tour.title || 'Không có tên'}</div>
-                <div class="tour-price">${this.formatPrice(tour.price)}</div>
-            </div>
-        `).join('');
-    }
-
-    selectTour(tourId) {
-        const tour = this.allTours.find(t => t.id === tourId);
-        if (tour && !this.selectedTours.has(tourId)) {
-            this.selectedTours.add(tourId);
-            this.renderSelectedTours();
-            document.getElementById('toursSearch').value = '';
-            this.hideToursDropdown();
-            this.markFormDirty();
-        }
-    }    removeTour(tourId) {
-        this.selectedTours.delete(tourId);
-        this.renderSelectedTours();
-        this.markFormDirty();
-    }
-
-    renderSelectedTours() {
-        const container = document.getElementById('selectedTours');
-        if (!container) return;
-        
-        const tours = Array.from(this.selectedTours).map(id => 
-            this.allTours.find(t => t.id === id)
-        ).filter(Boolean);
-
-        container.innerHTML = tours.map(tour => `
-            <div class="selected-tour">
-                <span class="selected-tour-name">${tour.title}</span>
-                <button type="button" class="remove-tour" onclick="adminArticleEdit.removeTour(${tour.id})">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-        `).join('');
-    }
-
-    showToursDropdown() {
-        const dropdown = document.getElementById('toursDropdown');
-        if (dropdown) {
-            dropdown.classList.add('show');
-        }
-    }
-
-    hideToursDropdown() {
-        const dropdown = document.getElementById('toursDropdown');
-        if (dropdown) {
-            dropdown.classList.remove('show');
-        }
-    }
-
-    toggleSection(button) {
-        const targetId = button.dataset.target;
-        const content = document.getElementById(targetId);
-        
-        if (content && content.classList.contains('collapsed')) {
-            content.classList.remove('collapsed');
-            button.classList.remove('collapsed');
-        } else if (content) {
-            content.classList.add('collapsed');
-            button.classList.add('collapsed');
-        }
-    }
-
-    previewArticle() {
-        this.showToast('Chức năng xem trước đang được phát triển', 'info');
-    }
-
-    formatPrice(price) {
-        if (!price) return '0 VND';
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND'
-        }).format(price);
-    }    async saveArticle() {
+    async saveArticle() {
         if (!this.validateForm()) return;
 
         try {
             this.showLoading();
+            
+            // Get the selected status from radio buttons
+            const statusRadio = document.querySelector('input[name="status"]:checked');
+            const shouldPublish = statusRadio ? statusRadio.value === 'published' : false;
             
             // Bước 1: Upload ảnh nếu có
             if (this.featuredImageFile) {
@@ -462,9 +334,8 @@ class AdminArticleEdit {
                     
                     if (uploadResponse && (uploadResponse.success !== false)) {
                         this.showToast('Ảnh đại diện đã được cập nhật', 'success');
-                        this.featuredImageFile = null; // Reset file after upload
+                        this.featuredImageFile = null;
                         
-                        // Cập nhật URL hiển thị
                         if (uploadResponse.featuredImageUrl) {
                             this.currentFeaturedImage = uploadResponse.featuredImageUrl;
                             this.displayCurrentImage(uploadResponse.featuredImageUrl);
@@ -473,11 +344,10 @@ class AdminArticleEdit {
                 } catch (imageError) {
                     console.error('Image upload failed:', imageError);
                     this.showToast('Không thể upload ảnh: ' + imageError.message, 'error');
-                    // Continue with article update even if image upload fails
                 }
             }
             
-            // Bước 2: Cập nhật thông tin bài viết (không bao gồm ảnh và publish status)
+            // Bước 2: Cập nhật thông tin bài viết
             const articleData = await this.collectFormDataForUpdate();
             console.log('Article data to update:', articleData);
             
@@ -486,8 +356,6 @@ class AdminArticleEdit {
             
             if (updateResponse && (updateResponse.success !== false)) {
                 // Bước 3: Xử lý publish/unpublish riêng biệt
-                const statusRadio = document.querySelector('input[name="status"]:checked');
-                const shouldPublish = statusRadio ? statusRadio.value === 'published' : false;
                 const currentlyPublished = this.originalArticle.isPublished;
                 
                 if (shouldPublish !== currentlyPublished) {
@@ -496,10 +364,8 @@ class AdminArticleEdit {
                         let statusResponse;
                         if (shouldPublish) {
                             statusResponse = await window.apiClient.publishArticle(this.articleId);
-                            console.log('Publish response:', statusResponse);
                         } else {
                             statusResponse = await window.apiClient.unpublishArticle(this.articleId);
-                            console.log('Unpublish response:', statusResponse);
                         }
                         
                         if (statusResponse && (statusResponse.success !== false)) {
@@ -529,8 +395,9 @@ class AdminArticleEdit {
         } finally {
             this.hideLoading();
         }
-    }    async collectFormDataForUpdate() {
-        // Chỉ collect data cần thiết cho update, không bao gồm ảnh và publish status
+    }
+
+    async collectFormDataForUpdate() {
         const data = {
             title: document.getElementById('title').value.trim(),
             slug: document.getElementById('slug').value.trim(),
@@ -539,8 +406,7 @@ class AdminArticleEdit {
             metaTitle: document.getElementById('metaTitle').value.trim() || null,
             metaDescription: document.getElementById('metaDescription').value.trim() || null,
             metaKeywords: document.getElementById('metaKeywords').value.trim() || null,
-            tags: Array.from(this.tags),
-            relatedTourIds: Array.from(this.selectedTours)
+            tags: Array.from(this.tags)
         };
 
         console.log('Form data for update:', data);
@@ -661,6 +527,23 @@ class AdminArticleEdit {
                 label.classList.remove('selected');
             }
         });
+    }
+
+    updateSaveButtonText() {
+        const statusRadio = document.querySelector('input[name="status"]:checked');
+        const saveBtn = document.getElementById('saveBtn');
+        const btnText = saveBtn.querySelector('.btn-text');
+        const btnIcon = saveBtn.querySelector('ion-icon');
+        
+        if (statusRadio && statusRadio.value === 'published') {
+            btnText.textContent = 'Cập nhật & Xuất bản';
+            btnIcon.setAttribute('name', 'checkmark-circle-outline');
+            saveBtn.className = 'btn btn-primary';
+        } else {
+            btnText.textContent = 'Cập nhật nháp';
+            btnIcon.setAttribute('name', 'document-outline');
+            saveBtn.className = 'btn btn-secondary';
+        }
     }
 
     // Utility methods
