@@ -18,9 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Service xử lý logic nghiệp vụ cho Tour
@@ -344,46 +343,150 @@ public class TourService {
         tourRepository.save(tour);
     }
 
+    // ========== STATISTICS METHODS ==========
+
     /**
-     * Lấy tổng số tours
+     * Lấy danh sách tours không hoạt động
      */
-    public long getTotalTours() {
-        return tourRepository.countByDeletedAtIsNull();
+    public List<Tour> getInactiveTours() {
+        return tourRepository.findByStatusAndDeletedAtIsNull(TourStatus.INACTIVE);
     }
 
     /**
-     * Lấy danh sách tours đang hoạt động
+     * Lấy số tours mới trong tháng
      */
-    public List<Tour> getActiveTours() {
-        return tourRepository.findByStatusAndDeletedAtIsNull(TourStatus.ACTIVE);
+    public long getNewToursThisMonth() {
+        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        return tourRepository.countByCreatedAtAfterAndDeletedAtIsNull(startOfMonth);
     }
 
     /**
-     * Thống kê tours theo loại
+     * Lấy đánh giá trung bình của tất cả tours
+     */
+    public double getAverageRating() {
+        return tourRepository.getAverageRating();
+    }    /**
+     * Lấy điểm đến phổ biến
+     */
+    public List<Object[]> getPopularDestinations(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return tourRepository.getPopularDestinations(pageable);
+    }
+
+    /**
+     * Thống kê phân bố tours theo danh mục
+     */
+    public List<Object[]> getTourCategoryDistribution() {
+        return tourRepository.getTourCategoryDistribution();
+    }
+
+    /**
+     * Top tours hiệu quả nhất
+     */
+    public List<Object[]> getTopPerformanceTours(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return tourRepository.getTopPerformanceTours(pageable);
+    }
+
+    /**
+     * Tours mới nhất
+     */
+    public List<Object[]> getRecentTours(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return tourRepository.getRecentTours(pageable);
+    }
+
+    /**
+     * Thống kê doanh thu theo tours
+     */
+    public List<Object[]> getTourRevenueBreakdown(int days) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
+        return tourRepository.getTourRevenueBreakdown(fromDate);
+    }    /**
+     * Thống kê phân bố đánh giá tours
+     */
+    public List<Object[]> getTourRatingDistribution() {
+        return tourRepository.getTourRatingDistribution();
+    }
+
+    /**
+     * Thống kê tour theo loại (type)
      */
     public List<Object[]> getTourStatsByType() {
         return tourRepository.countToursByType();
     }
 
     /**
-     * Thống kê tours theo trạng thái
+     * Thống kê tour theo trạng thái (status)
      */
     public List<Object[]> getTourStatsByStatus() {
         return tourRepository.countToursByStatus();
     }
 
+    // ========== MISSING STATISTICAL METHODS ==========
+
     /**
-     * Lấy thống kê comments theo rating cho tour
+     * Lấy tổng số tours
      */
-    public Map<String, Object> getTourCommentStats(Long tourId) {
-        Tour tour = tourRepository.findByIdAndDeletedAtIsNull(tourId)
-            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tour với ID: " + tourId));
+    public long getTotalTours() {
+        return tourRepository.count();
+    }
+
+    /**
+     * Lấy tỷ lệ tăng trưởng tours
+     */
+    public double getTourGrowthRate() {
+        long thisMonth = tourRepository.countNewToursThisMonth();
+        long lastMonth = tourRepository.countNewToursLastMonth();
         
-        // This would need to be implemented in CommentRepository
-        // For now, return basic stats
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalComments", tour.getTotalBookings()); // Placeholder
-        stats.put("averageRating", tour.getRatingAverage());
-        return stats;
+        if (lastMonth == 0) return 0.0;
+        return ((double) (thisMonth - lastMonth) / lastMonth) * 100;
+    }
+
+    /**
+     * Lấy số lượng tours mới trong khoảng thời gian
+     */
+    public long getNewToursCount(int days) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
+        return tourRepository.countByCreatedAtGreaterThanEqualAndDeletedAtIsNull(fromDate);
+    }
+
+    /**
+     * Lấy tỷ lệ tăng trưởng tours mới
+     */
+    public double getNewToursGrowthRate() {
+        long thisMonth = tourRepository.countNewToursThisMonth();
+        long lastMonth = tourRepository.countNewToursLastMonth();
+        
+        if (lastMonth == 0) return 0.0;
+        return ((double) (thisMonth - lastMonth) / lastMonth) * 100;
+    }
+
+    /**
+     * Lấy thay đổi rating
+     */
+    public double getRatingChange() {
+        // Tính toán thay đổi rating so với tháng trước
+        // Placeholder implementation
+        return 0.1; // +0.1 điểm
+    }
+
+    /**
+     * Lấy tỷ lệ booking
+     */
+    public double getBookingRate() {
+        long totalTours = tourRepository.count();
+        long toursWithBookings = tourRepository.countToursWithBookings();
+        
+        if (totalTours == 0) return 0.0;
+        return ((double) toursWithBookings / totalTours) * 100;
+    }
+
+    /**
+     * Lấy thay đổi tỷ lệ booking
+     */
+    public double getBookingRateChange() {
+        // Placeholder implementation
+        return 2.5; // +2.5%
     }
 }

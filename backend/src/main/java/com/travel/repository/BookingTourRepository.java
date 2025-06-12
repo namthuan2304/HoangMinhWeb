@@ -108,18 +108,16 @@ public interface BookingTourRepository extends JpaRepository<BookingTour, Long> 
     long countByStatus(@Param("status") BookingStatus status);    /**
      * Thống kê doanh thu theo tháng
      */
-    @Query("SELECT MONTH(b.bookingDate) as month, SUM(b.totalAmount) as revenue " +
+    @Query("SELECT MONTH(b.bookingDate) as month, SUM(b.totalAmount) as revenue, COUNT(b) as bookings " +
            "FROM BookingTour b WHERE b.deletedAt IS NULL AND " +
            "YEAR(b.bookingDate) = :year AND " +
            "b.status = 'COMPLETED' " +
            "GROUP BY MONTH(b.bookingDate) " +
            "ORDER BY MONTH(b.bookingDate)")
-    List<Object[]> getRevenueByMonth(@Param("year") int year);
-
-    /**
+    List<Object[]> getRevenueByMonth(@Param("year") int year);    /**
      * Thống kê doanh thu theo quý
      */
-    @Query("SELECT QUARTER(b.bookingDate) as quarter, SUM(b.totalAmount) as revenue " +
+    @Query("SELECT QUARTER(b.bookingDate) as quarter, SUM(b.totalAmount) as revenue, COUNT(b) as bookings " +
            "FROM BookingTour b WHERE b.deletedAt IS NULL AND " +
            "YEAR(b.bookingDate) = :year AND " +
            "b.status = 'COMPLETED' " +
@@ -182,11 +180,66 @@ public interface BookingTourRepository extends JpaRepository<BookingTour, Long> 
      * Tìm booking của user cho tour cụ thể
      */
     @Query("SELECT b FROM BookingTour b WHERE b.deletedAt IS NULL AND b.user = :user AND b.tour = :tour")
-    List<BookingTour> findByUserAndTour(@Param("user") User user, @Param("tour") Tour tour);
-
-    /**
+    List<BookingTour> findByUserAndTour(@Param("user") User user, @Param("tour") Tour tour);    /**
      * Kiểm tra user đã đặt tour này chưa
      */
     @Query("SELECT COUNT(b) > 0 FROM BookingTour b WHERE b.deletedAt IS NULL AND b.user = :user AND b.tour = :tour AND b.status IN ('CONFIRMED', 'COMPLETED')")
     boolean hasUserBookedTour(@Param("user") User user, @Param("tour") Tour tour);
+
+    /**
+     * Thống kê xu hướng booking theo ngày
+     */
+    @Query("SELECT DATE(b.bookingDate) as date, COUNT(b) as count " +
+           "FROM BookingTour b " +
+           "WHERE b.deletedAt IS NULL AND b.bookingDate >= :fromDate " +
+           "GROUP BY DATE(b.bookingDate) " +
+           "ORDER BY date DESC")
+    List<Object[]> getBookingTrendsDaily(@Param("fromDate") LocalDateTime fromDate);
+
+    /**
+     * Thống kê xu hướng booking theo tuần
+     */
+    @Query("SELECT FUNCTION('YEARWEEK', b.bookingDate) as week, " +
+           "COUNT(b) as count, " +
+           "MIN(b.bookingDate) as weekStart " +
+           "FROM BookingTour b " +
+           "WHERE b.deletedAt IS NULL AND b.bookingDate >= :fromDate " +
+           "GROUP BY FUNCTION('YEARWEEK', b.bookingDate) " +
+           "ORDER BY week DESC")
+    List<Object[]> getBookingTrendsWeekly(@Param("fromDate") LocalDateTime fromDate);
+
+    /**
+     * Thống kê xu hướng booking theo tháng
+     */
+    @Query("SELECT FUNCTION('YEAR', b.bookingDate) as year, " +
+           "FUNCTION('MONTH', b.bookingDate) as month, " +
+           "COUNT(b) as count " +
+           "FROM BookingTour b " +
+           "WHERE b.deletedAt IS NULL AND b.bookingDate >= :fromDate " +
+           "GROUP BY FUNCTION('YEAR', b.bookingDate), FUNCTION('MONTH', b.bookingDate) " +
+           "ORDER BY year DESC, month DESC")
+    List<Object[]> getBookingTrendsMonthly(@Param("fromDate") LocalDateTime fromDate);
+
+    /**
+     * Đếm bookings mới tháng này
+     */
+    @Query(value = "SELECT COUNT(*) FROM booking_tours b " +
+           "WHERE b.deleted_at IS NULL " +
+           "AND YEAR(b.created_at) = YEAR(CURRENT_DATE) " +
+           "AND MONTH(b.created_at) = MONTH(CURRENT_DATE)", nativeQuery = true)
+    long countNewBookingsThisMonth();
+
+    /**
+     * Đếm bookings mới tháng trước
+     */
+    @Query(value = "SELECT COUNT(*) FROM booking_tours b " +
+           "WHERE b.deleted_at IS NULL " +
+           "AND YEAR(b.created_at) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)) " +
+           "AND MONTH(b.created_at) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))", nativeQuery = true)
+    long countNewBookingsLastMonth();
+
+    /**
+     * Đếm bookings theo trạng thái và chưa bị xóa
+     */
+    long countByStatusAndDeletedAtIsNull(String status);
 }

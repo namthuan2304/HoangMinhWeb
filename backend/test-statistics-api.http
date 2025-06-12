@@ -1,0 +1,106 @@
+# Test Statistics API Endpoints
+# Use this file to test the implemented statistics endpoints
+
+### Test User Statistics
+GET http://localhost:8080/api/statistics/users/total
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test User Registration Trends
+GET http://localhost:8080/api/statistics/users/registration-trends?days=30
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test User Age Distribution
+GET http://localhost:8080/api/statistics/users/age-distribution
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test User Location Distribution
+GET http://localhost:8080/api/statistics/users/location-distribution
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test User Gender Distribution
+GET http://localhost:8080/api/statistics/users/gender-distribution
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Top Users by Bookings
+GET http://localhost:8080/api/statistics/users/top-by-bookings?limit=10
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Recent Users
+GET http://localhost:8080/api/statistics/users/recent-users?limit=10
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test New Users
+GET http://localhost:8080/api/statistics/users/new-users?days=30
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Active Users
+GET http://localhost:8080/api/statistics/users/active
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test User Retention Rate
+GET http://localhost:8080/api/statistics/users/retention-rate
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Statistics
+GET http://localhost:8080/api/statistics/tours/total
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test New Tours
+GET http://localhost:8080/api/statistics/tours/new-tours?days=30
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Average Rating
+GET http://localhost:8080/api/statistics/tours/average-rating
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Booking Rate
+GET http://localhost:8080/api/statistics/tours/booking-rate
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Popular Destinations
+GET http://localhost:8080/api/statistics/tours/popular-destinations?limit=10
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Category Distribution
+GET http://localhost:8080/api/statistics/tours/category-distribution
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Top Performance Tours
+GET http://localhost:8080/api/statistics/tours/top-performance?limit=5
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Recent Tours
+GET http://localhost:8080/api/statistics/tours/recent-tours?limit=5
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Revenue Breakdown
+GET http://localhost:8080/api/statistics/tours/revenue-breakdown?days=30
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Tour Rating Distribution
+GET http://localhost:8080/api/statistics/tours/rating-distribution
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Booking Statistics
+GET http://localhost:8080/api/statistics/bookings/total
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Booking Completion Rate
+GET http://localhost:8080/api/statistics/bookings/completion-rate
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Booking Cancellation Rate
+GET http://localhost:8080/api/statistics/bookings/cancellation-rate
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Booking Trends
+GET http://localhost:8080/api/statistics/bookings/trends?days=30&type=daily
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Weekly Booking Trends
+GET http://localhost:8080/api/statistics/bookings/trends?days=30&type=weekly
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Monthly Booking Trends
+GET http://localhost:8080/api/statistics/bookings/trends?days=90&type=monthly
+Authorization: Bearer YOUR_JWT_TOKEN

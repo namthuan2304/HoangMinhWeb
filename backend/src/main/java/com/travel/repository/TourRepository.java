@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,4 +155,132 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
      * Tìm tours theo danh sách IDs và chưa bị xóa
      */
     List<Tour> findByIdInAndDeletedAtIsNull(List<Long> ids);
+
+    // ========== STATISTICS METHODS ==========
+
+    /**
+     * Đếm tours được tạo sau thời điểm và chưa bị xóa
+     */
+    long countByCreatedAtAfterAndDeletedAtIsNull(LocalDateTime createdAt);
+
+    /**
+     * Lấy đánh giá trung bình của tất cả tours
+     */
+    @Query("SELECT AVG(t.ratingAverage) FROM Tour t WHERE t.deletedAt IS NULL AND t.ratingAverage > 0")
+    Double getAverageRating();
+
+    /**
+     * Đếm số tours có booking
+     */
+    @Query("SELECT COUNT(DISTINCT t) FROM Tour t " +
+           "INNER JOIN BookingTour b ON t = b.tour " +
+           "WHERE t.deletedAt IS NULL AND b.deletedAt IS NULL")
+    long countToursWithBookings();
+
+    /**
+     * Lấy điểm đến phổ biến
+     */
+    @Query("SELECT t.destination, COUNT(t) as tourCount, SUM(t.totalBookings) as totalBookings " +
+           "FROM Tour t " +
+           "WHERE t.deletedAt IS NULL " +
+           "GROUP BY t.destination " +
+           "ORDER BY totalBookings DESC, tourCount DESC")
+    List<Object[]> getPopularDestinations(Pageable pageable);
+
+    /**
+     * Thống kê phân bố tours theo danh mục
+     */
+    @Query("SELECT " +
+           "CASE " +
+           "  WHEN t.tourType = 'DOMESTIC' THEN 'Trong nước' " +
+           "  WHEN t.tourType = 'INTERNATIONAL' THEN 'Quốc tế' " +
+           "  ELSE 'Khác' " +
+           "END as category, " +
+           "COUNT(t) as count " +
+           "FROM Tour t " +
+           "WHERE t.deletedAt IS NULL " +
+           "GROUP BY t.tourType " +
+           "ORDER BY count DESC")
+    List<Object[]> getTourCategoryDistribution();
+
+    /**
+     * Top tours hiệu quả nhất (theo booking và rating)
+     */
+    @Query("SELECT t.id, t.name, t.destination, t.totalBookings, t.ratingAverage, " +
+           "COALESCE(SUM(b.totalAmount), 0) as totalRevenue " +
+           "FROM Tour t LEFT JOIN BookingTour b ON t = b.tour AND b.deletedAt IS NULL " +
+           "WHERE t.deletedAt IS NULL " +
+           "GROUP BY t.id, t.name, t.destination, t.totalBookings, t.ratingAverage " +
+           "ORDER BY t.totalBookings DESC, t.ratingAverage DESC, totalRevenue DESC")
+    List<Object[]> getTopPerformanceTours(Pageable pageable);
+
+    /**
+     * Tours mới nhất
+     */
+    @Query("SELECT t.id, t.name, t.destination, t.price, t.createdAt, t.status " +
+           "FROM Tour t " +
+           "WHERE t.deletedAt IS NULL " +
+           "ORDER BY t.createdAt DESC")
+    List<Object[]> getRecentTours(Pageable pageable);
+
+    /**
+     * Thống kê doanh thu theo tours
+     */
+    @Query("SELECT t.id, t.name, COUNT(b) as bookingCount, SUM(b.totalAmount) as revenue " +
+           "FROM Tour t LEFT JOIN BookingTour b ON t = b.tour " +
+           "AND b.deletedAt IS NULL AND b.createdAt >= :fromDate " +
+           "WHERE t.deletedAt IS NULL " +
+           "GROUP BY t.id, t.name " +
+           "HAVING COUNT(b) > 0 " +
+           "ORDER BY revenue DESC")
+    List<Object[]> getTourRevenueBreakdown(@Param("fromDate") LocalDateTime fromDate);
+
+    /**
+     * Thống kê phân bố đánh giá tours
+     */
+    @Query("SELECT " +
+           "CASE " +
+           "  WHEN t.ratingAverage >= 4.5 THEN '4.5-5 sao' " +
+           "  WHEN t.ratingAverage >= 4.0 THEN '4-4.5 sao' " +
+           "  WHEN t.ratingAverage >= 3.5 THEN '3.5-4 sao' " +
+           "  WHEN t.ratingAverage >= 3.0 THEN '3-3.5 sao' " +
+           "  WHEN t.ratingAverage > 0 THEN 'Dưới 3 sao' " +
+           "  ELSE 'Chưa có đánh giá' " +
+           "END as ratingRange, " +
+           "COUNT(t) as count " +
+           "FROM Tour t " +
+           "WHERE t.deletedAt IS NULL " +
+           "GROUP BY " +
+           "CASE " +
+           "  WHEN t.ratingAverage >= 4.5 THEN '4.5-5 sao' " +
+           "  WHEN t.ratingAverage >= 4.0 THEN '4-4.5 sao' " +
+           "  WHEN t.ratingAverage >= 3.5 THEN '3.5-4 sao' " +
+           "  WHEN t.ratingAverage >= 3.0 THEN '3-3.5 sao' " +
+           "  WHEN t.ratingAverage > 0 THEN 'Dưới 3 sao' " +
+           "  ELSE 'Chưa có đánh giá' " +           "END " +
+           "ORDER BY count DESC")
+    List<Object[]> getTourRatingDistribution();
+
+    /**
+     * Đếm tours mới tháng này
+     */
+    @Query(value = "SELECT COUNT(*) FROM tours t " +
+           "WHERE t.deleted_at IS NULL " +
+           "AND YEAR(t.created_at) = YEAR(CURRENT_DATE) " +
+           "AND MONTH(t.created_at) = MONTH(CURRENT_DATE)", nativeQuery = true)
+    long countNewToursThisMonth();
+
+    /**
+     * Đếm tours mới tháng trước
+     */
+    @Query(value = "SELECT COUNT(*) FROM tours t " +
+           "WHERE t.deleted_at IS NULL " +
+           "AND YEAR(t.created_at) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)) " +
+           "AND MONTH(t.created_at) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))", nativeQuery = true)
+    long countNewToursLastMonth();
+
+    /**
+     * Đếm tours theo khoảng thời gian tạo
+     */
+    long countByCreatedAtGreaterThanEqualAndDeletedAtIsNull(LocalDateTime fromDate);
 }

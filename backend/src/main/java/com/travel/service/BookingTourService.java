@@ -280,20 +280,91 @@ public class BookingTourService {
     }
 
     /**
-     * Tạo mã hóa đơn
+     * Lấy tỷ lệ tăng trưởng booking
+     */
+    public double getBookingGrowthRate() {
+        long thisMonth = bookingTourRepository.countNewBookingsThisMonth();
+        long lastMonth = bookingTourRepository.countNewBookingsLastMonth();
+        
+        if (lastMonth == 0) return 0.0;
+        return ((double) (thisMonth - lastMonth) / lastMonth) * 100;
+    }
+
+    /**
+     * Lấy thay đổi tỷ lệ hoàn thành
+     */
+    public double getCompletionRateChange() {
+        // Placeholder implementation
+        return 1.2; // +1.2%
+    }
+
+    /**
+     * Lấy thay đổi tỷ lệ hủy
+     */
+    public double getCancellationRateChange() {
+        // Placeholder implementation
+        return -0.8; // -0.8%
+    }
+
+    // ========== UTILITY METHODS ==========
+
+    /**
+     * Tạo mã hóa đơn tự động
      */
     private String generateInvoiceNumber() {
         String prefix = "INV";
         String timestamp = String.valueOf(System.currentTimeMillis());
-        String random = UUID.randomUUID().toString().substring(0, 4).toUpperCase();
-        return prefix + timestamp + random;
+        String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return prefix + "-" + timestamp + "-" + random;
+    }
+
+    // ========== STATISTICS METHODS ==========
+
+    /**
+     * Tính tỷ lệ hoàn thành booking
+     */
+    public double getCompletionRate() {
+        long totalBookings = getTotalBookings();
+        if (totalBookings == 0) return 0.0;
+        
+        long completedBookings = bookingTourRepository.countByStatus(BookingStatus.COMPLETED);
+        return ((double)completedBookings / totalBookings) * 100.0;
     }
 
     /**
-     * Lấy top tours được đặt nhiều nhất
+     * Tính tỷ lệ hủy tour
+     */
+    public double getCancellationRate() {
+        long totalBookings = getTotalBookings();
+        if (totalBookings == 0) return 0.0;
+        
+        long cancelledBookings = bookingTourRepository.countByStatus(BookingStatus.CANCELLED);
+        return ((double)cancelledBookings / totalBookings) * 100.0;
+    }
+
+    /**
+     * Thống kê xu hướng booking theo ngày/tuần/tháng
+     */
+    public List<Object[]> getBookingTrends(int days, String type) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
+        
+        switch (type.toLowerCase()) {
+            case "daily":                return bookingTourRepository.getBookingTrendsDaily(fromDate);
+            case "weekly":
+                return bookingTourRepository.getBookingTrendsWeekly(fromDate);
+            case "monthly":
+                return bookingTourRepository.getBookingTrendsMonthly(fromDate);
+            default:
+                return bookingTourRepository.getBookingTrendsDaily(fromDate);
+        }
+    }
+
+    /**
+     * Lấy danh sách top tour được book nhiều nhất
      */
     public List<Object[]> getTopBookedTours(int limit) {
-        return bookingTourRepository.findTopBookedTours(PageRequest.of(0, limit));
+        Pageable pageable = PageRequest.of(0, limit);
+        return bookingTourRepository.findTopBookedTours(pageable);
     }
 
     /**

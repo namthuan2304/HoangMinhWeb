@@ -10,6 +10,7 @@ import com.travel.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -246,10 +247,105 @@ public class UserService {
     }
 
     /**
-     * Lấy số users mới trong tháng
+     * Lấy tỷ lệ tăng trưởng user
+     */
+    public double getUserGrowthRate() {
+        long thisMonth = userRepository.countNewUsersThisMonth();
+        long lastMonth = userRepository.countNewUsersLastMonth();
+        if (lastMonth == 0) return 0;
+        return ((double) thisMonth - lastMonth) / lastMonth * 100;
+    }
+
+    /**
+     * Lấy số users mới tháng này
      */
     public long getNewUsersThisMonth() {
-        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-        return userRepository.countByCreatedAtAfterAndDeletedAtIsNull(startOfMonth);
+        return userRepository.countNewUsersThisMonth();
+    }
+
+    /**
+     * Lấy số users mới tháng trước
+     */
+    public long getNewUsersLastMonth() {
+        return userRepository.countNewUsersLastMonth();
+    }
+
+    /**
+     * Lấy số users đang hoạt động
+     */
+    public long getActiveUsers() {
+        return userRepository.countActiveUsers();
+    }
+
+    /**
+     * Lấy tỷ lệ users hoạt động
+     */
+    public double getActiveUserRate() {
+        long totalUsers = getTotalUsers();
+        long activeUsers = getActiveUsers();
+        if (totalUsers == 0) return 0;
+        return ((double) activeUsers / totalUsers) * 100;
+    }
+
+    /**
+     * Lấy tỷ lệ giữ chân users
+     */
+    public double getUserRetentionRate() {
+        // Tính toán tỷ lệ users có booking trong 3 tháng gần nhất
+        long activeUsers = userRepository.countUsersWithRecentBookings();
+        long totalUsers = getTotalUsers();
+        if (totalUsers == 0) return 0;
+        return ((double) activeUsers / totalUsers) * 100;
+    }
+
+    /**
+     * Thống kê hoạt động users hàng ngày
+     */
+    public List<Object[]> getUserDailyActivity(int days) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
+        return userRepository.getUserDailyActivity(fromDate);
+    }
+
+    /**
+     * Thống kê phân bố độ tuổi
+     */
+    public List<Object[]> getUserAgeDistribution() {
+        return userRepository.getUserAgeDistribution();
+    }
+
+    /**
+     * Thống kê phân bố theo vị trí
+     */
+    public List<Object[]> getUserLocationDistribution() {
+        return userRepository.getUserLocationDistribution();
+    }
+
+    /**
+     * Thống kê phân bố theo giới tính
+     */
+    public List<Object[]> getUserGenderDistribution() {
+        return userRepository.getUserGenderDistribution();
+    }
+
+    /**
+     * Thống kê xu hướng đăng ký theo ngày
+     */
+    public List<Object[]> getUserRegistrationTrends(int days) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
+        return userRepository.getUserRegistrationTrends(fromDate);
+    }    /**
+     * Top users có nhiều booking nhất
+     */
+    public List<Object[]> getTopUsersByBookings(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return userRepository.getTopUsersByBookings(pageable);
+    }
+
+    /**
+     * Users mới nhất
+     */
+    public List<Object[]> getRecentUsers(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return userRepository.getRecentUsers(pageable);
     }
 }

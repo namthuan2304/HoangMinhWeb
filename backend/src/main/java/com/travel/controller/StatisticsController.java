@@ -256,4 +256,403 @@ public class StatisticsController {
         
         return ResponseEntity.ok(activity);
     }
+
+    // ========== USER STATISTICS APIs ==========
+
+    /**
+     * Thống kê người dùng tổng quan
+     */
+    @GetMapping("/users/overview")
+    @Operation(summary = "Thống kê người dùng tổng quan")
+    public ResponseEntity<Map<String, Object>> getUserOverview() {
+        Map<String, Object> overview = new HashMap<>();
+        
+        // Tổng số người dùng
+        overview.put("totalUsers", userService.getTotalUsers());
+        overview.put("newUsersThisMonth", userService.getNewUsersThisMonth());
+        overview.put("activeUsers", userService.getActiveUsers());
+        overview.put("inactiveUsers", userService.getInactiveUsers());
+        
+        // Tỷ lệ tăng trưởng
+        overview.put("userGrowthRate", userService.getUserGrowthRate());
+        overview.put("activeRate", userService.getActiveUserRate());
+        
+        return ResponseEntity.ok(overview);
+    }    /**
+     * Thống kê người dùng theo độ tuổi
+     */
+    @GetMapping("/users/age-distribution")
+    @Operation(summary = "Thống kê người dùng theo độ tuổi")
+    public ResponseEntity<List<Object[]>> getUserAgeDistribution() {
+        List<Object[]> stats = userService.getUserAgeDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê người dùng theo vị trí
+     */
+    @GetMapping("/users/location-distribution")
+    @Operation(summary = "Thống kê người dùng theo vị trí")
+    public ResponseEntity<List<Object[]>> getUserLocationDistribution() {
+        List<Object[]> stats = userService.getUserLocationDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê người dùng theo giới tính
+     */
+    @GetMapping("/users/gender-distribution")
+    @Operation(summary = "Thống kê người dùng theo giới tính")
+    public ResponseEntity<List<Object[]>> getUserGenderDistribution() {
+        List<Object[]> stats = userService.getUserGenderDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê hoạt động đăng ký người dùng theo ngày
+     */
+    @GetMapping("/users/registration-trends")
+    @Operation(summary = "Thống kê hoạt động đăng ký người dùng theo ngày")
+    public ResponseEntity<List<Object[]>> getUserRegistrationTrends(
+            @RequestParam(defaultValue = "30") int days) {
+        List<Object[]> stats = userService.getUserRegistrationTrends(days);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Top người dùng có nhiều booking nhất
+     */
+    @GetMapping("/users/top-bookings")
+    @Operation(summary = "Top người dùng có nhiều booking nhất")
+    public ResponseEntity<List<Object[]>> getTopUsersByBookings(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = userService.getTopUsersByBookings(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Người dùng mới nhất
+     */
+    @GetMapping("/users/recent")
+    @Operation(summary = "Danh sách người dùng mới nhất")
+    public ResponseEntity<List<Object[]>> getRecentUsers(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = userService.getRecentUsers(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê tổng số người dùng
+     */
+    @GetMapping("/users/total")
+    @Operation(summary = "Thống kê tổng số người dùng")
+    public ResponseEntity<Map<String, Object>> getUserTotal() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", userService.getTotalUsers());
+        response.put("growthRate", userService.getUserGrowthRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thống kê người dùng mới
+     */
+    @GetMapping("/users/new-users")
+    @Operation(summary = "Thống kê người dùng mới")
+    public ResponseEntity<Map<String, Object>> getNewUsers(
+            @RequestParam(defaultValue = "30") int days) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", userService.getNewUsersThisMonth());
+        response.put("growthRate", userService.getUserGrowthRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thống kê người dùng đang hoạt động
+     */
+    @GetMapping("/users/active")
+    @Operation(summary = "Thống kê người dùng đang hoạt động")
+    public ResponseEntity<Map<String, Object>> getActiveUsers() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", userService.getActiveUsers());
+        response.put("growthRate", userService.getActiveUserRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thống kê tỷ lệ giữ chân người dùng
+     */
+    @GetMapping("/users/retention-rate")
+    @Operation(summary = "Thống kê tỷ lệ giữ chân người dùng")
+    public ResponseEntity<Map<String, Object>> getUserRetentionRate() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("rate", 68.5); // Placeholder value
+        response.put("change", 4.1); // Placeholder value
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Top người dùng theo booking
+     */
+    @GetMapping("/users/top-by-bookings")
+    @Operation(summary = "Top người dùng theo booking")
+    public ResponseEntity<List<Object[]>> getTopUsersByBookingsAlias(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = userService.getTopUsersByBookings(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Người dùng mới gần đây
+     */
+    @GetMapping("/users/recent-users")
+    @Operation(summary = "Người dùng mới gần đây")
+    public ResponseEntity<List<Object[]>> getRecentUsersAlias(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = userService.getRecentUsers(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    // ========== TOUR STATISTICS APIs ==========
+
+    /**
+     * Thống kê tours tổng quan
+     */
+    @GetMapping("/tours/overview")
+    @Operation(summary = "Thống kê tours tổng quan")
+    public ResponseEntity<Map<String, Object>> getTourOverview() {
+        Map<String, Object> overview = new HashMap<>();
+        
+        // Tổng số tours
+        overview.put("totalTours", tourService.getTotalTours());
+        overview.put("activeTours", tourService.getActiveTours().size());
+        overview.put("inactiveTours", tourService.getInactiveTours().size());
+        overview.put("newToursThisMonth", tourService.getNewToursThisMonth());
+        
+        // Thống kê booking
+        overview.put("totalBookings", bookingTourService.getTotalBookings());
+        overview.put("totalRevenue", bookingTourService.getCurrentMonthRevenue());
+        overview.put("averageRating", tourService.getAverageRating());
+        
+        // Tỷ lệ hiệu quả
+        overview.put("bookingRate", tourService.getBookingRate());
+        overview.put("completionRate", bookingTourService.getCompletionRate());
+        overview.put("cancellationRate", bookingTourService.getCancellationRate());
+        
+        return ResponseEntity.ok(overview);
+    }
+
+    /**
+     * Thống kê booking tours theo ngày
+     */
+    @GetMapping("/tours/booking-trends")
+    @Operation(summary = "Thống kê booking tours theo ngày")
+    public ResponseEntity<List<Object[]>> getTourBookingTrends(
+            @RequestParam(defaultValue = "30") int days,
+            @RequestParam(defaultValue = "daily") String type) {
+        List<Object[]> stats = bookingTourService.getBookingTrends(days, type);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê tours theo điểm đến phổ biến
+     */
+    @GetMapping("/tours/popular-destinations")
+    @Operation(summary = "Thống kê tours theo điểm đến phổ biến")
+    public ResponseEntity<List<Object[]>> getPopularDestinations(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = tourService.getPopularDestinations(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê tours theo danh mục
+     */
+    @GetMapping("/tours/category-distribution")
+    @Operation(summary = "Thống kê tours theo danh mục")
+    public ResponseEntity<List<Object[]>> getTourCategoryDistribution() {
+        List<Object[]> stats = tourService.getTourCategoryDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Top tours hiệu quả nhất
+     */
+    @GetMapping("/tours/top-performance")
+    @Operation(summary = "Top tours hiệu quả nhất")
+    public ResponseEntity<List<Object[]>> getTopPerformanceTours(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = tourService.getTopPerformanceTours(limit);
+        return ResponseEntity.ok(stats);
+    }    /**
+     * Tours mới nhất
+     */
+    @GetMapping("/tours/recent")
+    @Operation(summary = "Danh sách tours mới nhất")
+    public ResponseEntity<List<Object[]>> getRecentTours(
+            @RequestParam(defaultValue = "10") int limit) {
+        List<Object[]> stats = tourService.getRecentTours(limit);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê doanh thu theo tours
+     */
+    @GetMapping("/tours/revenue-breakdown")
+    @Operation(summary = "Thống kê doanh thu theo tours")
+    public ResponseEntity<List<Object[]>> getTourRevenueBreakdown(
+            @RequestParam(defaultValue = "30") int days) {
+        List<Object[]> stats = tourService.getTourRevenueBreakdown(days);
+        return ResponseEntity.ok(stats);
+    }    /**
+     * Thống kê đánh giá tours
+     */
+    @GetMapping("/tours/rating-distribution")
+    @Operation(summary = "Thống kê đánh giá tours")
+    public ResponseEntity<List<Object[]>> getTourRatingDistribution() {
+        List<Object[]> stats = tourService.getTourRatingDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    // ========== MISSING USER STATISTICS APIs ==========
+
+    /**
+     * Thống kê người dùng theo khu vực
+     */
+    @GetMapping("/users/regional-stats")
+    @Operation(summary = "Thống kê người dùng theo khu vực")
+    public ResponseEntity<List<Object[]>> getUserRegionalStats() {
+        List<Object[]> stats = userService.getUserLocationDistribution();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê hoạt động người dùng hàng ngày
+     */
+    @GetMapping("/users/daily-activity")
+    @Operation(summary = "Thống kê hoạt động người dùng hàng ngày")
+    public ResponseEntity<List<Object[]>> getUserDailyActivity(
+            @RequestParam(defaultValue = "30") int days) {
+        List<Object[]> stats = userService.getUserDailyActivity(days);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Thống kê tăng trưởng người dùng
+     */
+    @GetMapping("/users/growth-stats")
+    @Operation(summary = "Thống kê tăng trưởng người dùng")
+    public ResponseEntity<Map<String, Object>> getUserGrowthStats() {
+        Map<String, Object> growthStats = new HashMap<>();
+        
+        // Thống kê tăng trưởng
+        growthStats.put("totalUsers", userService.getTotalUsers());
+        growthStats.put("newUsersThisMonth", userService.getNewUsersThisMonth());
+        growthStats.put("newUsersLastMonth", userService.getNewUsersLastMonth());
+        growthStats.put("growthRate", userService.getUserGrowthRate());
+        
+        // Dự đoán tăng trưởng
+        long avgGrowthPerMonth = (userService.getNewUsersThisMonth() + userService.getNewUsersLastMonth()) / 2;
+        growthStats.put("predictedNextMonth", avgGrowthPerMonth);
+        
+        return ResponseEntity.ok(growthStats);
+    }
+
+    // ========== MISSING TOUR STATISTICS APIs ==========
+
+    /**
+     * Tổng số tours
+     */
+    @GetMapping("/tours/total")
+    @Operation(summary = "Tổng số tours")
+    public ResponseEntity<Map<String, Object>> getTotalTours() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", tourService.getTotalTours());
+        response.put("growthRate", tourService.getTourGrowthRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Tours mới
+     */
+    @GetMapping("/tours/new-tours")
+    @Operation(summary = "Tours mới")
+    public ResponseEntity<Map<String, Object>> getNewTours(
+            @RequestParam(defaultValue = "30") int days) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", tourService.getNewToursCount(days));
+        response.put("growthRate", tourService.getNewToursGrowthRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Đánh giá trung bình của tours
+     */
+    @GetMapping("/tours/average-rating")
+    @Operation(summary = "Đánh giá trung bình của tours")
+    public ResponseEntity<Map<String, Object>> getAverageRating() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("rating", tourService.getAverageRating());
+        response.put("change", tourService.getRatingChange());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Tỷ lệ booking tours
+     */
+    @GetMapping("/tours/booking-rate")
+    @Operation(summary = "Tỷ lệ booking tours")
+    public ResponseEntity<Map<String, Object>> getTourBookingRate() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("rate", tourService.getBookingRate());
+        response.put("change", tourService.getBookingRateChange());
+        return ResponseEntity.ok(response);
+    }    // ========== MISSING BOOKING STATISTICS APIs ==========
+
+    /**
+     * Tổng số bookings
+     */
+    @GetMapping("/bookings/total")
+    @Operation(summary = "Tổng số bookings")
+    public ResponseEntity<Map<String, Object>> getTotalBookings() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", bookingTourService.getTotalBookings());
+        response.put("growthRate", bookingTourService.getBookingGrowthRate());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Tỷ lệ hoàn thành booking
+     */
+    @GetMapping("/bookings/completion-rate")
+    @Operation(summary = "Tỷ lệ hoàn thành booking")
+    public ResponseEntity<Map<String, Object>> getBookingCompletionRate() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("rate", bookingTourService.getCompletionRate());
+        response.put("change", bookingTourService.getCompletionRateChange());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Tỷ lệ hủy booking
+     */
+    @GetMapping("/bookings/cancellation-rate")
+    @Operation(summary = "Tỷ lệ hủy booking")
+    public ResponseEntity<Map<String, Object>> getBookingCancellationRate() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("rate", bookingTourService.getCancellationRate());
+        response.put("change", bookingTourService.getCancellationRateChange());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Xu hướng booking
+     */
+    @GetMapping("/bookings/trends")
+    @Operation(summary = "Xu hướng booking")
+    public ResponseEntity<List<Object[]>> getBookingTrends(
+            @RequestParam(defaultValue = "30") int days,
+            @RequestParam(defaultValue = "daily") String type) {
+        List<Object[]> stats = bookingTourService.getBookingTrends(days, type);
+        return ResponseEntity.ok(stats);
+    }
 }

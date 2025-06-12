@@ -147,10 +147,149 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Đếm user chưa bị xóa
      */
-    long countByDeletedAtIsNull();
+    long countByDeletedAtIsNull();    /**
+     * Đếm số users mới tháng này
+     */
+    @Query(value = "SELECT COUNT(*) FROM users u " +
+           "WHERE u.deleted_at IS NULL " +
+           "AND YEAR(u.created_at) = YEAR(CURRENT_DATE) " +
+           "AND MONTH(u.created_at) = MONTH(CURRENT_DATE)", nativeQuery = true)
+    long countNewUsersThisMonth();
 
     /**
-     * Đếm user được tạo sau thời điểm và chưa bị xóa
+     * Đếm số users mới tháng trước
      */
-    long countByCreatedAtAfterAndDeletedAtIsNull(LocalDateTime createdAt);
+    @Query(value = "SELECT COUNT(*) FROM users u " +
+           "WHERE u.deleted_at IS NULL " +
+           "AND YEAR(u.created_at) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)) " +
+           "AND MONTH(u.created_at) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))", nativeQuery = true)  
+    long countNewUsersLastMonth();
+
+    /**
+     * Đếm số users đang hoạt động
+     */
+    @Query(value = "SELECT COUNT(*) FROM users u " +
+           "WHERE u.deleted_at IS NULL AND u.is_active = true", nativeQuery = true)
+    long countActiveUsers();
+
+    /**
+     * Đếm users có booking gần đây (trong 3 tháng)
+     */
+    @Query(value = "SELECT COUNT(DISTINCT u.id) FROM users u " +
+           "JOIN booking_tours b ON u.id = b.user_id " +
+           "WHERE u.deleted_at IS NULL " +
+           "AND b.deleted_at IS NULL " +
+           "AND b.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH)", nativeQuery = true)
+    long countUsersWithRecentBookings();
+
+    /**
+     * Thống kê hoạt động users hàng ngày
+     */
+    @Query(value = "SELECT DATE(b.created_at) as date, COUNT(DISTINCT b.user_id) as activeUsers " +
+           "FROM booking_tours b JOIN users u ON b.user_id = u.id " +
+           "WHERE b.deleted_at IS NULL AND u.deleted_at IS NULL " +
+           "AND b.created_at >= ?1 " +
+           "GROUP BY DATE(b.created_at) " +
+           "ORDER BY date DESC", nativeQuery = true)
+    List<Object[]> getUserDailyActivity(@Param("fromDate") LocalDateTime fromDate);
+
+    // ========== STATISTICS METHODS ==========
+
+    /**
+     * Đếm users theo trạng thái active và chưa bị xóa
+     */
+    long countByIsActiveTrueAndDeletedAtIsNull();
+
+    /**
+     * Đếm users theo trạng thái inactive và chưa bị xóa
+     */
+    long countByIsActiveFalseAndDeletedAtIsNull();
+
+    /**
+     * Đếm users trong khoảng thời gian và chưa bị xóa
+     */
+    long countByCreatedAtBetweenAndDeletedAtIsNull(LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Thống kê phân bố độ tuổi người dùng
+     */
+    @Query("SELECT " +
+           "CASE " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 18 AND 25 THEN '18-25 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 26 AND 35 THEN '26-35 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 36 AND 45 THEN '36-45 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 46 AND 55 THEN '46-55 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) > 55 THEN '55+ tuổi' " +
+           "  ELSE 'Không xác định' " +
+           "END as ageGroup, " +
+           "COUNT(u) as count " +
+           "FROM User u " +
+           "WHERE u.deletedAt IS NULL AND u.birthDate IS NOT NULL " +
+           "GROUP BY " +
+           "CASE " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 18 AND 25 THEN '18-25 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 26 AND 35 THEN '26-35 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 36 AND 45 THEN '36-45 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) BETWEEN 46 AND 55 THEN '46-55 tuổi' " +
+           "  WHEN YEAR(CURRENT_DATE) - YEAR(u.birthDate) > 55 THEN '55+ tuổi' " +
+           "  ELSE 'Không xác định' " +
+           "END " +
+           "ORDER BY count DESC")
+    List<Object[]> getUserAgeDistribution();
+
+    /**
+     * Thống kê phân bố theo vị trí
+     */
+    @Query("SELECT u.address as location, COUNT(u) as count " +
+           "FROM User u " +
+           "WHERE u.deletedAt IS NULL AND u.address IS NOT NULL " +
+           "GROUP BY u.address " +
+           "ORDER BY count DESC")
+    List<Object[]> getUserLocationDistribution();
+
+    /**
+     * Thống kê phân bố theo giới tính
+     */
+    @Query("SELECT " +
+           "CASE " +
+           "  WHEN u.gender = 'MALE' THEN 'Nam' " +
+           "  WHEN u.gender = 'FEMALE' THEN 'Nữ' " +
+           "  ELSE 'Khác' " +
+           "END as gender, " +
+           "COUNT(u) as count " +
+           "FROM User u " +
+           "WHERE u.deletedAt IS NULL " +
+           "GROUP BY u.gender " +
+           "ORDER BY count DESC")
+    List<Object[]> getUserGenderDistribution();
+
+    /**
+     * Thống kê xu hướng đăng ký theo ngày
+     */
+    @Query("SELECT DATE(u.createdAt) as date, COUNT(u) as count " +
+           "FROM User u " +
+           "WHERE u.deletedAt IS NULL AND u.createdAt >= :fromDate " +
+           "GROUP BY DATE(u.createdAt) " +
+           "ORDER BY date DESC")
+    List<Object[]> getUserRegistrationTrends(@Param("fromDate") LocalDateTime fromDate);
+
+    /**
+     * Top users có nhiều booking nhất
+     */
+    @Query("SELECT u.id, u.username, u.fullName, u.email, COUNT(b) as bookingCount, " +
+           "SUM(b.totalAmount) as totalSpent " +
+           "FROM User u LEFT JOIN BookingTour b ON u = b.user AND b.deletedAt IS NULL " +
+           "WHERE u.deletedAt IS NULL " +
+           "GROUP BY u.id, u.username, u.fullName, u.email " +
+           "ORDER BY bookingCount DESC, totalSpent DESC")
+    List<Object[]> getTopUsersByBookings(Pageable pageable);
+
+    /**
+     * Users mới nhất
+     */
+    @Query("SELECT u.id, u.username, u.fullName, u.email, u.createdAt, u.isActive " +
+           "FROM User u " +
+           "WHERE u.deletedAt IS NULL " +
+           "ORDER BY u.createdAt DESC")
+    List<Object[]> getRecentUsers(Pageable pageable);
 }
