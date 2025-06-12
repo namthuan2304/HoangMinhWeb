@@ -318,6 +318,26 @@
 }
 
 .status-option {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.status-option:hover {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.status-option:active {
+    transform: translateY(0);
     flex: 1;
     min-width: 120px;
     justify-content: center;

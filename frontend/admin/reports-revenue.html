@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Doanh thu - Travel Booking System</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-common.css">
+    <link rel="stylesheet" href="../assets/css/admin-reports.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Ion Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>Travel Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <ion-icon name="grid-outline"></ion-icon>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Tour Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="tours">
+                            <ion-icon name="map-outline"></ion-icon>
+                            <span>Quản lý Tours</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="tours-submenu">
+                            <li><a href="tours.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Tours</span>
+                            </a></li>
+                            <li><a href="tour-create.html" class="submenu-link">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Tour Mới</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Booking Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="bookings">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>Quản lý Đặt Tour</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="bookings-submenu">
+                            <li><a href="bookings.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Đặt Tour</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- User Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="users">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <span>Quản lý Người dùng</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="users-submenu">
+                            <li><a href="users.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Người dùng</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Article Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="articles">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <span>Quản lý Bài viết</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="articles-submenu">
+                            <li><a href="articles.html" class="submenu-link">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Bài viết</span>
+                            </a></li>
+                            <li><a href="article-create.html" class="submenu-link">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Bài viết</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Comment Management -->
+                    <li class="nav-item">
+                        <a href="comments.html" class="nav-link">
+                            <ion-icon name="chatbubbles-outline"></ion-icon>
+                            <span>Quản lý Bình luận</span>
+                        </a>
+                    </li>
+
+                    <!-- Statistics & Reports -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="reports">
+                            <ion-icon name="bar-chart-outline"></ion-icon>
+                            <span>Thống kê & Báo cáo</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="reports-submenu">
+                            <li><a href="reports-revenue.html" class="submenu-link active">
+                                <ion-icon name="cash-outline"></ion-icon>
+                                <span>Báo cáo Doanh thu</span>
+                            </a></li>
+                            <li><a href="reports-users.html" class="submenu-link">
+                                <ion-icon name="people-outline"></ion-icon>
+                                <span>Thống kê Người dùng</span>
+                            </a></li>
+                            <li><a href="reports-tours.html" class="submenu-link">
+                                <ion-icon name="trending-up-outline"></ion-icon>
+                                <span>Thống kê Tours</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Settings -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="settings">
+                            <ion-icon name="settings-outline"></ion-icon>
+                            <span>Cài đặt</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="settings-submenu">
+                            <li><a href="settings-general.html" class="submenu-link">
+                                <ion-icon name="cog-outline"></ion-icon>
+                                <span>Cài đặt Chung</span>
+                            </a></li>
+                            <li><a href="settings-email.html" class="submenu-link">
+                                <ion-icon name="mail-outline"></ion-icon>
+                                <span>Cài đặt Email</span>
+                            </a></li>
+                            <li><a href="settings-system.html" class="submenu-link">
+                                <ion-icon name="server-outline"></ion-icon>
+                                <span>Cài đặt Hệ thống</span>
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- User Profile in Sidebar -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">Admin</span>
+                        <span class="user-role">Quản trị viên</span>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" id="profileBtn" title="Hồ sơ">
+                            <ion-icon name="person-outline"></ion-icon>
+                        </button>
+                        <button class="btn-icon" id="sidebarLogoutBtn" title="Đăng xuất">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <h1 class="page-title">Báo cáo Doanh thu</h1>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="topbar-actions">
+                        <button class="btn btn-outline" id="refreshBtn">
+                            <ion-icon name="refresh-outline"></ion-icon>
+                            <span class="btn-text">Làm mới</span>
+                        </button>
+                        <button class="btn btn-primary" id="exportPdfBtn">
+                            <ion-icon name="download-outline"></ion-icon>
+                            <span class="btn-text">Xuất PDF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Content -->
+            <div class="admin-content">
+                <div class="container">
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <div class="filter-card">
+                            <div class="filter-header">
+                                <h3>
+                                    <ion-icon name="funnel-outline"></ion-icon>
+                                    Bộ lọc báo cáo
+                                </h3>
+                            </div>
+                            <div class="filter-content">
+                                <div class="filter-group">
+                                    <label>Loại báo cáo:</label>
+                                    <select id="reportTypeSelect" class="form-select">
+                                        <option value="monthly">Theo tháng</option>
+                                        <option value="quarterly">Theo quý</option>
+                                        <option value="yearly">Theo năm</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group" id="yearFilterGroup">
+                                    <label>Năm:</label>
+                                    <select id="yearSelect" class="form-select">
+                                        <option value="2024">2024</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2022">2022</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group" id="quarterFilterGroup" style="display: none;">
+                                    <label>Quý:</label>
+                                    <select id="quarterSelect" class="form-select">
+                                        <option value="1">Quý 1</option>
+                                        <option value="2">Quý 2</option>
+                                        <option value="3">Quý 3</option>
+                                        <option value="4">Quý 4</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-actions">
+                                    <button class="btn btn-primary" id="applyFilterBtn">
+                                        <ion-icon name="search-outline"></ion-icon>
+                                        Áp dụng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="summary-section">
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <div class="summary-icon revenue">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value" id="totalRevenue">-</h3>
+                                    <p class="summary-label">Tổng doanh thu</p>
+                                    <span class="summary-period" id="revenuePeriod">-</span>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-icon bookings">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value" id="totalBookings">-</h3>
+                                    <p class="summary-label">Tổng đặt tour</p>
+                                    <span class="summary-period" id="bookingsPeriod">-</span>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-icon average">
+                                    <ion-icon name="trending-up-outline"></ion-icon>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value" id="averageRevenue">-</h3>
+                                    <p class="summary-label">Doanh thu trung bình</p>
+                                    <span class="summary-period" id="averagePeriod">-</span>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-icon growth">
+                                    <ion-icon name="analytics-outline"></ion-icon>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value" id="growthRate">-</h3>
+                                    <p class="summary-label">Tỷ lệ tăng trưởng</p>
+                                    <span class="summary-period" id="growthPeriod">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Section -->
+                    <div class="chart-section">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 id="chartTitle">Biểu đồ doanh thu theo tháng</h3>
+                                <div class="chart-actions">
+                                    <button class="btn btn-sm btn-outline" id="chartToggleBtn">
+                                        <ion-icon name="swap-horizontal-outline"></ion-icon>
+                                        Đổi loại biểu đồ
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper" id="chartWrapper">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Table Section -->
+                    <div class="table-section">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>
+                                    <ion-icon name="list-outline"></ion-icon>
+                                    Chi tiết doanh thu
+                                </h3>
+                                <div class="table-actions">
+                                    <button class="btn btn-sm btn-outline" id="exportTableBtn">
+                                        <ion-icon name="download-outline"></ion-icon>
+                                        Xuất Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="data-table" id="revenueTable">
+                                    <thead>
+                                        <tr id="tableHeader">
+                                            <th>Thời gian</th>
+                                            <th>Doanh thu</th>
+                                            <th>Số đơn</th>
+                                            <th>Đơn giá TB</th>
+                                            <th>% Tổng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <tr>
+                                            <td colspan="5" class="loading-cell">
+                                                <div class="loading-spinner"></div>
+                                                Đang tải dữ liệu...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Tours Section -->
+                    <div class="top-tours-section">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>
+                                    <ion-icon name="trophy-outline"></ion-icon>
+                                    Top Tours tạo doanh thu cao
+                                </h3>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="data-table" id="topToursTable">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Tên Tour</th>
+                                            <th>Lượt đặt</th>
+                                            <th>Doanh thu</th>
+                                            <th>% Tổng DT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topToursBody">
+                                        <tr>
+                                            <td colspan="5" class="loading-cell">
+                                                <div class="loading-spinner"></div>
+                                                Đang tải dữ liệu...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner large"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/admin-reports-revenue.js"></script>
+    <script src="../assets/js/admin-sidebar.js"></script>
+</body>
+</html>

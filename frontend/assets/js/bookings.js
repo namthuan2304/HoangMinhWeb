@@ -304,16 +304,60 @@ class BookingsManager {
         if (tourId) {
             window.location.href = `tour-detail.html?id=${tourId}`;
         }
+    }    async cancelBooking(bookingId) {
+        // Show cancellation reason modal
+        this.showCancellationModal(bookingId);
     }
 
-    async cancelBooking(bookingId) {
-        if (!confirm('Bạn có chắc chắn muốn hủy đặt tour này?')) {
-            return;
-        }
+    showCancellationModal(bookingId) {
+        const modalHtml = `
+            <div class="modal-overlay" id="cancellationModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>Hủy đặt tour</h3>
+                        <button class="modal-close" onclick="bookingsManager.closeCancellationModal()">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn hủy đặt tour này?</p>
+                        <div class="form-group">
+                            <label for="cancellationReason">Lý do hủy (tùy chọn):</label>
+                            <textarea id="cancellationReason" class="form-textarea" rows="3" 
+                                     placeholder="Nhập lý do hủy đặt tour..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="bookingsManager.closeCancellationModal()">
+                            Không
+                        </button>
+                        <button class="btn btn-danger" onclick="bookingsManager.confirmCancelBooking(${bookingId})">
+                            Có, hủy đặt tour
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Show modal with animation
+        setTimeout(() => {
+            const modal = document.getElementById('cancellationModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }, 10);
+    }
+
+    async confirmCancelBooking(bookingId) {
+        const reasonInput = document.getElementById('cancellationReason');
+        const reason = reasonInput ? reasonInput.value.trim() : '';
 
         try {
-            await apiClient.cancelBooking(bookingId);
+            await apiClient.cancelBooking(bookingId, reason);
             this.showToast('Hủy đặt tour thành công', 'success');
+            this.closeCancellationModal();
             this.loadBookings(); // Reload bookings
         } catch (error) {
             console.error('Error cancelling booking:', error);
@@ -326,6 +370,16 @@ class BookingsManager {
             }
             
             this.showToast(errorMessage, 'error');
+        }
+    }
+
+    closeCancellationModal() {
+        const modal = document.getElementById('cancellationModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
         }
     }
 

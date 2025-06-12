@@ -288,13 +288,12 @@ class APIClient {
         return await this.request(`/comments/${id}/approve`, {
             method: 'POST',
         });
-    }
-
-    async rejectComment(id) {
-        return await this.request(`/comments/${id}/reject`, {
+    }    async rejectComment(id, reason) {
+        const url = `/comments/${id}/reject${reason ? `?reason=${encodeURIComponent(reason)}` : ''}`;
+        return await this.request(url, {
             method: 'POST',
         });
-    }    // Alias method for consistency with admin-comments.js
+    }// Alias method for consistency with admin-comments.js
     async get(endpoint) {
         return await this.request(endpoint);
     }    async post(endpoint, data = {}) {
@@ -448,17 +447,22 @@ class APIClient {
         const queryString = new URLSearchParams(params).toString();
         const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';
         return await this.request(endpoint);
-    }
-
-    async updateBookingStatus(id, status) {
-        return await this.request(`/bookings/${id}/status`, {
+    }    async updateBookingStatus(id, status, notes = null) {
+        const params = new URLSearchParams({ status });
+        if (notes) {
+            params.append('notes', notes);
+        }
+        return await this.request(`/bookings/${id}/status?${params.toString()}`, {
             method: 'PUT',
-            body: JSON.stringify({ status }),
         });
-    }
-
-    async cancelBooking(id) {
-        return await this.request(`/bookings/${id}/cancel`, {
+    }    async cancelBooking(id, reason = null) {
+        const params = new URLSearchParams();
+        if (reason) {
+            params.append('reason', reason);
+        }
+        
+        const endpoint = params.toString() ? `/bookings/${id}/cancel?${params.toString()}` : `/bookings/${id}/cancel`;
+        return await this.request(endpoint, {
             method: 'POST',
         });
     }
@@ -569,16 +573,44 @@ class APIClient {
         return await this.request('/statistics/dashboard');
     }
 
-    async getMonthlyRevenue() {
-        return await this.request('/statistics/revenue/monthly?year=' + new Date().getFullYear());
+    async getMonthlyRevenue(year = new Date().getFullYear()) {
+        return await this.request(`/statistics/revenue/monthly?year=${year}`);
     }
 
-    async getQuarterlyRevenue() {
-        return await this.request('/statistics/revenue/quarterly?year=' + new Date().getFullYear());
+    async getQuarterlyRevenue(year = new Date().getFullYear()) {
+        return await this.request(`/statistics/revenue/quarterly?year=${year}`);
+    }
+
+    async getYearlyRevenue(year = new Date().getFullYear()) {
+        return await this.request(`/statistics/revenue/yearly?year=${year}`);
+    }
+
+    async getUserStatsByMonth(year = new Date().getFullYear()) {
+        return await this.request(`/statistics/users/monthly?year=${year}`);
     }
 
     async getTopBookedTours(limit = 10) {
-        return await this.request(`/bookings/statistics/top-tours?limit=${limit}`);
+        return await this.request(`/statistics/tours/top-booked?limit=${limit}`);
+    }
+
+    async getBookingStatsByStatus() {
+        return await this.request('/statistics/bookings/status');
+    }
+
+    async getTourStatsByType() {
+        return await this.request('/statistics/tours/type');
+    }
+
+    async getTourStatsByStatus() {
+        return await this.request('/statistics/tours/status');
+    }
+
+    async getSystemActivityStats() {
+        return await this.request('/statistics/system-activity');
+    }
+
+    async getMonthlyGrowthStats(year, month) {
+        return await this.request(`/statistics/growth/monthly?year=${year}&month=${month}`);
     }
 
     // PDF Methods
@@ -619,6 +651,20 @@ class APIClient {
 
         if (!response.ok) {
             throw new Error('Failed to generate PDF');
+        }
+
+        return response.blob();
+    }
+
+    async getYearlyRevenuePDF(year) {
+        const response = await fetch(`${this.baseURL}/statistics/revenue/yearly/pdf?year=${year}`, {
+            headers: {
+                'Authorization': `Bearer ${this.token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to generate yearly PDF');
         }
 
         return response.blob();

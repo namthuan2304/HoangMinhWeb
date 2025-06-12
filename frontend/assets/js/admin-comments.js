@@ -437,18 +437,15 @@ class AdminComments {
                 </tr>
             `;
         }
-    }
-
-    // Updated confirmReject method to send reject reason
+    }    // Updated confirmReject method to send reject reason
     async confirmReject() {
         if (this.currentCommentId) {
             try {
                 const rejectReason = document.getElementById('rejectReason')?.value || '';
                 
-                // Call the backend with reject reason
-                await window.apiClient.post(`/comments/${this.currentCommentId}/reject`, {
-                    reason: rejectReason
-                });
+                // Call the backend with reject reason as query parameter
+                const url = `/comments/${this.currentCommentId}/reject${rejectReason ? `?reason=${encodeURIComponent(rejectReason)}` : ''}`;
+                await window.apiClient.post(url);
                 
                 this.showToast('Từ chối bình luận thành công', 'success');
                 this.hideModal('rejectModal');
@@ -460,7 +457,8 @@ class AdminComments {
                     document.getElementById('rejectReason').value = '';
                 }
             } catch (error) {
-                console.error('Error rejecting comment:', error);                this.showToast('Không thể từ chối bình luận', 'error');
+                console.error('Error rejecting comment:', error);
+                this.showToast('Không thể từ chối bình luận', 'error');
             }
         }
     }

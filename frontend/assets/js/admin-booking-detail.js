@@ -277,9 +277,7 @@ class AdminBookingDetail {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-    }
-
-    async confirmUpdateStatus() {
+    }    async confirmUpdateStatus() {
         const newStatus = document.getElementById('newStatus').value;
         const notes = document.getElementById('statusNotes').value;
 
@@ -291,12 +289,16 @@ class AdminBookingDetail {
         try {
             this.showLoading(true);
             
-            await apiClient.updateBookingStatus(this.bookingId, newStatus);
+            await apiClient.updateBookingStatus(this.bookingId, newStatus, notes);
             
             // Update local booking data
             this.booking.status = newStatus;
             if (notes) {
                 this.booking.notes = notes;
+                // If status is CANCELLED and notes provided, set it as cancellation reason
+                if (newStatus === 'CANCELLED') {
+                    this.booking.cancellationReason = notes;
+                }
             }
             
             this.showToast('Cập nhật trạng thái thành công!', 'success');

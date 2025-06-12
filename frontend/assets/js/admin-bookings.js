@@ -177,9 +177,7 @@ class AdminBookings {
         if (this.confirmedCount) this.confirmedCount.textContent = this.formatNumber(this.stats.confirmed);
         if (this.completedCount) this.completedCount.textContent = this.formatNumber(this.stats.completed);
         if (this.cancelledCount) this.cancelledCount.textContent = this.formatNumber(this.stats.cancelled);
-    }
-
-    renderBookingsTable() {
+    }    renderBookingsTable() {
         if (!this.tableWrapper) return;
 
         if (this.bookings.length === 0) {
@@ -216,9 +214,46 @@ class AdminBookings {
         `;
 
         this.tableWrapper.innerHTML = html;
-    }
+        
+        // Bind event listeners for action buttons
+        this.bindActionButtons();
+    }    bindActionButtons() {
+        // Remove existing event listeners to prevent duplicate bindings
+        document.querySelectorAll('.view-booking-btn, .edit-booking-btn, .print-invoice-btn').forEach(btn => {
+            btn.replaceWith(btn.cloneNode(true));
+        });
 
-    renderBookingRow(booking) {
+        // View booking buttons
+        document.querySelectorAll('.view-booking-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const bookingId = parseInt(e.currentTarget.dataset.bookingId);
+                this.viewBooking(bookingId);
+            });
+        });
+
+        // Edit booking buttons
+        document.querySelectorAll('.edit-booking-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const bookingId = parseInt(e.currentTarget.dataset.bookingId);
+                console.log('Edit button clicked for booking:', bookingId);
+                this.updateStatus(bookingId);
+            });
+        });
+
+        // Print invoice buttons
+        document.querySelectorAll('.print-invoice-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const bookingId = parseInt(e.currentTarget.dataset.bookingId);
+                this.printInvoice(bookingId);
+            });
+        });
+    }renderBookingRow(booking) {
         return `
             <tr>
                 <td>
@@ -252,13 +287,19 @@ class AdminBookings {
                 </td>
                 <td>
                     <div class="action-buttons">
-                        <button class="btn btn-sm btn-outline" onclick="adminBookings.viewBooking(${booking.id})" title="Xem chi tiết">
+                        <button class="btn btn-sm btn-outline view-booking-btn" 
+                                data-booking-id="${booking.id}" 
+                                title="Xem chi tiết">
                             <ion-icon name="eye-outline"></ion-icon>
                         </button>
-                        <button class="btn btn-sm btn-primary" onclick="adminBookings.updateStatus(${booking.id})" title="Cập nhật trạng thái">
+                        <button class="btn btn-sm btn-primary edit-booking-btn" 
+                                data-booking-id="${booking.id}" 
+                                title="Cập nhật trạng thái">
                             <ion-icon name="create-outline"></ion-icon>
                         </button>
-                        <button class="btn btn-sm btn-success" onclick="adminBookings.printInvoice(${booking.id})" title="In hóa đơn">
+                        <button class="btn btn-sm btn-success print-invoice-btn" 
+                                data-booking-id="${booking.id}" 
+                                title="In hóa đơn">
                             <ion-icon name="print-outline"></ion-icon>
                         </button>
                     </div>
@@ -362,14 +403,18 @@ class AdminBookings {
         if (bookingId) {
             window.location.href = `booking-detail.html?id=${bookingId}`;
         }
-    }
-
-    async updateStatus(bookingId) {
+    }    async updateStatus(bookingId) {
+        console.log('updateStatus called with bookingId:', bookingId);
         try {
             const booking = this.bookings.find(b => b.id === bookingId);
-            if (!booking) return;
+            console.log('Found booking:', booking);
+            if (!booking) {
+                console.error('Booking not found');
+                return;
+            }
 
             const availableStatuses = this.getAvailableStatuses(booking.status);
+            console.log('Available statuses:', availableStatuses);
             
             if (availableStatuses.length === 0) {
                 this.showToast('Không thể thay đổi trạng thái của đặt tour này', 'warning');
@@ -381,10 +426,8 @@ class AdminBookings {
                 `<button class="btn btn-sm btn-outline status-option" data-status="${status}">
                     ${this.getStatusText(status)}
                 </button>`
-            ).join('');
-
-            const modalHtml = `
-                <div class="modal-overlay" id="statusModal">
+            ).join('');            const modalHtml = `
+                <div class="modal-overlay show" id="statusModal">
                     <div class="modal">
                         <div class="modal-header">
                             <h3>Cập nhật trạng thái</h3>
@@ -403,6 +446,14 @@ class AdminBookings {
             `;
 
             document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Show modal with animation
+            setTimeout(() => {
+                const modal = document.getElementById('statusModal');
+                if (modal) {
+                    modal.classList.add('show');
+                }
+            }, 10);
 
             // Bind status option events
             document.querySelectorAll('.status-option').forEach(btn => {
@@ -415,12 +466,11 @@ class AdminBookings {
             console.error('Error updating status:', error);
             this.showToast('Có lỗi khi cập nhật trạng thái', 'error');
         }
-    }
-
-    async confirmStatusUpdate(bookingId, newStatus) {
+    }    async confirmStatusUpdate(bookingId, newStatus) {
         try {
             this.showLoading(true);
             
+            // For CANCELLED status, we might want to add a note, but for quick actions keep it simple
             await apiClient.updateBookingStatus(bookingId, newStatus);
             
             this.showToast('Cập nhật trạng thái thành công!', 'success');
@@ -488,12 +538,13 @@ class AdminBookings {
         } finally {
             this.showLoading(false);
         }
-    }
-
-    closeModal() {
+    }    closeModal() {
         const modal = document.getElementById('statusModal');
         if (modal) {
-            modal.remove();
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
         }
     }
 
@@ -602,11 +653,15 @@ class AdminBookings {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing AdminBookings...');
     // Wait for API client to be available
     const initBookings = () => {
         if (typeof apiClient !== 'undefined' && apiClient) {
+            console.log('API client available, creating AdminBookings instance...');
             window.adminBookings = new AdminBookings();
+            console.log('AdminBookings instance created:', window.adminBookings);
         } else {
+            console.log('API client not ready, retrying...');
             setTimeout(initBookings, 100);
         }
     };
