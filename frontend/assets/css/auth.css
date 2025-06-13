@@ -150,6 +150,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .spinner {
@@ -158,11 +161,12 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: var(--white);
-  animation: spin 1s ease-in-out infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .form-divider {

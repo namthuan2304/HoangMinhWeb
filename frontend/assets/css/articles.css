@@ -293,16 +293,23 @@
   color: var(--sonic-silver);
 }
 
-/* Loading */
+/* Loading - Standardized */
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 60px 0;
+  padding: 4rem 2rem;
+  min-height: 200px;
+  background: var(--white);
 }
 
 .loading-spinner {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--sonic-silver);
 }
 
 .spinner {
@@ -312,12 +319,17 @@
   border-top: 4px solid var(--bright-navy-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 15px;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+  font-size: var(--fs-6);
+  font-weight: var(--fw-500);
+  margin: 0;
 }
 
 /* Articles Grid */
