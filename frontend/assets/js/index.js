@@ -562,18 +562,29 @@ function setupEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
-    
-    // View all buttons
-    const viewAllButtons = document.querySelectorAll('.btn[data-translate="view_all"]');
+      // View all buttons
+    const viewAllButtons = document.querySelectorAll('.btn[data-translate^="view_all"]');
     viewAllButtons.forEach(btn => {
         btn.addEventListener('click', function() {
-            const section = btn.closest('section');
-            if (section && section.id === 'articles') {
-                // For articles section, go to articles page
+            const translateKey = btn.getAttribute('data-translate');
+            
+            if (translateKey === 'view_all_destinations') {
+                // Redirect to tours page with destinations filter
+                window.location.href = 'tours.html';
+            } else if (translateKey === 'view_all_tours') {
+                // Redirect to tours page
+                window.location.href = 'tours.html';
+            } else if (translateKey === 'view_all_articles') {
+                // Redirect to articles page
                 window.location.href = 'articles.html';
             } else {
-                // For other sections, go to tours page
-                window.location.href = 'tours.html';
+                // Default fallback
+                const section = btn.closest('section');
+                if (section && section.id === 'articles') {
+                    window.location.href = 'articles.html';
+                } else {
+                    window.location.href = 'tours.html';
+                }
             }
         });
     });
