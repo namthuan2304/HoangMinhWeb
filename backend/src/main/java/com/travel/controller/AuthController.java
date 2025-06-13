@@ -2,6 +2,7 @@ package com.travel.controller;
 
 import com.travel.dto.request.LoginRequest;
 import com.travel.dto.request.SignupRequest;
+import com.travel.dto.request.ForgotPasswordRequest;
 import com.travel.dto.response.JwtResponse;
 import com.travel.dto.response.MessageResponse;
 import com.travel.entity.User;
@@ -148,12 +149,10 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(MessageResponse.success("Xác thực email thành công!"));
-    }
-
-    @PostMapping("/forgot-password")
+    }    @PostMapping("/forgot-password")
     @Operation(summary = "Quên mật khẩu", description = "Gửi email reset mật khẩu")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest()
@@ -173,9 +172,7 @@ public class AuthController {
             return ResponseEntity.badRequest()
                     .body(MessageResponse.error("Lỗi gửi email: " + e.getMessage()));
         }
-    }
-
-    @PostMapping("/reset-password")
+    }    @PostMapping("/reset-password")
     @Operation(summary = "Reset mật khẩu", description = "Đặt lại mật khẩu với token")
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         if (newPassword.length() < 6) {

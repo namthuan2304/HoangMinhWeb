@@ -169,12 +169,13 @@ class APIClient {
             body: JSON.stringify({ email }),
             auth: false,
         });
-    }
-
-    async resetPassword(token, newPassword) {
-        return await this.request('/auth/reset-password', {
+    }    async resetPassword(token, newPassword) {
+        const params = new URLSearchParams();
+        params.append('token', token);
+        params.append('newPassword', newPassword);
+        
+        return await this.request(`/auth/reset-password?${params.toString()}`, {
             method: 'POST',
-            body: JSON.stringify({ token, newPassword }),
             auth: false,
         });
     }
