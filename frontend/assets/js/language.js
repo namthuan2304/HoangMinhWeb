@@ -320,7 +320,30 @@ class LanguageManager {
                 'family': 'Gia đình',
                 'solo': 'Một mình',
                 'couple': 'Cặp đôi',
-                'group': 'Nhóm'
+                'group': 'Nhóm',
+                
+                // Missing translations for HTML content
+                'company_name': 'Du Lịch Hoàng Minh',
+                'hero_full_description': 'Trải nghiệm những chuyến du lịch tuyệt vời với dịch vụ chuyên nghiệp. Chúng tôi mang đến cho bạn những kỷ niệm đáng nhớ nhất trong cuộc đời.',
+                'enter_destination': 'Nhập điểm đến...',
+                'number_of_people_placeholder': 'Số người',
+                'popular_full_description': 'Những điểm đến được yêu thích nhất với cảnh đẹp hùng vĩ và văn hóa đặc sắc. Hãy cùng chúng tôi khám phá những nơi tuyệt vời này.',
+                'loading_destinations': 'Đang tải điểm đến...',
+                'view_all_destinations': 'Xem tất cả điểm đến',
+                'about_company': 'Về công ty',
+                'about_full_description': 'Du Lịch Hoàng Minh là công ty du lịch hàng đầu Việt Nam với hơn 10 năm kinh nghiệm trong ngành du lịch. Chúng tôi chuyên tổ chức các tour du lịch trong nước và quốc tế với dịch vụ chuyên nghiệp và tận tâm.',
+                'about_mission': 'Sứ mệnh của chúng tôi là mang đến cho khách hàng những trải nghiệm du lịch tuyệt vời nhất, từ những chuyến đi ngắn ngày đến những hành trình dài khám phá thế giới.',
+                'popular_packages': 'Gói tour phổ biến',
+                'tour_packages_full_description': 'Chọn gói tour phù hợp với bạn từ những chuyến đi trong nước đến quốc tế. Tất cả đều được thiết kế với dịch vụ chuyên nghiệp và giá cả hợp lý.',
+                'loading_tours': 'Đang tải gói tour...',
+                'view_all_tours': 'Xem tất cả gói tour',
+                'gallery_images': 'Hình ảnh từ các chuyến đi',
+                'gallery_full_description': 'Những khoảnh khắc đẹp nhất được ghi lại từ các chuyến du lịch của khách hàng. Hãy cùng ngắm nhìn những trải nghiệm tuyệt vời này.',
+                'travel_images': 'Hình ảnh du lịch',
+                'loading_articles': 'Đang tải bài viết...',
+                'contact_us_cta': 'Liên hệ chúng tôi!',
+                'newsletter_signup': 'Đăng ký nhận bản tin để cập nhật thông tin tour mới nhất!',
+                'enter_email': 'Nhập email của bạn'
             },
             en: {
                 // Header
@@ -639,7 +662,30 @@ class LanguageManager {
                 'family': 'Family',
                 'solo': 'Solo',
                 'couple': 'Couple',
-                'group': 'Group'
+                'group': 'Group',
+                
+                // Missing translations for HTML content
+                'company_name': 'Hoang Minh Travel',
+                'hero_full_description': 'Experience amazing trips with professional service. We bring you the most memorable memories of your life.',
+                'enter_destination': 'Enter destination...',
+                'number_of_people_placeholder': 'Number of people',
+                'popular_full_description': 'The most beloved destinations with magnificent scenery and distinctive culture. Let us explore these wonderful places together.',
+                'loading_destinations': 'Loading destinations...',
+                'view_all_destinations': 'View all destinations',
+                'about_company': 'About company',
+                'about_full_description': 'Hoang Minh Travel is a leading travel company in Vietnam with over 10 years of experience in the tourism industry. We specialize in organizing domestic and international tours with professional and dedicated service.',
+                'about_mission': 'Our mission is to bring customers the best travel experiences, from short trips to long journeys exploring the world.',
+                'popular_packages': 'Popular packages',
+                'tour_packages_full_description': 'Choose the right tour package for you from domestic to international trips. All are designed with professional service and reasonable prices.',
+                'loading_tours': 'Loading tour packages...',
+                'view_all_tours': 'View all tour packages',
+                'gallery_images': 'Images from trips',
+                'gallery_full_description': 'The most beautiful moments captured from customer trips. Let\'s admire these wonderful experiences.',
+                'travel_images': 'Travel images',
+                'loading_articles': 'Loading articles...',
+                'contact_us_cta': 'Contact us!',
+                'newsletter_signup': 'Subscribe to newsletter to get updates on the latest tours!',
+                'enter_email': 'Enter your email'
             }
         };
         this.init();
