@@ -123,11 +123,17 @@ class AuthManager {
             this.clearFormErrors();
 
             // Attempt login
-            const response = await apiClient.login(credentials);            // Show success message
-            this.showToast('Đăng nhập thành công!', 'success');            // Remember me
+            const response = await apiClient.login(credentials);
+
+            // Show success message
+            this.showToast('Đăng nhập thành công!', 'success');
+
+            // Remember me
             if (formData.get('rememberMe')) {
                 localStorage.setItem('rememberMe', 'true');
-            }            // Trigger auth state change event
+            }
+
+            // Trigger auth state change event
             console.log('Login successful, triggering auth state change...');
             if (typeof HeaderManager !== 'undefined') {
                 HeaderManager.triggerAuthStateChange();
@@ -147,15 +153,7 @@ class AuthManager {
 
         } catch (error) {
             console.error('Login error:', error);
-            this.showToast(error.message || 'Đăng nhập thất bại', 'error');
-            
-            // Show field-specific errors
-            if (error.message.includes('username') || error.message.includes('tên đăng nhập')) {
-                this.showFieldError('usernameError', 'Tên đăng nhập không hợp lệ');
-            }
-            if (error.message.includes('password') || error.message.includes('mật khẩu')) {
-                this.showFieldError('passwordError', 'Mật khẩu không chính xác');
-            }
+            this.showFormError(error.message || 'Đăng nhập thất bại');
         } finally {
             // Hide loading
             this.setButtonLoading(loginBtn, btnText, btnLoading, false);
@@ -173,7 +171,9 @@ class AuthManager {
         };
 
         // Validate form
-        if (!this.validateRegisterForm(userData, formData.get('confirmPassword'))) {
+        const validationError = this.validateRegisterForm(userData, formData.get('confirmPassword'));
+        if (validationError) {
+            this.showFormError(validationError);
             return;
         }
 
@@ -201,7 +201,7 @@ class AuthManager {
 
         } catch (error) {
             console.error('Register error:', error);
-            this.showToast(error.message || 'Đăng ký thất bại', 'error');
+            this.showFormError(error.message || 'Đăng ký thất bại');
         } finally {
             // Hide loading
             this.setButtonLoading(registerBtn, btnText, btnLoading, false);
@@ -213,7 +213,7 @@ class AuthManager {
         const email = formData.get('email');
 
         if (!this.validateEmail(email)) {
-            this.showFieldError('emailError', 'Vui lòng nhập email hợp lệ');
+            this.showFormError('Vui lòng nhập email hợp lệ');
             return;
         }
 
@@ -246,7 +246,7 @@ class AuthManager {
 
         } catch (error) {
             console.error('Forgot password error:', error);
-            this.showToast(error.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+            this.showFormError(error.message || 'Có lỗi xảy ra, vui lòng thử lại');
         } finally {
             // Hide loading
             this.setButtonLoading(submitBtn, btnText, btnLoading, false);
@@ -260,11 +260,13 @@ class AuthManager {
         const confirmPassword = formData.get('confirmPassword');
 
         if (!token) {
-            this.showToast('Token không hợp lệ', 'error');
+            this.showFormError('Token không hợp lệ');
             return;
         }
 
-        if (!this.validatePasswordReset(newPassword, confirmPassword)) {
+        const validationError = this.validatePasswordReset(newPassword, confirmPassword);
+        if (validationError) {
+            this.showFormError(validationError);
             return;
         }
 
@@ -292,7 +294,7 @@ class AuthManager {
 
         } catch (error) {
             console.error('Reset password error:', error);
-            this.showToast(error.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+            this.showFormError(error.message || 'Có lỗi xảy ra, vui lòng thử lại');
         } finally {
             // Hide loading
             this.setButtonLoading(submitBtn, btnText, btnLoading, false);
@@ -301,107 +303,86 @@ class AuthManager {
 
     // Validation methods
     validateLoginForm(credentials) {
-        let isValid = true;
-
         if (!credentials.username.trim()) {
-            this.showFieldError('usernameError', 'Vui lòng nhập tên đăng nhập');
-            isValid = false;
+            return false;
         }
 
         if (!credentials.password.trim()) {
-            this.showFieldError('passwordError', 'Vui lòng nhập mật khẩu');
-            isValid = false;
+            return false;
         }
 
-        return isValid;
+        return true;
     }
 
     validateRegisterForm(userData, confirmPassword) {
-        let isValid = true;
-
         // Username validation
         if (!userData.username.trim()) {
-            this.showFieldError('usernameError', 'Vui lòng nhập tên đăng nhập');
-            isValid = false;
-        } else if (userData.username.length < 3) {
-            this.showFieldError('usernameError', 'Tên đăng nhập phải có ít nhất 3 ký tự');
-            isValid = false;
+            return 'Vui lòng nhập tên đăng nhập';
+        }
+        if (userData.username.length < 3) {
+            return 'Tên đăng nhập phải có ít nhất 3 ký tự';
         }
 
         // Email validation
         if (!userData.email.trim()) {
-            this.showFieldError('emailError', 'Vui lòng nhập email');
-            isValid = false;
-        } else if (!this.validateEmail(userData.email)) {
-            this.showFieldError('emailError', 'Email không hợp lệ');
-            isValid = false;
+            return 'Vui lòng nhập email';
+        }
+        if (!this.validateEmail(userData.email)) {
+            return 'Email không hợp lệ';
         }
 
         // Full name validation
         if (!userData.fullName.trim()) {
-            this.showFieldError('fullNameError', 'Vui lòng nhập họ và tên');
-            isValid = false;
+            return 'Vui lòng nhập họ và tên';
         }
 
         // Phone validation
         if (!userData.phoneNumber.trim()) {
-            this.showFieldError('phoneNumberError', 'Vui lòng nhập số điện thoại');
-            isValid = false;
-        } else if (!this.validatePhone(userData.phoneNumber)) {
-            this.showFieldError('phoneNumberError', 'Số điện thoại không hợp lệ');
-            isValid = false;
+            return 'Vui lòng nhập số điện thoại';
+        }
+        if (!this.validatePhone(userData.phoneNumber)) {
+            return 'Số điện thoại không hợp lệ';
         }
 
         // Password validation
         if (!userData.password.trim()) {
-            this.showFieldError('passwordError', 'Vui lòng nhập mật khẩu');
-            isValid = false;
-        } else if (userData.password.length < 6) {
-            this.showFieldError('passwordError', 'Mật khẩu phải có ít nhất 6 ký tự');
-            isValid = false;
+            return 'Vui lòng nhập mật khẩu';
+        }
+        if (userData.password.length < 6) {
+            return 'Mật khẩu phải có ít nhất 6 ký tự';
         }
 
         // Confirm password validation
         if (!confirmPassword.trim()) {
-            this.showFieldError('confirmPasswordError', 'Vui lòng xác nhận mật khẩu');
-            isValid = false;
-        } else if (userData.password !== confirmPassword) {
-            this.showFieldError('confirmPasswordError', 'Mật khẩu xác nhận không khớp');
-            isValid = false;
+            return 'Vui lòng xác nhận mật khẩu';
+        }
+        if (userData.password !== confirmPassword) {
+            return 'Mật khẩu xác nhận không khớp';
         }
 
-        return isValid;
+        return null;
     }
 
     validatePasswordReset(newPassword, confirmPassword) {
-        let isValid = true;
-
         if (!newPassword.trim()) {
-            this.showFieldError('newPasswordError', 'Vui lòng nhập mật khẩu mới');
-            isValid = false;
-        } else if (newPassword.length < 6) {
-            this.showFieldError('newPasswordError', 'Mật khẩu phải có ít nhất 6 ký tự');
-            isValid = false;
+            return 'Vui lòng nhập mật khẩu mới';
+        }
+        if (newPassword.length < 6) {
+            return 'Mật khẩu phải có ít nhất 6 ký tự';
         }
 
         if (!confirmPassword.trim()) {
-            this.showFieldError('confirmPasswordError', 'Vui lòng xác nhận mật khẩu');
-            isValid = false;
-        } else if (newPassword !== confirmPassword) {
-            this.showFieldError('confirmPasswordError', 'Mật khẩu xác nhận không khớp');
-            isValid = false;
+            return 'Vui lòng xác nhận mật khẩu';
+        }
+        if (newPassword !== confirmPassword) {
+            return 'Mật khẩu xác nhận không khớp';
         }
 
-        return isValid;
+        return null;
     }
 
     validatePasswordMatch(password, confirmPassword) {
-        const errorElement = document.getElementById('confirmPasswordError');
-        if (password !== confirmPassword && confirmPassword.length > 0) {
-            this.showFieldError('confirmPasswordError', 'Mật khẩu xác nhận không khớp');
-        } else {
-            if (errorElement) errorElement.textContent = '';
-        }
+        // Remove this method as we're not using real-time validation anymore
     }
 
     validateEmail(email) {
@@ -427,24 +408,20 @@ class AuthManager {
         }
     }
 
-    showFieldError(elementId, message) {
-        const errorElement = document.getElementById(elementId);
+    showFormError(message) {
+        const errorElement = document.getElementById('formError');
         if (errorElement) {
             errorElement.textContent = message;
-            const inputElement = errorElement.previousElementSibling;
-            if (inputElement && inputElement.classList.contains('form-control')) {
-                inputElement.classList.add('error');
-            }
+            errorElement.style.display = 'block';
         }
     }
 
     clearFormErrors() {
-        document.querySelectorAll('.error-message').forEach(element => {
-            element.textContent = '';
-        });
-        document.querySelectorAll('.form-control.error').forEach(element => {
-            element.classList.remove('error');
-        });
+        const errorElement = document.getElementById('formError');
+        if (errorElement) {
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+        }
     }
 
     showToast(message, type = 'info') {

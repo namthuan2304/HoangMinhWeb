@@ -28,7 +28,7 @@
                 <div class="auth-wrapper">                    <div class="auth-card">
                         <div class="auth-card-logo">
                             <a href="index.html">
-                                <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
+                                <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
                             </a>
                         </div>
                         
@@ -38,32 +38,30 @@
                         </div>
 
                         <form id="registerForm" class="auth-form">
+                            <div class="error-message" id="formError" style="display: none;"></div>
+
                             <div class="form-group">
                                 <label for="fullName" class="form-label" data-translate="full_name">Họ và tên</label>
                                 <input type="text" id="fullName" name="fullName" class="form-control" 
                                        data-translate-placeholder="full_name" placeholder="Nhập họ và tên đầy đủ" required>
-                                <div class="error-message" id="fullNameError"></div>
                             </div>
 
                             <div class="form-group">
                                 <label for="username" class="form-label" data-translate="username">Tên đăng nhập</label>
                                 <input type="text" id="username" name="username" class="form-control" 
                                        data-translate-placeholder="username" placeholder="Nhập tên đăng nhập" required>
-                                <div class="error-message" id="usernameError"></div>
                             </div>
 
                             <div class="form-group">
                                 <label for="email" class="form-label" data-translate="email">Email</label>
                                 <input type="email" id="email" name="email" class="form-control" 
                                        data-translate-placeholder="email_address" placeholder="Nhập địa chỉ email" required>
-                                <div class="error-message" id="emailError"></div>
                             </div>
 
                             <div class="form-group">
                                 <label for="phoneNumber" class="form-label" data-translate="phone_number">Số điện thoại</label>
                                 <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" 
                                        data-translate-placeholder="phone_number" placeholder="Nhập số điện thoại" required>
-                                <div class="error-message" id="phoneNumberError"></div>
                             </div>
 
                             <div class="form-group">
@@ -75,7 +73,6 @@
                                         <ion-icon name="eye-outline"></ion-icon>
                                     </button>
                                 </div>
-                                <div class="error-message" id="passwordError"></div>
                             </div>
 
                             <div class="form-group">
@@ -87,7 +84,6 @@
                                         <ion-icon name="eye-outline"></ion-icon>
                                     </button>
                                 </div>
-                                <div class="error-message" id="confirmPasswordError"></div>
                             </div>
 
                             <div class="form-group">
