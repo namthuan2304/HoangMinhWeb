@@ -1631,7 +1631,7 @@ address {
    * TOUR SEARCH
    */
 
-  .tour-search-form { grid-template-columns: repeat(5, 1fr); }
+  .tour-search.form { grid-template-columns: repeat(5, 1fr); }
 
   .tour-search .btn {
     --padding: 15px;
@@ -1735,7 +1735,6 @@ address {
   .user-dropdown-menu {
     min-width: 220px;
   }
-
 }
 
 /*-----------------------------------*\
@@ -2037,4 +2036,108 @@ address {
 .article-cta .btn {
   display: inline-block;
   margin: 0 auto;
+}
+
+/*-----------------------------------*\
+ * #ABOUT
+\*-----------------------------------*/
+
+.about {
+  padding-block: var(--section-padding);
+  background: var(--white);
+}
+
+.about-content {
+  display: block;
+  text-align: center;
+}
+
+.about-text {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-text .section-subtitle {
+  margin-bottom: 10px;
+}
+
+.about-text .section-title {
+  margin-bottom: 20px;
+}
+
+.about-text .section-text {
+  margin-bottom: 25px;
+  line-height: 1.7;
+  font-size: var(--fs-5);
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 30px 20px;
+  background: var(--cultured);
+  border-radius: var(--radius-15);
+  transition: var(--transition);
+}
+
+.stat-item:hover {
+  background: var(--bright-navy-blue);
+  color: var(--white);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px hsla(214, 57%, 51%, 0.3);
+}
+
+.stat-number {
+  font-size: var(--fs-1);
+  font-weight: var(--fw-800);
+  font-family: var(--ff-montserrat);
+  color: var(--bright-navy-blue);
+  margin-bottom: 8px;
+  transition: var(--transition);
+}
+
+.stat-item:hover .stat-number {
+  color: var(--white);
+}
+
+.stat-label {
+  font-size: var(--fs-6);
+  color: var(--black-coral);
+  font-weight: var(--fw-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+}
+
+.stat-item:hover .stat-label {
+  color: var(--white);
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+  .about-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+}
+
+@media (min-width: 992px) {
+  .about-text .section-text {
+    font-size: var(--fs-4);
+  }
+
+  .stat-number {
+    font-size: calc(var(--fs-1) + 0.5rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  .about {
+    padding-block: calc(var(--section-padding) + 20px);
+  }
 }

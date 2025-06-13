@@ -51,7 +51,7 @@
           </div>
 
         </a>        <a href="#" class="logo">
-          <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+          <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh" data-translate-alt="company_name">
         </a>
 
         <div class="header-btn-group">
@@ -97,7 +97,7 @@
         <nav class="navbar" data-navbar>
 
           <div class="navbar-top">            <a href="#" class="logo">
-              <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh">
+              <img src="./assets/images/logo-blue.svg" alt="Du Lịch Hoàng Minh" data-translate-alt="company_name">
             </a>
 
             <button class="nav-close-btn" aria-label="Đóng menu" data-nav-close-btn data-translate-title="close_menu">
@@ -197,7 +197,7 @@
 
           <h2 class="h1 hero-title" data-translate="hero_title">Khám phá thế giới cùng chúng tôi</h2>
 
-          <p class="hero-text" data-translate="hero_subtitle">
+          <p class="hero-text" data-translate="hero_full_description">
             Trải nghiệm những chuyến du lịch tuyệt vời với dịch vụ chuyên nghiệp. 
             Chúng tôi mang đến cho bạn những kỷ niệm đáng nhớ nhất trong cuộc đời.
           </p>
@@ -228,14 +228,15 @@
               <label for="destination" class="input-label" data-translate="destination">Điểm đến*</label>
 
               <input type="text" name="destination" id="destination" required 
-                     data-translate-placeholder="search_placeholder" placeholder="Nhập điểm đến..."
+                     data-translate-placeholder="enter_destination" placeholder="Nhập điểm đến..."
                      class="input-field">
             </div>
 
             <div class="input-wrapper">
               <label for="people" class="input-label" data-translate="number_of_people">Số người*</label>
 
-              <input type="number" name="people" id="people" required placeholder="Số người" class="input-field">
+              <input type="number" name="people" id="people" required 
+                     data-translate-placeholder="number_of_people_placeholder" placeholder="Số người" class="input-field">
             </div>
 
             <div class="input-wrapper">
@@ -270,7 +271,7 @@
 
           <h2 class="h2 section-title" data-translate="popular_destinations">Điểm đến phổ biến</h2>
 
-          <p class="section-text" data-translate="popular_subtitle">
+          <p class="section-text" data-translate="popular_full_description">
             Những điểm đến được yêu thích nhất với cảnh đẹp hùng vĩ và văn hóa đặc sắc. 
             Hãy cùng chúng tôi khám phá những nơi tuyệt vời này.
           </p>          <ul class="popular-list" id="popularDestinationsList">
@@ -278,30 +279,62 @@
             <li class="loading-placeholder">
               <div class="loading-spinner">
                 <div class="spinner"></div>
-                <p>Đang tải điểm đến...</p>
+                <p data-translate="loading_destinations">Đang tải điểm đến...</p>
               </div>
             </li>
           </ul>
 
-          <button class="btn btn-primary" data-translate="view_all">Xem tất cả điểm đến</button>
+          <button class="btn btn-primary" data-translate="view_all_destinations">Xem tất cả điểm đến</button>
 
         </div>
       </section>
 
-
-
-
+      <!-- 
+        - #ABOUT US SECTION
+      -->
+      <section class="about" id="about">
+        <div class="container">
+          <div class="about-content">
+            <div class="about-text">
+              <p class="section-subtitle" data-translate="about_company">Về công ty</p>
+              <h2 class="h2 section-title" data-translate="about_us">Về chúng tôi</h2>
+              <p class="section-text" data-translate="about_full_description">
+                Du Lịch Hoàng Minh là công ty du lịch hàng đầu Việt Nam với hơn 10 năm kinh nghiệm trong ngành du lịch. 
+                Chúng tôi chuyên tổ chức các tour du lịch trong nước và quốc tế với dịch vụ chuyên nghiệp và tận tâm.
+              </p>
+              <p class="section-text" data-translate="about_mission">
+                Sứ mệnh của chúng tôi là mang đến cho khách hàng những trải nghiệm du lịch tuyệt vời nhất, 
+                từ những chuyến đi ngắn ngày đến những hành trình dài khám phá thế giới.
+              </p>
+              <div class="about-stats">
+                <div class="stat-item">
+                  <h3 class="stat-number">10+</h3>
+                  <p class="stat-label" data-translate="years_experience">Năm kinh nghiệm</p>
+                </div>
+                <div class="stat-item">
+                  <h3 class="stat-number">1000+</h3>
+                  <p class="stat-label" data-translate="happy_customers">Khách hàng hài lòng</p>
+                </div>
+                <div class="stat-item">
+                  <h3 class="stat-number">50+</h3>
+                  <p class="stat-label" data-translate="destinations">Điểm đến</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- 
         - #PACKAGE
       -->      <section class="package" id="package">
         <div class="container">
 
-          <p class="section-subtitle">Gói tour phổ biến</p>
+          <p class="section-subtitle" data-translate="popular_packages">Gói tour phổ biến</p>
 
           <h2 class="h2 section-title" data-translate="tour_packages_title">Gói tour du lịch</h2>
 
-          <p class="section-text" data-translate="tour_packages_subtitle">
+          <p class="section-text" data-translate="tour_packages_full_description">
             Chọn gói tour phù hợp với bạn từ những chuyến đi trong nước đến quốc tế. 
             Tất cả đều được thiết kế với dịch vụ chuyên nghiệp và giá cả hợp lý.
           </p>          <ul class="package-list" id="featuredToursList">
@@ -309,12 +342,12 @@
             <li class="loading-placeholder">
               <div class="loading-spinner">
                 <div class="spinner"></div>
-                <p>Đang tải gói tour...</p>
+                <p data-translate="loading_tours">Đang tải gói tour...</p>
               </div>
             </li>
           </ul>
 
-          <button class="btn btn-primary" data-translate="view_all">Xem tất cả gói tour</button>
+          <button class="btn btn-primary" data-translate="view_all_tours">Xem tất cả gói tour</button>
 
         </div>
       </section>
@@ -330,18 +363,18 @@
       <section class="gallery" id="gallery">
         <div class="container">
 
-          <p class="section-subtitle">Thư viện ảnh</p>
+          <p class="section-subtitle" data-translate="gallery">Thư viện ảnh</p>
 
-          <h2 class="h2 section-title" data-translate="gallery_title">Hình ảnh từ các chuyến đi</h2>
+          <h2 class="h2 section-title" data-translate="gallery_images">Hình ảnh từ các chuyến đi</h2>
 
-          <p class="section-text" data-translate="gallery_subtitle">
+          <p class="section-text" data-translate="gallery_full_description">
             Những khoảnh khắc đẹp nhất được ghi lại từ các chuyến du lịch của khách hàng. 
             Hãy cùng ngắm nhìn những trải nghiệm tuyệt vời này.
           </p>
 
           <ul class="gallery-list">            <li class="gallery-item">
               <figure class="gallery-image">
-                <img src="./assets/images/gallery-1.jpg" alt="Hình ảnh du lịch">
+                <img src="./assets/images/gallery-1.jpg" alt="Hình ảnh du lịch" data-translate-alt="travel_images">
               </figure>
             </li>
 
@@ -392,13 +425,13 @@
             <li class="loading-placeholder">
               <div class="loading-spinner">
                 <div class="spinner"></div>
-                <p>Đang tải bài viết...</p>
+                <p data-translate="loading_articles">Đang tải bài viết...</p>
               </div>
             </li>
           </ul>
 
           <div class="article-cta">
-            <a href="articles.html" class="btn btn-primary" data-translate="view_all">Xem tất cả bài viết</a>
+            <a href="articles.html" class="btn btn-primary" data-translate="view_all_articles">Xem tất cả bài viết</a>
           </div>
 
         </div>
@@ -422,7 +455,7 @@
             </p>
           </div>
 
-          <button class="btn btn-secondary" data-translate="contact_us">Liên hệ chúng tôi!</button>
+          <button class="btn btn-secondary" data-translate="contact_us_cta">Liên hệ chúng tôi!</button>
 
         </div>
       </section>
@@ -446,7 +479,7 @@
         <div class="footer-brand">
 
           <a href="#" class="logo">
-            <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh">
+            <img src="./assets/images/logo.svg" alt="Du Lịch Hoàng Minh" data-translate-alt="company_name">
           </a>
 
           <p class="footer-text" data-translate="footer_description">
@@ -490,13 +523,13 @@
 
         <div class="footer-form">
 
-          <p class="form-text" data-translate="newsletter_text">
+          <p class="form-text" data-translate="newsletter_signup">
             Đăng ký nhận bản tin để cập nhật thông tin tour mới nhất!
           </p>
 
           <form action="" class="form-wrapper">
             <input type="email" name="email" class="input-field" 
-                   data-translate-placeholder="email_address" placeholder="Nhập email của bạn" required>
+                   data-translate-placeholder="enter_email" placeholder="Nhập email của bạn" required>
 
             <button type="submit" class="btn btn-secondary" data-translate="subscribe">Đăng ký</button>
           </form>
@@ -510,7 +543,7 @@
       <div class="container">
 
         <p class="copyright">
-          &copy; 2024 <a href="">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
+          &copy; 2024 <a href="" data-translate="company_name">Du Lịch Hoàng Minh</a>. <span data-translate="all_rights_reserved">Tất cả quyền được bảo lưu</span>
         </p>
 
         <ul class="footer-bottom-list">
