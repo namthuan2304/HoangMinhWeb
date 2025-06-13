@@ -2019,3 +2019,22 @@ address {
   color: var(--sonic-silver);
   font-size: var(--fs-6);
 }
+
+/* Section buttons centering */
+.popular .btn,
+.package .btn,
+.gallery .btn {
+  display: block;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+.article-cta {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.article-cta .btn {
+  display: inline-block;
+  margin: 0 auto;
+}
