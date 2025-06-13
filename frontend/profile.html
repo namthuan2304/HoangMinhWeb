@@ -202,7 +202,8 @@
         <div class="container">
           <div class="profile-container">
             <!-- Sidebar -->
-            <div class="profile-sidebar">              <div class="profile-avatar-section">
+            <div class="profile-sidebar">              
+              <div class="profile-avatar-section">
                 <div class="avatar-container">
                   <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxwYXRoIGQ9Ik0yMCA4MEMyMCA3MCAzNSA2MCA1MCA2MEM2NSA2MCA4MCA3MCA4MCA4MEgyMFoiIGZpbGw9IiNDQ0MiLz4KPC9zdmc+" alt="Avatar" id="avatarImage" class="avatar-img">
                   <input type="file" id="avatarInput" accept="image/*" style="display: none;">
@@ -220,10 +221,6 @@
                 <button class="profile-nav-item" data-tab="security">
                   <ion-icon name="shield-checkmark-outline"></ion-icon>
                   <span data-translate="change_password">Đổi mật khẩu</span>
-                </button>
-                <button class="profile-nav-item" data-tab="settings">
-                  <ion-icon name="settings-outline"></ion-icon>
-                  <span data-translate="settings">Cài đặt</span>
                 </button>
               </nav>
             </div>
@@ -347,52 +344,6 @@
                     </button>
                   </div>
                 </form>              </div>
-
-              <!-- Settings Tab -->
-              <div class="profile-tab" id="settingsTab">
-                <div class="tab-header">
-                  <h2 data-translate="settings">Cài đặt</h2>
-                  <p data-translate="customize_experience">Tùy chỉnh trải nghiệm của bạn</p>
-                </div>
-
-                <div class="settings-section">
-                  <h3 data-translate="notifications">Thông báo</h3>
-                  <div class="setting-item">
-                    <label class="setting-label">
-                      <input type="checkbox" id="emailNotifications" checked>
-                      <span class="checkmark"></span>
-                      <span data-translate="email_notifications">Nhận thông báo qua email</span>
-                    </label>
-                  </div>
-                  <div class="setting-item">
-                    <label class="setting-label">
-                      <input type="checkbox" id="smsNotifications">
-                      <span class="checkmark"></span>
-                      <span data-translate="sms_notifications">Nhận thông báo qua SMS</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="settings-section">
-                  <h3 data-translate="language">Ngôn ngữ</h3>
-                  <div class="setting-item">
-                    <select id="languageSelect" class="form-control">
-                      <option value="vi">Tiếng Việt</option>
-                      <option value="en">English</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="settings-section">
-                  <h3 data-translate="account">Tài khoản</h3>
-                  <div class="setting-item">
-                    <button class="btn btn-danger" id="deleteAccountBtn">
-                      <ion-icon name="trash-outline"></ion-icon>
-                      <span data-translate="delete_account">Xóa tài khoản</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

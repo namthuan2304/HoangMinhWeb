@@ -418,14 +418,14 @@ class AdminTours {
         } finally {
             this.showLoading(false);
         }
-    }
-
-    // Utility methods
+    }    // Utility methods
     getStatusColor(status) {
         const colors = {
             'ACTIVE': 'success',
             'INACTIVE': 'warning',
-            'DRAFT': 'secondary'
+            'CANCELLED': 'danger',
+            'COMPLETED': 'info',
+            'FULL': 'primary'
         };
         return colors[status] || 'secondary';
     }
@@ -434,7 +434,9 @@ class AdminTours {
         const texts = {
             'ACTIVE': 'Hoạt động',
             'INACTIVE': 'Ngừng hoạt động',
-            'DRAFT': 'Bản nháp'
+            'CANCELLED': 'Đã hủy',
+            'COMPLETED': 'Hoàn thành',
+            'FULL': 'Đã đầy'
         };
         return texts[status] || status;
     }

@@ -446,17 +446,10 @@ class APIClient {
         return await this.request(`/bookings/${id}`);
     }    async getUserBookings(params = {}) {
         const queryString = new URLSearchParams(params).toString();
-        const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';
-        return await this.request(endpoint);
-    }    async updateBookingStatus(id, status, notes = null) {
-        const params = new URLSearchParams({ status });
-        if (notes) {
-            params.append('notes', notes);
-        }
-        return await this.request(`/bookings/${id}/status?${params.toString()}`, {
-            method: 'PUT',
-        });
-    }    async cancelBooking(id, reason = null) {
+        const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';        return await this.request(endpoint);
+    }
+
+    async cancelBooking(id, reason = null) {
         const params = new URLSearchParams();
         if (reason) {
             params.append('reason', reason);

@@ -63,6 +63,7 @@
     font-weight: 500;
     color: #495057;
     font-size: 0.9rem;
+    display: flex;
 }
 
 .required {
@@ -239,7 +240,6 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: white;
     font-size: 0.8rem;
 }
 

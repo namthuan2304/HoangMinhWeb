@@ -788,7 +788,6 @@ body { background: var(--white); }
   background: var(--white);
   max-width: max-content;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   padding: 8px;

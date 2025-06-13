@@ -252,14 +252,14 @@ class AdminTourEdit {
                                 <input type="number" id="maxParticipants" name="maxParticipants" class="form-input" 
                                        value="${this.tour.maxParticipants || ''}" min="1" required>
                                 <div class="form-error" id="maxParticipantsError"></div>
-                            </div>
-
-                            <div class="form-group">
+                            </div>                            <div class="form-group">
                                 <label for="status">Trạng thái tour</label>
                                 <select id="status" name="status" class="form-select">
                                     <option value="ACTIVE" ${this.tour.status === 'ACTIVE' ? 'selected' : ''}>Hoạt động</option>
                                     <option value="INACTIVE" ${this.tour.status === 'INACTIVE' ? 'selected' : ''}>Ngừng hoạt động</option>
-                                    <option value="DRAFT" ${this.tour.status === 'DRAFT' ? 'selected' : ''}>Bản nháp</option>
+                                    <option value="CANCELLED" ${this.tour.status === 'CANCELLED' ? 'selected' : ''}>Đã hủy</option>
+                                    <option value="COMPLETED" ${this.tour.status === 'COMPLETED' ? 'selected' : ''}>Hoàn thành</option>
+                                    <option value="FULL" ${this.tour.status === 'FULL' ? 'selected' : ''}>Đã đầy</option>
                                 </select>
                             </div>
 
@@ -823,14 +823,14 @@ class AdminTourEdit {
             this.saveTourBtn.disabled = this.isLoading || !this.hasChanges;
             this.saveTourBtn.classList.toggle('loading', this.isLoading);
         }
-    }
-
-    // Utility methods
+    }    // Utility methods
     getStatusColor(status) {
         const colors = {
             'ACTIVE': 'success',
             'INACTIVE': 'warning',
-            'DRAFT': 'secondary'
+            'CANCELLED': 'danger',
+            'COMPLETED': 'info',
+            'FULL': 'primary'
         };
         return colors[status] || 'secondary';
     }
@@ -839,7 +839,9 @@ class AdminTourEdit {
         const texts = {
             'ACTIVE': 'Hoạt động',
             'INACTIVE': 'Ngừng hoạt động',
-            'DRAFT': 'Bản nháp'
+            'CANCELLED': 'Đã hủy',
+            'COMPLETED': 'Hoàn thành',
+            'FULL': 'Đã đầy'
         };
         return texts[status] || status;
     }

@@ -100,14 +100,7 @@ class AdminBookingDetail {
                                 <span class="badge badge-${this.getStatusColor(this.booking.status)}">
                                     ${this.getStatusText(this.booking.status)}
                                 </span>
-                            </div>
-                        </div>
-                        <div class="booking-actions">
-                            <button class="btn btn-outline" onclick="adminBookingDetail.updateStatus()">
-                                <ion-icon name="create-outline"></ion-icon>
-                                Cập nhật trạng thái
-                            </button>
-                        </div>
+                            </div>                        </div>
                     </div>
                 </div>
 
@@ -225,111 +218,7 @@ class AdminBookingDetail {
             </div>
         `;
 
-        this.wrapper.innerHTML = html;
-    }
-
-    async updateStatus() {
-        const currentStatus = this.booking.status;
-        const availableStatuses = this.getAvailableStatuses(currentStatus);
-        
-        if (availableStatuses.length === 0) {
-            this.showToast('Không thể thay đổi trạng thái của đặt tour này', 'warning');
-            return;
-        }
-
-        // Show status selection modal
-        const statusOptions = availableStatuses.map(status => 
-            `<option value="${status}">${this.getStatusText(status)}</option>`
-        ).join('');
-
-        const modalHtml = `
-            <div class="modal-overlay" id="statusModal">
-                <div class="modal">
-                    <div class="modal-header">
-                        <h3>Cập nhật trạng thái đặt tour</h3>
-                        <button class="modal-close" onclick="adminBookingDetail.closeModal()">
-                            <ion-icon name="close-outline"></ion-icon>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="newStatus">Trạng thái mới:</label>
-                            <select id="newStatus" class="form-select">
-                                ${statusOptions}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="statusNotes">Ghi chú (tùy chọn):</label>
-                            <textarea id="statusNotes" class="form-textarea" rows="3" 
-                                     placeholder="Nhập ghi chú về việc thay đổi trạng thái..."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline" onclick="adminBookingDetail.closeModal()">
-                            Hủy
-                        </button>
-                        <button class="btn btn-primary" onclick="adminBookingDetail.confirmUpdateStatus()">
-                            Cập nhật
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-    }    async confirmUpdateStatus() {
-        const newStatus = document.getElementById('newStatus').value;
-        const notes = document.getElementById('statusNotes').value;
-
-        if (!newStatus) {
-            this.showToast('Vui lòng chọn trạng thái mới', 'error');
-            return;
-        }
-
-        try {
-            this.showLoading(true);
-            
-            await apiClient.updateBookingStatus(this.bookingId, newStatus, notes);
-            
-            // Update local booking data
-            this.booking.status = newStatus;
-            if (notes) {
-                this.booking.notes = notes;
-                // If status is CANCELLED and notes provided, set it as cancellation reason
-                if (newStatus === 'CANCELLED') {
-                    this.booking.cancellationReason = notes;
-                }
-            }
-            
-            this.showToast('Cập nhật trạng thái thành công!', 'success');
-            this.closeModal();
-            this.renderBookingDetail(); // Re-render to show updated status
-            
-        } catch (error) {
-            console.error('Error updating booking status:', error);
-            this.showToast('Có lỗi khi cập nhật trạng thái', 'error');
-        } finally {
-            this.showLoading(false);
-        }
-    }
-
-    closeModal() {
-        const modal = document.getElementById('statusModal');
-        if (modal) {
-            modal.remove();
-        }
-    }
-
-    getAvailableStatuses(currentStatus) {
-        const statusTransitions = {
-            'PENDING': ['CONFIRMED', 'CANCELLED'],
-            'CONFIRMED': ['COMPLETED', 'CANCELLED'],
-            'COMPLETED': [],
-            'CANCELLED': []
-        };
-        
-        return statusTransitions[currentStatus] || [];
-    }
+        this.wrapper.innerHTML = html;    }
 
     async printInvoice() {
         try {
