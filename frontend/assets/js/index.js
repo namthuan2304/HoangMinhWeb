@@ -102,7 +102,7 @@ function checkAuthStatus() {
 
 // Tải điểm đến phổ biến từ API
 async function loadPopularDestinations() {
-    const popularList = document.querySelector('.popular-list');
+    const popularList = document.getElementById('popularDestinationsList') || document.querySelector('.popular-list');
     if (!popularList) return;
     
     try {
@@ -146,15 +146,16 @@ async function loadPopularDestinations() {
 
 // Cập nhật section điểm đến phổ biến
 function updatePopularDestinations(destinations) {
-    const popularList = document.querySelector('.popular-list');
+    const popularList = document.getElementById('popularDestinationsList') || document.querySelector('.popular-list');
     if (!popularList || destinations.length === 0) return;
     
     popularList.innerHTML = '';
-    
-    destinations.forEach(destination => {
+      destinations.forEach(destination => {
         const listItem = document.createElement('li');        const imageUrl = destination.imageUrls && destination.imageUrls.length > 0 
-            ? destination.imageUrls[0] 
-            : (destination.mainImageUrl || './assets/images/popular-1.jpg');
+            ? (window.apiClient ? window.apiClient.getFullImageUrl(destination.imageUrls[0]) : destination.imageUrls[0])
+            : (destination.mainImageUrl ? 
+                (window.apiClient ? window.apiClient.getFullImageUrl(destination.mainImageUrl) : destination.mainImageUrl) 
+                : './assets/images/popular-1.jpg');
         const description = IndexUtils 
             ? IndexUtils.truncateText(destination.description || '', 120)
             : (destination.description || 'Khám phá điểm đến tuyệt vời này.');
@@ -192,7 +193,7 @@ function updatePopularDestinations(destinations) {
 
 // Tải tour nổi bật từ API
 async function loadFeaturedTours() {
-    const packageList = document.querySelector('.package-list');
+    const packageList = document.getElementById('featuredToursList') || document.querySelector('.package-list');
     if (!packageList) return;
     
     try {
@@ -244,7 +245,7 @@ async function loadFeaturedTours() {
 
 // Cập nhật section tour packages
 function updateFeaturedTours(tours) {
-    const packageList = document.querySelector('.package-list');
+    const packageList = document.getElementById('featuredToursList') || document.querySelector('.package-list');
     if (!packageList || tours.length === 0) return;
     
     console.log('Updating featured tours with data:', tours); // Debug log
@@ -1006,16 +1007,14 @@ const fallbackDestinations = [
 // Function để load fallback data
 function loadFallbackData() {
     console.log('Loading fallback data...');
-    
-    // Load fallback tours for featured section
-    const packageList = document.querySelector('.package-list');
+      // Load fallback tours for featured section
+    const packageList = document.getElementById('featuredToursList') || document.querySelector('.package-list');
     if (packageList && fallbackTours.length > 0) {
         updateFeaturedTours(fallbackTours);
         console.log('Loaded fallback featured tours');
     }
-    
-    // Load fallback destinations for popular section
-    const popularList = document.querySelector('.popular-list');
+      // Load fallback destinations for popular section
+    const popularList = document.getElementById('popularDestinationsList') || document.querySelector('.popular-list');
     if (popularList && fallbackDestinations.length > 0) {
         updatePopularDestinations(fallbackDestinations);
         console.log('Loaded fallback popular destinations');
