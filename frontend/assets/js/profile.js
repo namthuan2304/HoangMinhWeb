@@ -29,9 +29,11 @@ class ProfileManager {    constructor() {
         this.initializePasswordToggle();
         this.initializeForms();
         this.initializeAvatarUpload();
-        
-        // Load user data
+          // Load user data
         this.loadUserProfile();
+        
+        // Restore any preserved form data
+        setTimeout(() => this.restoreTabData(), 500);
         
         console.log('Profile page initialization complete');
     }
@@ -79,28 +81,25 @@ class ProfileManager {    constructor() {
             console.warn('Tab elements not found. Will retry in 500ms.');
             setTimeout(() => this.initializeTabs(), 500);
             return;
-        }
-
-        tabButtons.forEach(button => {
+        }        tabButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 const tabId = button.getAttribute('data-tab');
                 console.log('Tab clicked:', tabId);
                 
-                // Remove active class from all buttons and tabs
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(tab => tab.classList.remove('active'));
+                // Preserve current tab data before switching
+                this.preserveTabData();
                 
-                // Add active class to clicked button and corresponding tab
-                button.classList.add('active');
-                const targetTab = document.getElementById(`${tabId}Tab`);
-                if (targetTab) {
-                    targetTab.classList.add('active');
-                    // Force display block to ensure visibility
-                    targetTab.style.display = 'block';
-                    console.log('Activated tab:', tabId);
-                } else {
-                    console.error('Target tab not found:', `${tabId}Tab`);
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Use the new method to handle tab switching
+                if (this.activateTab(tabId)) {
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Restore data for the new tab
+                    setTimeout(() => this.restoreTabData(), 100);
                 }
             });
         });
@@ -115,6 +114,35 @@ class ProfileManager {    constructor() {
         }
         
         console.log('Tab initialization complete');
+    }
+
+    resetAllTabs() {
+        const tabContents = document.querySelectorAll('.profile-tab');
+        tabContents.forEach(tab => {
+            tab.classList.remove('active');
+            // Clear any inline styles that might interfere
+            tab.style.cssText = '';
+        });
+    }    activateTab(tabId) {
+        console.log('Activating tab:', tabId);
+        
+        // First reset all tabs
+        this.resetAllTabs();
+        
+        // Then activate the target tab
+        const targetTab = document.getElementById(`${tabId}Tab`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+            console.log('Successfully activated tab:', tabId);
+            
+            // Debug the state
+            this.debugTabState();
+            
+            return true;
+        } else {
+            console.error('Tab not found:', `${tabId}Tab`);
+            return false;
+        }
     }
 
     initializeProfile() {
@@ -342,6 +370,44 @@ class ProfileManager {    constructor() {
             avatarUploadBtn.disabled = false;        }
     }
 
+    // Preserve form data when switching tabs
+    preserveTabData() {
+        const forms = document.querySelectorAll('.profile-tab form');
+        forms.forEach(form => {
+            const formData = new FormData(form);
+            const tabId = form.closest('.profile-tab').id;
+            
+            // Store form data in session storage
+            const dataObj = {};
+            for (let [key, value] of formData.entries()) {
+                dataObj[key] = value;
+            }
+            sessionStorage.setItem(`tabData_${tabId}`, JSON.stringify(dataObj));
+        });
+    }
+
+    restoreTabData() {
+        const forms = document.querySelectorAll('.profile-tab form');
+        forms.forEach(form => {
+            const tabId = form.closest('.profile-tab').id;
+            const savedData = sessionStorage.getItem(`tabData_${tabId}`);
+            
+            if (savedData) {
+                try {
+                    const dataObj = JSON.parse(savedData);
+                    Object.keys(dataObj).forEach(key => {
+                        const field = form.querySelector(`[name="${key}"]`);
+                        if (field && field.type !== 'password') {
+                            field.value = dataObj[key];
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Could not restore form data for', tabId, error);
+                }
+            }
+        });
+    }
+
     // Validation methods
     validateProfileForm(userData) {
         let isValid = true;
@@ -470,6 +536,21 @@ class ProfileManager {    constructor() {
         setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
+    }
+
+    // Enhanced debugging for tab switching
+    debugTabState() {
+        const tabButtons = document.querySelectorAll('.profile-nav-item');
+        const tabContents = document.querySelectorAll('.profile-tab');
+        
+        console.log('=== Tab State Debug ===');
+        console.log('Active buttons:', Array.from(tabButtons).filter(btn => btn.classList.contains('active')).map(btn => btn.getAttribute('data-tab')));
+        console.log('Active tabs:', Array.from(tabContents).filter(tab => tab.classList.contains('active')).map(tab => tab.id));
+        console.log('Visible tabs:', Array.from(tabContents).filter(tab => {
+            const computed = window.getComputedStyle(tab);
+            return computed.display !== 'none' && computed.visibility !== 'hidden' && computed.opacity !== '0';
+        }).map(tab => tab.id));
+        console.log('=== End Debug ===');
     }
 }
 

@@ -106,13 +106,13 @@
 }
 
 /* Profile Navigation */
-.profile-nav {
+.profile-sidebar .profile-nav {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.profile-nav-item {
+.profile-sidebar .profile-nav .profile-nav-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -129,16 +129,16 @@
     width: 100%;
 }
 
-.profile-nav-item:hover {
+.profile-sidebar .profile-nav .profile-nav-item:hover {
     background-color: var(--cultured);
 }
 
-.profile-nav-item.active {
+.profile-sidebar .profile-nav .profile-nav-item.active {
     background-color: var(--bright-navy-blue);
     color: var(--white);
 }
 
-.profile-nav-item ion-icon {
+.profile-sidebar .profile-nav .profile-nav-item ion-icon {
     font-size: 1.2rem;
 }
 
@@ -150,11 +150,24 @@
     padding: 2rem;
 }
 
-.profile-tab {
+.profile-main .profile-tab {
+    /* Reset any potential inherited styles */
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    
+    /* Core tab styles */
     display: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.profile-tab.active {
+.profile-main .profile-tab.active {
     display: block !important;
     opacity: 1 !important;
     visibility: visible !important;
