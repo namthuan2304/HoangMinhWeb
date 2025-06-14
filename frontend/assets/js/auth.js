@@ -450,7 +450,7 @@ class AuthManager {
             apiClient.token = null;
             apiClient.refreshToken = null;
             localStorage.clear();
-            window.location.href = '/';
+            window.location.href = '/frontend/index.html';
         }
     }
 }
