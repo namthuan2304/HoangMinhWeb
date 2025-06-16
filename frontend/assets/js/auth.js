@@ -6,8 +6,8 @@ class AuthManager {
 
     initializeAuth() {
         // Check if user is already logged in
-        if (apiClient.isAuthenticated()) {
-            this.redirectIfAuthenticated();
+        if (apiClient.isAuthenticated()) { // kiem tra xem có auth token chưa
+            this.redirectIfAuthenticated(); //redirect ve trang tương ưng
         }
 
         // Initialize form handlers
@@ -16,7 +16,9 @@ class AuthManager {
         this.initializeForgotPasswordForm();
         this.initializeResetPasswordForm();
         this.initializePasswordToggle();
-    }    redirectIfAuthenticated() {
+    }
+
+    redirectIfAuthenticated() {
         const currentPage = window.location.pathname;
         const authPages = ['/login.html', '/register.html', '/forgot-password.html'];
         
