@@ -125,7 +125,8 @@ class APIClient {
         } catch (error) {
             throw new Error('Đăng ký thất bại: ' + error.message);
         }
-    }    async refreshAuthToken() {
+    }    
+    async refreshAuthToken() {
         if (!this.refreshToken) return false;
 
         try {

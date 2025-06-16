@@ -70,7 +70,8 @@ class ArticlesManager {    constructor() {
             this.currentPage = 1;
             this.loadArticles();
         });
-    }async loadArticles() {
+    }
+    async loadArticles() {
         if (this.isLoading) return;
         
         this.isLoading = true;
@@ -186,7 +187,8 @@ class ArticlesManager {    constructor() {
         // Add fade-in animation
         this.articlesGrid.classList.add('fade-in');
         setTimeout(() => this.articlesGrid.classList.remove('fade-in'), 500);
-    }    createArticleCard(article) {
+    }    
+    createArticleCard(article) {
         const publishedDate = new Date(article.publishedAt || article.createdAt).toLocaleDateString('vi-VN');
         const defaultImage = './assets/images/img8.jpg';
         const articleImage = article.featuredImageUrl ? `http://localhost:8080${article.featuredImageUrl}` : defaultImage;
@@ -229,7 +231,8 @@ class ArticlesManager {    constructor() {
                 </div>
             </div>
         `;
-    }    renderTagOptions(tags) {
+    }    
+    renderTagOptions(tags) {
         // Clear existing options except the first "All" option
         const defaultOption = this.tagSelect.querySelector('option[value=""]');
         this.tagSelect.innerHTML = '';
