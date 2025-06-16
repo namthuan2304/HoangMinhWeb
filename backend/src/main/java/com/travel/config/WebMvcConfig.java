@@ -26,21 +26,31 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(false)                .maxAge(3600);
-    }
-
-    /**
+    }    /**
      * Cấu hình static resources
      */
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        // Serve uploaded files
-        String uploadsPath = System.getProperty("user.dir") + "/" + uploadDir + "/";
+        // Serve uploaded files - Đảm bảo đường dẫn luôn đúng
+        String uploadsPath;
+        String currentDir = System.getProperty("user.dir");
+        
+        // Kiểm tra nếu đang chạy từ thư mục backend
+        if (currentDir.endsWith("backend")) {
+            uploadsPath = currentDir + "/" + uploadDir + "/";
+        } else {
+            // Nếu chạy từ root project hoặc thư mục khác
+            uploadsPath = currentDir + "/backend/" + uploadDir + "/";
+        }
+        
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadsPath)
                 .setCachePeriod(3600)
                 .resourceChain(true);
         
         // Log để debug
+        System.out.println("Current working directory: " + currentDir);
         System.out.println("Upload path configured: " + uploadsPath);
+        System.out.println("Upload directory exists: " + new java.io.File(uploadsPath).exists());
     }
 }

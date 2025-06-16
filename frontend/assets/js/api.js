@@ -696,8 +696,7 @@ class APIClient {
         const user = this.getCurrentUser();
         return user && user.role === role;
     }    isAdmin() {
-        return this.hasRole('ADMIN');
-    }
+        return this.hasRole('ADMIN');    }
 
     // Profile Management Methods
     async updateProfile(userData) {

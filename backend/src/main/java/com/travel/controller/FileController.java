@@ -19,10 +19,23 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/files")
 @Tag(name = "File Management", description = "APIs quản lý file")
-public class FileController {
-
-    @Value("${app.upload.dir:uploads}")
+public class FileController {    @Value("${app.upload.dir:uploads}")
     private String uploadDir;
+
+    /**
+     * Lấy đường dẫn upload thực tế
+     */
+    private String getActualUploadDir() {
+        String currentDir = System.getProperty("user.dir");
+        
+        // Kiểm tra nếu đang chạy từ thư mục backend
+        if (currentDir.endsWith("backend")) {
+            return currentDir + "/" + uploadDir;
+        } else {
+            // Nếu chạy từ root project hoặc thư mục khác
+            return currentDir + "/backend/" + uploadDir;
+        }
+    }
 
     /**
      * Serve uploaded files
@@ -33,7 +46,8 @@ public class FileController {
             @PathVariable String subDir,
             @PathVariable String filename) {
         try {
-            Path filePath = Paths.get(uploadDir, subDir, filename);
+            String actualUploadDir = getActualUploadDir();
+            Path filePath = Paths.get(actualUploadDir, subDir, filename);
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {

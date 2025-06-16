@@ -30,6 +30,21 @@ public class FileUploadService {
     private final long maxFileSize = 10 * 1024 * 1024; // 10MB
 
     /**
+     * Lấy đường dẫn upload thực tế
+     */
+    private String getActualUploadDir() {
+        String currentDir = System.getProperty("user.dir");
+        
+        // Kiểm tra nếu đang chạy từ thư mục backend
+        if (currentDir.endsWith("backend")) {
+            return currentDir + "/" + uploadDir;
+        } else {
+            // Nếu chạy từ root project hoặc thư mục khác
+            return currentDir + "/backend/" + uploadDir;
+        }
+    }
+
+    /**
      * Upload file
      */
     public String uploadFile(MultipartFile file, String subDir) {
@@ -49,8 +64,9 @@ public class FileUploadService {
         }
 
         try {
-            // Tạo thư mục nếu chưa tồn tại
-            Path uploadPath = Paths.get(uploadDir, subDir);
+            // Tạo đường dẫn upload chính xác
+            String actualUploadDir = getActualUploadDir();
+            Path uploadPath = Paths.get(actualUploadDir, subDir);
             Files.createDirectories(uploadPath);
 
             // Tạo tên file unique
@@ -58,7 +74,9 @@ public class FileUploadService {
             String fileExtension = originalFilename != null && originalFilename.contains(".") 
                 ? originalFilename.substring(originalFilename.lastIndexOf("."))
                 : "";
-            String fileName = UUID.randomUUID().toString() + fileExtension;            // Lưu file
+            String fileName = UUID.randomUUID().toString() + fileExtension;
+
+            // Lưu file
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
@@ -77,26 +95,24 @@ public class FileUploadService {
         return Arrays.stream(files)
             .map(file -> uploadFile(file, subDir))
             .toList();
-    }
-
-    /**
+    }    /**
      * Xóa file
      */
     public void deleteFile(String filePath) {
         try {
-            Path path = Paths.get(uploadDir, filePath);
+            String actualUploadDir = getActualUploadDir();
+            Path path = Paths.get(actualUploadDir, filePath);
             Files.deleteIfExists(path);
         } catch (IOException e) {
             // Log error nhưng không throw exception
             System.err.println("Không thể xóa file: " + filePath + ", Error: " + e.getMessage());
         }
-    }
-
-    /**
+    }    /**
      * Kiểm tra file có tồn tại không
      */
     public boolean fileExists(String filePath) {
-        Path path = Paths.get(uploadDir, filePath);
+        String actualUploadDir = getActualUploadDir();
+        Path path = Paths.get(actualUploadDir, filePath);
         return Files.exists(path);
     }
 }
