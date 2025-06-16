@@ -160,7 +160,7 @@ class APIClient {
             localStorage.removeItem('authToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
-            window.location.href = '/';
+            window.location.href = '/frontend/';
         }
     }
 

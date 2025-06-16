@@ -431,26 +431,25 @@ class AuthManager {
         toast.textContent = message;
         toast.className = `toast ${type}`;
         
-        // Show toast
-        setTimeout(() => toast.classList.add('show'), 100);
+        // Show toast        setTimeout(() => toast.classList.add('show'), 100);
         
         // Hide toast after 4 seconds
         setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
-    }
-
-    // Logout method
+    }    // Logout method
     async logout() {
         try {
             await apiClient.logout();
+            // Always redirect to frontend home after successful logout
+            window.location.href = '/frontend/';
         } catch (error) {
             console.error('Logout error:', error);
             // Force logout even if API call fails
             apiClient.token = null;
             apiClient.refreshToken = null;
             localStorage.clear();
-            window.location.href = 'index.html';
+            window.location.href = '/frontend/';
         }
     }
 }
