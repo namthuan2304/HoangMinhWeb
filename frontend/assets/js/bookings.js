@@ -71,7 +71,8 @@ class BookingsManager {
                 }
             });
         }
-    }    async loadBookings() {
+    }    
+    async loadBookings() {
         const wrapper = document.getElementById('bookingsWrapper');
         if (!wrapper) return;
 
@@ -104,7 +105,8 @@ class BookingsManager {
             console.error('Error loading bookings:', error);
             this.renderError();
         }
-    }    renderBookings() {
+    }    
+    renderBookings() {
         const wrapper = document.getElementById('bookingsWrapper');
         if (!wrapper) return;
 
@@ -123,7 +125,9 @@ class BookingsManager {
         setTimeout(() => {
             this.loadTourImages();
         }, 100);
-    }async loadTourImages() {
+    
+    }
+    async loadTourImages() {
         // Find all tour images that need to be loaded
         const images = document.querySelectorAll('.booking-tour-image[data-tour-id]:not([data-loaded])');
         
@@ -364,7 +368,8 @@ class BookingsManager {
         if (tourId) {
             window.location.href = `tour-detail.html?id=${tourId}`;
         }
-    }    async cancelBooking(bookingId) {
+    }    
+    async cancelBooking(bookingId) {
         // Show cancellation reason modal
         this.showCancellationModal(bookingId);
     }

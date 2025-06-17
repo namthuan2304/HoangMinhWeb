@@ -128,7 +128,8 @@ public class BookingTourService {
      */
     public Page<BookingTourResponse> getUserBookings(String username, Pageable pageable) {
         User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
-            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));        Page<BookingTour> bookings = bookingTourRepository.findByUserAndDeletedAtIsNull(user, pageable);
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));        
+            Page<BookingTour> bookings = bookingTourRepository.findByUserAndDeletedAtIsNull(user, pageable);
         return bookings.map(booking -> {
             BookingTourResponse response = modelMapper.map(booking, BookingTourResponse.class);
             // Map thông tin tour
@@ -139,7 +140,8 @@ public class BookingTourService {
             }
             return response;
         });
-    }/**
+    }
+    /**
      * Lấy chi tiết đơn đặt
      */
     public BookingTourResponse getBookingById(Long id) {        BookingTour booking = bookingTourRepository.findByIdAndDeletedAtIsNull(id)
@@ -245,7 +247,8 @@ public class BookingTourService {
         tour.decreaseParticipants(booking.getParticipantsCount());
         tourRepository.save(tour);
 
-        BookingTour savedBooking = bookingTourRepository.save(booking);        // Gửi email thông báo hủy        emailService.sendBookingCancelledEmail(savedBooking);
+        BookingTour savedBooking = bookingTourRepository.save(booking);        // Gửi email thông báo hủy        
+        emailService.sendBookingCancelledEmail(savedBooking);
 
         BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
         // Map thông tin tour

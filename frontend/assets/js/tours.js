@@ -256,7 +256,8 @@ class ToursManager {
         if (window.languageManager) {
             window.languageManager.translatePage();
         }
-    }    renderTourCard(tour) {
+    }    
+    renderTourCard(tour) {
         const rating = tour.ratingAverage || 0;
         const reviewCount = tour.totalBookings || 0;
         const price = this.formatPrice(tour.price);

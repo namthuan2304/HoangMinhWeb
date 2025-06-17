@@ -112,22 +112,27 @@ class AuthManager {
                 this.validatePasswordMatchRealTime(newPassword, confirmPassword);
             });
         }
-    }
-
-    initializePasswordToggle() {
+    }    initializePasswordToggle() {
         const toggleButtons = document.querySelectorAll('.password-toggle');
+        console.log('Found password toggle buttons:', toggleButtons.length);
         
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', () => {
+        toggleButtons.forEach((button, index) => {
+            console.log(`Setting up toggle button ${index + 1}`);
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const input = button.previousElementSibling;
                 const icon = button.querySelector('ion-icon');
                 
-                if (input.type === 'password') {
+                console.log('Password toggle clicked', { input, icon });
+                
+                if (input && input.type === 'password') {
                     input.type = 'text';
-                    icon.name = 'eye-off-outline';
-                } else {
+                    if (icon) icon.name = 'eye-off-outline';
+                    console.log('Password shown');
+                } else if (input) {
                     input.type = 'password';
-                    icon.name = 'eye-outline';
+                    if (icon) icon.name = 'eye-outline';
+                    console.log('Password hidden');
                 }
             });
         });
@@ -645,22 +650,45 @@ class AuthManager {
             errorElement.textContent = '';
             errorElement.style.display = 'none';
         }
-    }
-
-    showToast(message, type = 'info') {
+    }    showToast(message, type = 'info') {
         const toast = document.getElementById('toast');
         if (!toast) return;
 
-        toast.textContent = message;
+        // Get icon based on type
+        let iconName = 'information-circle-outline';
+        switch (type) {
+            case 'success':
+                iconName = 'checkmark-circle-outline';
+                break;
+            case 'error':
+                iconName = 'alert-circle-outline';
+                break;
+            case 'warning':
+                iconName = 'warning-outline';
+                break;
+            case 'loading':
+                iconName = 'sync-outline';
+                break;
+        }
+
+        // Set toast content with proper structure
+        toast.innerHTML = `
+            <div class="toast-content">
+                <ion-icon name="${iconName}" class="toast-icon"></ion-icon>
+                <div class="toast-message">${message}</div>
+            </div>
+        `;
+        
         toast.className = `toast ${type}`;
         
-        // Show toast        setTimeout(() => toast.classList.add('show'), 100);
+        // Show toast
+        setTimeout(() => toast.classList.add('show'), 100);
         
         // Hide toast after 4 seconds
         setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
-    }    // Logout method
+    }// Logout method
     async logout() {
         try {
             await apiClient.logout();
@@ -678,21 +706,24 @@ class AuthManager {
 }
 
 // Initialize when DOM is loaded
+let authManager;
 document.addEventListener('DOMContentLoaded', () => {
-    window.authManager = new AuthManager();
+    authManager = new AuthManager();
+    window.authManager = authManager;
 });
-
-// Initialize AuthManager
-const authManager = new AuthManager();
 
 // Global function for Google Sign-In callback
 window.handleGoogleSignIn = async (response) => {
-    await authManager.handleGoogleSignIn(response.credential);
+    if (authManager) {
+        await authManager.handleGoogleSignIn(response.credential);
+    }
 };
 
 // Global function for Google Sign-Up callback
 window.handleGoogleSignUp = async (response) => {
-    await authManager.handleGoogleSignUp(response.credential);
+    if (authManager) {
+        await authManager.handleGoogleSignUp(response.credential);
+    }
 };
 
 // Export for use in other files

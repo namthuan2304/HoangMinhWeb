@@ -445,9 +445,11 @@ class APIClient {
 
     async getBooking(id) {
         return await this.request(`/bookings/${id}`);
-    }    async getUserBookings(params = {}) {
+    }    
+    async getUserBookings(params = {}) {
         const queryString = new URLSearchParams(params).toString();
-        const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';        return await this.request(endpoint);
+        const endpoint = queryString ? `/bookings/my-bookings?${queryString}` : '/bookings/my-bookings';        
+        return await this.request(endpoint);
     }
 
     async cancelBooking(id, reason = null) {
@@ -455,12 +457,12 @@ class APIClient {
         if (reason) {
             params.append('reason', reason);
         }
-        
         const endpoint = params.toString() ? `/bookings/${id}/cancel?${params.toString()}` : `/bookings/${id}/cancel`;
         return await this.request(endpoint, {
             method: 'POST',
         });
-    }    async updateBookingStatus(bookingId, status, notes = null) {
+    }    
+    async updateBookingStatus(bookingId, status, notes = null) {
         const params = new URLSearchParams();
         params.append('status', status);
         if (notes) {

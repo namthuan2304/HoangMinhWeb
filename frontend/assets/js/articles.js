@@ -34,7 +34,8 @@ class ArticlesManager {    constructor() {
         // Sidebar elements
         this.popularArticles = document.getElementById('popularArticles');
         this.latestArticles = document.getElementById('latestArticles');
-    }    bindEvents() {
+    }   
+     bindEvents() {
         // Search functionality
         let searchTimeout;
         this.searchInput.addEventListener('input', (e) => {
