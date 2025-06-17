@@ -1,8 +1,10 @@
 package com.travel.service;
 
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.travel.entity.BookingTour;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -29,18 +31,19 @@ public class PdfService {
             htmlContent.append("<meta charset='UTF-8'>");
             htmlContent.append("<title>Hóa đơn đặt tour</title>");
             htmlContent.append("<style>");
-            htmlContent.append("body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }");
-            htmlContent.append(".header { text-align: center; margin-bottom: 30px; }");
-            htmlContent.append(".company-name { font-size: 24px; font-weight: bold; color: #2c3e50; }");
-            htmlContent.append(".invoice-title { font-size: 18px; margin-top: 10px; color: #e74c3c; }");
+            htmlContent.append("@page { size: A4; margin: 20mm; }");
+            htmlContent.append("body { font-family: 'DejaVu Sans', Arial, sans-serif; margin: 0; padding: 0; color: #333; font-size: 12px; }");
+            htmlContent.append(".header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #2c3e50; padding-bottom: 20px; }");
+            htmlContent.append(".company-name { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }");
+            htmlContent.append(".invoice-title { font-size: 16px; margin-top: 10px; color: #e74c3c; font-weight: bold; }");
             htmlContent.append(".invoice-info { margin: 20px 0; }");
-            htmlContent.append(".section { margin: 20px 0; }");
-            htmlContent.append(".section-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }");
+            htmlContent.append(".section { margin: 20px 0; page-break-inside: avoid; }");
+            htmlContent.append(".section-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #2c3e50; background-color: #f8f9fa; padding: 8px; border-left: 4px solid #2c3e50; }");
             htmlContent.append("table { width: 100%; border-collapse: collapse; margin: 10px 0; }");
-            htmlContent.append("th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }");
+            htmlContent.append("th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }");
             htmlContent.append("th { background-color: #f8f9fa; font-weight: bold; }");
-            htmlContent.append(".total { font-size: 18px; font-weight: bold; color: #e74c3c; }");
-            htmlContent.append(".footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }");
+            htmlContent.append(".total { font-size: 14px; font-weight: bold; color: #e74c3c; background-color: #fff5f5; }");
+            htmlContent.append(".footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }");
             htmlContent.append("</style>");
             htmlContent.append("</head>");
             htmlContent.append("<body>");
@@ -119,9 +122,10 @@ public class PdfService {
             htmlContent.append("</body>");
             htmlContent.append("</html>");
 
-            // Trong thực tế, bạn có thể sử dụng thư viện như iText hoặc Flying Saucer
-            // để chuyển HTML thành PDF. Ở đây chỉ là demo trả về HTML dưới dạng bytes
-            return htmlContent.toString().getBytes("UTF-8");
+            // Chuyển HTML thành PDF bằng iText
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            HtmlConverter.convertToPdf(htmlContent.toString(), outputStream);
+            return outputStream.toByteArray();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tạo PDF hóa đơn: " + e.getMessage(), e);
@@ -186,7 +190,10 @@ public class PdfService {
             htmlContent.append("</body>");
             htmlContent.append("</html>");
 
-            return htmlContent.toString().getBytes("UTF-8");
+            // Chuyển HTML thành PDF bằng iText
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            HtmlConverter.convertToPdf(htmlContent.toString(), outputStream);
+            return outputStream.toByteArray();
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tạo PDF báo cáo: " + e.getMessage(), e);

@@ -276,12 +276,12 @@ class AdminComments {
                 <td>
                     <input type="checkbox" ${this.selectedComments.has(comment.id) ? 'checked' : ''} 
                            onchange="adminCommentsToggleCommentSelection(${comment.id}, this.checked)">
-                </td>
-                <td>
+                </td>                <td>
                     <div class="user-cell">
                         <div class="user-avatar">
                             ${comment.user.avatarUrl ? 
-                                `<img src="${comment.user.avatarUrl}" alt="${comment.user.fullName}">` : 
+                                `<img src="${IndexUtils.getFullAvatarUrl(comment.user.avatarUrl)}" alt="${comment.user.fullName}" onerror="this.style.display='none'; this.parentElement.querySelector('ion-icon').style.display='flex';">
+                                 <ion-icon name="person-outline" style="display: none;"></ion-icon>` : 
                                 `<ion-icon name="person-outline"></ion-icon>`
                             }
                         </div>

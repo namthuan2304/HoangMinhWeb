@@ -3,6 +3,7 @@ package com.travel.controller;
 import com.travel.dto.request.LoginRequest;
 import com.travel.dto.request.SignupRequest;
 import com.travel.dto.request.ForgotPasswordRequest;
+import com.travel.dto.request.GoogleAuthRequest;
 import com.travel.dto.response.JwtResponse;
 import com.travel.dto.response.MessageResponse;
 import com.travel.entity.User;
@@ -10,6 +11,8 @@ import com.travel.enums.UserRole;
 import com.travel.repository.UserRepository;
 import com.travel.service.JwtService;
 import com.travel.service.EmailService;
+import com.travel.service.GoogleAuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +26,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,7 +36,6 @@ import java.util.stream.Collectors;
 /**
  * Controller xử lý authentication và authorization
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "API xác thực và phân quyền")
@@ -51,6 +55,9 @@ public class AuthController {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private GoogleAuthService googleAuthService;
 
     @PostMapping("/signin")
     @Operation(summary = "Đăng nhập", description = "Đăng nhập với username/email và password")
@@ -229,5 +236,89 @@ public class AuthController {
         // Với JWT stateless, chúng ta chỉ cần clear token ở client
         // Nhưng ở đây chúng ta có thể thêm logic để blacklist token nếu cần
         return ResponseEntity.ok(MessageResponse.success("Đăng xuất thành công!"));
+    }
+      @PostMapping("/google")
+    @Operation(summary = "Đăng nhập bằng Google", description = "Xác thực bằng Google ID Token")
+    public ResponseEntity<?> googleSignIn(@Valid @RequestBody GoogleAuthRequest request) {
+        try {
+            GoogleIdToken.Payload payload = googleAuthService.verifyGoogleToken(request.getCredential());
+            User user = googleAuthService.findOrCreateUser(payload);
+            
+            // Tạo JWT token
+            String jwt = jwtService.generateTokenFromUsername(user.getUsername());
+            String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+            List<String> roles = List.of("ROLE_" + user.getRole().name());
+            
+            return ResponseEntity.ok(new JwtResponse(
+                jwt,
+                refreshToken,
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFullName(),
+                roles
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(MessageResponse.error("Đăng nhập Google thất bại: " + e.getMessage()));
+        }
+    }
+      @PostMapping("/google/signup")
+    @Operation(summary = "Đăng ký bằng Google", description = "Đăng ký tài khoản mới bằng Google ID Token")
+    public ResponseEntity<?> googleSignUp(@Valid @RequestBody GoogleAuthRequest request) {
+        try {
+            GoogleIdToken.Payload payload = googleAuthService.verifyGoogleToken(request.getCredential());
+            String email = payload.getEmail();
+            
+            // Kiểm tra email đã tồn tại chưa
+            if (userRepository.existsByEmail(email)) {
+                return ResponseEntity.badRequest()
+                        .body(MessageResponse.error("Email này đã được đăng ký!"));
+            }
+            
+            User user = googleAuthService.findOrCreateUser(payload);
+            
+            // Tạo JWT token
+            String jwt = jwtService.generateTokenFromUsername(user.getUsername());
+            String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+            List<String> roles = List.of("ROLE_" + user.getRole().name());
+            
+            return ResponseEntity.ok(new JwtResponse(
+                jwt,
+                refreshToken,
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFullName(),
+                roles
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(MessageResponse.error("Đăng ký Google thất bại: " + e.getMessage()));
+        }
+    }
+    
+    @GetMapping("/debug/user/{email}")
+    @Operation(summary = "Debug user info", description = "Debug endpoint để kiểm tra thông tin user")
+    public ResponseEntity<?> debugUser(@PathVariable String email) {
+        try {
+            Optional<User> user = userRepository.findByEmail(email);
+            if (user.isPresent()) {
+                User u = user.get();
+                Map<String, Object> info = new HashMap<>();
+                info.put("id", u.getId());
+                info.put("username", u.getUsername());
+                info.put("email", u.getEmail());
+                info.put("isActive", u.getIsActive());
+                info.put("deletedAt", u.getDeletedAt());
+                info.put("role", u.getRole());
+                return ResponseEntity.ok(info);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(MessageResponse.error("Debug failed: " + e.getMessage()));
+        }
     }
 }

@@ -12,12 +12,13 @@
 
     <!-- custom css link -->
     <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./assets/css/auth.css">
-
-    <!-- google font link -->
+    <link rel="stylesheet" href="./assets/css/auth.css">    <!-- google font link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -103,13 +104,8 @@
 
                             <div class="form-divider">
                                 <span>hoặc</span>
-                            </div>
-
-                            <div class="social-login">
-                                <button type="button" class="btn btn-social btn-google">
-                                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
-                                    Đăng ký với Google
-                                </button>
+                            </div>                            <div class="social-login">
+                                <div id="g_id_signin"></div>
                             </div>
 
                             <div class="auth-footer">
@@ -132,11 +128,10 @@
     </main>
 
     <!-- Toast notification -->
-    <div id="toast" class="toast"></div>
-
-    <!-- Scripts -->
+    <div id="toast" class="toast"></div>    <!-- Scripts -->
     <script src="./assets/js/language.js"></script>
     <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/google-signin.js"></script>
     <script src="./assets/js/auth.js"></script>
 
     <!-- ionicon link -->

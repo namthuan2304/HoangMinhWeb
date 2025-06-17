@@ -153,45 +153,68 @@ public class BookingTourService {
             response.setTourDestination(booking.getTour().getDestination());
         }
         return response;
-    }
-
-    /**
+    }    /**
      * Cập nhật trạng thái đơn đặt (Admin)
      */
     public BookingTourResponse updateBookingStatus(Long id, BookingStatus status, String notes) {
-        BookingTour booking = bookingTourRepository.findByIdAndDeletedAtIsNull(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn đặt tour"));
+        try {
+            BookingTour booking = bookingTourRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn đặt tour"));
 
-        booking.setStatus(status);
-        booking.setNotes(notes);
+            booking.setStatus(status);
+            booking.setNotes(notes);
 
-        // Xử lý theo trạng thái mới
-        switch (status) {
-            case CONFIRMED:
-                booking.confirm();
-                emailService.sendBookingConfirmedEmail(booking);
-                break;
-            case CANCELLED:
-                booking.cancel("Hủy bởi admin");
-                // Trả lại số chỗ cho tour
-                Tour tour = booking.getTour();
-                tour.decreaseParticipants(booking.getParticipantsCount());
-                tourRepository.save(tour);
-                emailService.sendBookingCancelledEmail(booking);
-                break;
-            case COMPLETED:
-                booking.complete();
-                break;
-            default:
-                break;        }        BookingTour savedBooking = bookingTourRepository.save(booking);
-        BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
-        // Map thông tin tour
-        if (savedBooking.getTour() != null) {
-            response.setTourId(savedBooking.getTour().getId());
-            response.setTourName(savedBooking.getTour().getName());
-            response.setTourDestination(savedBooking.getTour().getDestination());
+            // Xử lý theo trạng thái mới
+            switch (status) {
+                case CONFIRMED:
+                    booking.confirm();
+                    try {
+                        emailService.sendBookingConfirmedEmail(booking);
+                    } catch (Exception e) {
+                        System.err.println("Failed to send booking confirmed email: " + e.getMessage());
+                    }
+                    break;
+                case CANCELLED:
+                    booking.cancel("Hủy bởi admin");
+                    // Trả lại số chỗ cho tour
+                    try {
+                        Tour tour = booking.getTour();
+                        if (tour != null) {
+                            tour.decreaseParticipants(booking.getParticipantsCount());
+                            tourRepository.save(tour);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Failed to update tour participants: " + e.getMessage());
+                    }
+                    try {
+                        emailService.sendBookingCancelledEmail(booking);
+                    } catch (Exception e) {
+                        System.err.println("Failed to send booking cancelled email: " + e.getMessage());
+                    }
+                    break;
+                case COMPLETED:
+                    booking.complete();
+                    break;
+                default:
+                    break;
+            }
+
+            BookingTour savedBooking = bookingTourRepository.save(booking);
+            BookingTourResponse response = modelMapper.map(savedBooking, BookingTourResponse.class);
+            
+            // Map thông tin tour
+            if (savedBooking.getTour() != null) {
+                response.setTourId(savedBooking.getTour().getId());
+                response.setTourName(savedBooking.getTour().getName());
+                response.setTourDestination(savedBooking.getTour().getDestination());
+            }
+            return response;
+            
+        } catch (Exception e) {
+            System.err.println("Error updating booking status: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Không thể cập nhật trạng thái đơn đặt: " + e.getMessage());
         }
-        return response;
     }
 
     /**

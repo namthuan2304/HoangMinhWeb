@@ -101,9 +101,7 @@ public class BookingTourController {
     public ResponseEntity<BookingTourResponse> getBookingById(@PathVariable Long id) {
         BookingTourResponse booking = bookingTourService.getBookingById(id);
         return ResponseEntity.ok(booking);
-    }
-
-    /**
+    }    /**
      * Cập nhật trạng thái đơn đặt (Admin only)
      */
     @PutMapping("/{id}/status")
@@ -113,8 +111,16 @@ public class BookingTourController {
             @PathVariable Long id,
             @RequestParam BookingStatus status,
             @RequestParam(required = false) String notes) {
-        BookingTourResponse updatedBooking = bookingTourService.updateBookingStatus(id, status, notes);
-        return ResponseEntity.ok(updatedBooking);
+        try {
+            System.out.println("Updating booking status - ID: " + id + ", Status: " + status + ", Notes: " + notes);
+            BookingTourResponse updatedBooking = bookingTourService.updateBookingStatus(id, status, notes);
+            System.out.println("Booking status updated successfully");
+            return ResponseEntity.ok(updatedBooking);
+        } catch (Exception e) {
+            System.err.println("Error in updateBookingStatus controller: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     /**

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Sign-In</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .debug-info {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        #g_id_signin {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Google Sign-In</h1>
+    
+    <div id="debug-info" class="debug-info">
+        Debug information will appear here...
+    </div>
+    
+    <div id="g_id_signin"></div>
+    
+    <script>
+        // Debug function
+        function log(message) {
+            const debugDiv = document.getElementById('debug-info');
+            debugDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            console.log(message);
+        }
+        
+        // Google Sign-In callback
+        function handleGoogleSignIn(response) {
+            log('Google Sign-In Response received');
+            log('Credential length: ' + (response.credential ? response.credential.length : 'null'));
+            
+            if (response.credential) {
+                // Decode JWT to see payload
+                try {
+                    const base64Url = response.credential.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    const payload = JSON.parse(jsonPayload);
+                    log('User email: ' + payload.email);
+                    log('User name: ' + payload.name);
+                } catch (error) {
+                    log('Error decoding token: ' + error.message);
+                }
+                
+                // Test API call
+                testGoogleLogin(response.credential);
+            }
+        }
+        
+        // Test API call
+        async function testGoogleLogin(credential) {
+            log('Testing API call to backend...');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ credential: credential })
+                });
+                
+                log('Backend response status: ' + response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('Backend response: ' + JSON.stringify(data, null, 2));
+                } else {
+                    const errorText = await response.text();
+                    log('Backend error: ' + errorText);
+                }
+            } catch (error) {
+                log('Network error: ' + error.message);
+            }
+        }
+        
+        // Initialize Google Sign-In
+        window.onload = function() {
+            log('Initializing Google Sign-In...');
+            
+            google.accounts.id.initialize({
+                client_id: '182798155685-hrpfokla969lhmen4e39gg90s2etunu5.apps.googleusercontent.com',
+                callback: handleGoogleSignIn
+            });
+            
+            google.accounts.id.renderButton(
+                document.getElementById('g_id_signin'),
+                {
+                    theme: 'outline',
+                    size: 'large',
+                    type: 'standard',
+                    text: 'sign_in_with',
+                    shape: 'rectangular',
+                    logo_alignment: 'left'
+                }
+            );
+            
+            log('Google Sign-In button rendered');
+        };
+    </script>
+</body>
+</html>

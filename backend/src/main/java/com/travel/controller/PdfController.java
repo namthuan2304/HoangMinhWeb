@@ -59,9 +59,7 @@ public class PdfController {
         return ResponseEntity.ok()
             .headers(headers)
             .body(pdfBytes);
-    }
-
-    /**
+    }    /**
      * Xuất hóa đơn PDF (Admin có thể xuất bất kỳ hóa đơn nào)
      */
     @GetMapping("/admin/invoice/{bookingId}")

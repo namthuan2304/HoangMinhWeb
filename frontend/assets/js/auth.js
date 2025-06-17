@@ -6,8 +6,8 @@ class AuthManager {
 
     initializeAuth() {
         // Check if user is already logged in
-        if (apiClient.isAuthenticated()) { // kiem tra xem có auth token chưa
-            this.redirectIfAuthenticated(); //redirect ve trang tương ưng
+        if (apiClient.isAuthenticated()) {
+            this.redirectIfAuthenticated();
         }
 
         // Initialize form handlers
@@ -16,9 +16,7 @@ class AuthManager {
         this.initializeForgotPasswordForm();
         this.initializeResetPasswordForm();
         this.initializePasswordToggle();
-    }
-
-    redirectIfAuthenticated() {
+    }    redirectIfAuthenticated() {
         const currentPage = window.location.pathname;
         const authPages = ['/login.html', '/register.html', '/forgot-password.html'];
         
@@ -51,13 +49,25 @@ class AuthManager {
             await this.handleRegister(registerForm);
         });
 
-        // Password confirmation validation
+        // Password validation
         const password = document.getElementById('password');
         const confirmPassword = document.getElementById('confirmPassword');
         
+        if (password) {
+            // Add password validation on input
+            password.addEventListener('input', () => {
+                this.validatePasswordRealTime(password);
+            });
+            
+            // Add password validation on blur
+            password.addEventListener('blur', () => {
+                this.validatePasswordRealTime(password);
+            });
+        }
+        
         if (password && confirmPassword) {
             confirmPassword.addEventListener('input', () => {
-                this.validatePasswordMatch(password.value, confirmPassword.value);
+                this.validatePasswordMatchRealTime(password, confirmPassword);
             });
         }
     }
@@ -80,6 +90,28 @@ class AuthManager {
             e.preventDefault();
             await this.handleResetPassword(resetForm);
         });
+
+        // Password validation for reset form
+        const newPassword = document.getElementById('newPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        
+        if (newPassword) {
+            // Add password validation on input
+            newPassword.addEventListener('input', () => {
+                this.validatePasswordRealTime(newPassword);
+            });
+            
+            // Add password validation on blur
+            newPassword.addEventListener('blur', () => {
+                this.validatePasswordRealTime(newPassword);
+            });
+        }
+        
+        if (newPassword && confirmPassword) {
+            confirmPassword.addEventListener('input', () => {
+                this.validatePasswordMatchRealTime(newPassword, confirmPassword);
+            });
+        }
     }
 
     initializePasswordToggle() {
@@ -301,15 +333,114 @@ class AuthManager {
             // Hide loading
             this.setButtonLoading(submitBtn, btnText, btnLoading, false);
         }
-    }
+    }    // Google Sign-In Handler
+    async handleGoogleSignIn(credential) {
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = loginBtn ? loginBtn.querySelector('.btn-text') : null;
+        const btnLoading = loginBtn ? loginBtn.querySelector('.btn-loading') : null;
+        const formError = document.getElementById('formError');
+          try {
+            if (loginBtn && btnText && btnLoading) {
+                this.setButtonLoading(loginBtn, btnText, btnLoading, true);
+            }
+            
+            // Clear previous errors
+            this.clearFormErrors();
 
+            const response = await apiClient.googleSignIn(credential);
+            
+            if (response.success) {
+                this.showToast('Đăng nhập thành công!', 'success');
+                
+                // Trigger auth state change event
+                if (typeof HeaderManager !== 'undefined') {
+                    HeaderManager.triggerAuthStateChange();
+                } else {
+                    window.dispatchEvent(new CustomEvent('authStateChanged'));
+                }
+                
+                // Redirect based on user role
+                const user = apiClient.getCurrentUser();
+                if (user && user.role === 'ADMIN') {
+                    setTimeout(() => window.location.href = 'admin/dashboard.html', 1000);
+                } else {
+                    setTimeout(() => window.location.href = 'index.html', 1000);
+                }
+            } else {
+                if (formError) {
+                    this.showFormError(response.message);
+                }
+            }
+        } catch (error) {
+            console.error('Google sign-in error:', error);
+            if (formError) {
+                this.showFormError('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
+            }
+        } finally {
+            if (loginBtn && btnText && btnLoading) {
+                this.setButtonLoading(loginBtn, btnText, btnLoading, false);
+            }
+        }
+    }
+      // Google Sign-Up Handler
+    async handleGoogleSignUp(credential) {
+        const registerBtn = document.getElementById('registerBtn');
+        const btnText = registerBtn ? registerBtn.querySelector('.btn-text') : null;
+        const btnLoading = registerBtn ? registerBtn.querySelector('.btn-loading') : null;
+        const formError = document.getElementById('formError');
+          try {
+            if (registerBtn && btnText && btnLoading) {
+                this.setButtonLoading(registerBtn, btnText, btnLoading, true);
+            }
+            
+            // Clear previous errors
+            this.clearFormErrors();
+
+            const response = await apiClient.googleSignUp(credential);
+            
+            if (response.success) {
+                this.showToast('Đăng ký thành công!', 'success');
+                
+                // Trigger auth state change event
+                if (typeof HeaderManager !== 'undefined') {
+                    HeaderManager.triggerAuthStateChange();
+                } else {
+                    window.dispatchEvent(new CustomEvent('authStateChanged'));
+                }
+                
+                // Redirect based on user role
+                const user = apiClient.getCurrentUser();
+                if (user && user.role === 'ADMIN') {
+                    setTimeout(() => window.location.href = 'admin/dashboard.html', 1000);
+                } else {
+                    setTimeout(() => window.location.href = 'index.html', 1000);
+                }
+            } else {
+                if (formError) {
+                    this.showFormError(response.message);
+                }
+            }
+        } catch (error) {
+            console.error('Google sign-up error:', error);
+            if (formError) {
+                this.showFormError('Đăng ký bằng Google thất bại. Vui lòng thử lại.');
+            }
+        } finally {
+            if (registerBtn && btnText && btnLoading) {
+                this.setButtonLoading(registerBtn, btnText, btnLoading, false);
+            }
+        }
+    }
+    
     // Validation methods
     validateLoginForm(credentials) {
         if (!credentials.username.trim()) {
+            this.showFormError('Vui lòng nhập tên đăng nhập');
             return false;
         }
 
         if (!credentials.password.trim()) {
+            this.showFormError('Vui lòng nhập mật khẩu');
             return false;
         }
 
@@ -350,16 +481,18 @@ class AuthManager {
         if (!userData.password.trim()) {
             return 'Vui lòng nhập mật khẩu';
         }
-        if (userData.password.length < 6) {
-            return 'Mật khẩu phải có ít nhất 6 ký tự';
+        const passwordValidation = this.validatePassword(userData.password);
+        if (passwordValidation !== true) {
+            return passwordValidation;
         }
 
         // Confirm password validation
         if (!confirmPassword.trim()) {
             return 'Vui lòng xác nhận mật khẩu';
         }
-        if (userData.password !== confirmPassword) {
-            return 'Mật khẩu xác nhận không khớp';
+        const passwordMatchValidation = this.validatePasswordMatch(userData.password, confirmPassword);
+        if (passwordMatchValidation !== true) {
+            return passwordMatchValidation;
         }
 
         return null;
@@ -369,22 +502,92 @@ class AuthManager {
         if (!newPassword.trim()) {
             return 'Vui lòng nhập mật khẩu mới';
         }
-        if (newPassword.length < 6) {
-            return 'Mật khẩu phải có ít nhất 6 ký tự';
+        const passwordValidation = this.validatePassword(newPassword);
+        if (passwordValidation !== true) {
+            return passwordValidation;
         }
 
         if (!confirmPassword.trim()) {
             return 'Vui lòng xác nhận mật khẩu';
         }
-        if (newPassword !== confirmPassword) {
-            return 'Mật khẩu xác nhận không khớp';
+        const passwordMatchValidation = this.validatePasswordMatch(newPassword, confirmPassword);
+        if (passwordMatchValidation !== true) {
+            return passwordMatchValidation;
         }
 
         return null;
     }
 
     validatePasswordMatch(password, confirmPassword) {
-        // Remove this method as we're not using real-time validation anymore
+        if (password !== confirmPassword) {
+            return 'Mật khẩu xác nhận không khớp';
+        }
+        return true;
+    }
+
+    validatePasswordMatchRealTime(passwordField, confirmPasswordField) {
+        if (!passwordField || !confirmPasswordField) return;
+        
+        // Remove existing error message
+        this.removeFieldError(confirmPasswordField);
+        
+        const password = passwordField.value;
+        const confirmPassword = confirmPasswordField.value;
+        
+        if (confirmPassword && password !== confirmPassword) {
+            this.showFieldError(confirmPasswordField, 'Mật khẩu xác nhận không khớp');
+        }
+    }
+
+    validatePasswordRealTime(passwordField) {
+        if (!passwordField) return;
+        
+        // Remove existing error message
+        this.removeFieldError(passwordField);
+        
+        const password = passwordField.value;
+        if (password) {
+            const validation = this.validatePassword(password);
+            if (validation !== true) {
+                this.showFieldError(passwordField, validation);
+            }
+        }
+    }
+
+    showFieldError(field, message) {
+        // Remove existing error
+        this.removeFieldError(field);
+        
+        // Create error element
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = message;
+        errorElement.style.color = '#e74c3c';
+        errorElement.style.fontSize = '12px';
+        errorElement.style.marginTop = '4px';
+        
+        // Insert after the field's parent (form-group)
+        const formGroup = field.closest('.form-group') || field.parentElement;
+        if (formGroup) {
+            formGroup.appendChild(errorElement);
+        }
+        
+        // Add error styling to field
+        field.style.borderColor = '#e74c3c';
+    }
+
+    removeFieldError(field) {
+        // Remove error styling from field
+        field.style.borderColor = '';
+        
+        // Remove error message
+        const formGroup = field.closest('.form-group') || field.parentElement;
+        if (formGroup) {
+            const existingError = formGroup.querySelector('.field-error');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
     }
 
     validateEmail(email) {
@@ -395,6 +598,24 @@ class AuthManager {
     validatePhone(phone) {
         const phoneRegex = /^[0-9+\-\s()]{10,}$/;
         return phoneRegex.test(phone);
+    }
+
+    validatePassword(password) {
+        if (!password || password.length < 8) {
+            return 'Mật khẩu phải có ít nhất 8 ký tự';
+        }
+        
+        // Check if password contains at least one letter
+        if (!/[a-zA-Z]/.test(password)) {
+            return 'Mật khẩu phải chứa ít nhất một chữ cái';
+        }
+        
+        // Check if password contains at least one number
+        if (!/[0-9]/.test(password)) {
+            return 'Mật khẩu phải chứa ít nhất một chữ số';
+        }
+        
+        return true;
     }
 
     // UI Helper methods
@@ -460,6 +681,19 @@ class AuthManager {
 document.addEventListener('DOMContentLoaded', () => {
     window.authManager = new AuthManager();
 });
+
+// Initialize AuthManager
+const authManager = new AuthManager();
+
+// Global function for Google Sign-In callback
+window.handleGoogleSignIn = async (response) => {
+    await authManager.handleGoogleSignIn(response.credential);
+};
+
+// Global function for Google Sign-Up callback
+window.handleGoogleSignUp = async (response) => {
+    await authManager.handleGoogleSignUp(response.credential);
+};
 
 // Export for use in other files
 if (typeof module !== 'undefined' && module.exports) {

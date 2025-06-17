@@ -1,0 +1,21 @@
+# Test PDF API Endpoints
+
+### Login để lấy JWT token
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Test PDF Invoice endpoint (thay {bookingId} và {jwt_token})
+GET http://localhost:8080/api/pdf/admin/invoice/1
+Authorization: Bearer {jwt_token}
+
+### Test booking list để lấy booking ID
+GET http://localhost:8080/api/bookings?page=0&size=10
+Authorization: Bearer {jwt_token}
+
+### Test PDF endpoint với curl command
+# curl -H "Authorization: Bearer YOUR_JWT_TOKEN" -o invoice.pdf http://localhost:8080/api/pdf/admin/invoice/1

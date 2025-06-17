@@ -460,6 +460,16 @@ class APIClient {
         return await this.request(endpoint, {
             method: 'POST',
         });
+    }    async updateBookingStatus(bookingId, status, notes = null) {
+        const params = new URLSearchParams();
+        params.append('status', status);
+        if (notes) {
+            params.append('notes', notes);
+        }
+        
+        return await this.request(`/bookings/${bookingId}/status?${params.toString()}`, {
+            method: 'PUT'
+        });
     }
 
     // Tours Methods
@@ -618,20 +628,44 @@ class APIClient {
         }
 
         return response.blob();
-    }
+    }    async getAdminInvoicePDF(bookingId) {
+        try {
+            const response = await fetch(`${this.baseURL}/pdf/admin/invoice/${bookingId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/pdf',
+                },
+            });
 
-    async getAdminInvoicePDF(bookingId) {
-        const response = await fetch(`${this.baseURL}/pdf/admin/invoice/${bookingId}`, {
-            headers: {
-                'Authorization': `Bearer ${this.token}`,
-            },
-        });
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('PDF generation error:', errorText);
+                throw new Error(`Không thể tạo PDF: ${response.status} - ${errorText}`);
+            }
 
-        if (!response.ok) {
-            throw new Error('Failed to generate PDF');
+            // Check content type
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/pdf')) {
+                console.warn('Response is not PDF:', contentType);
+                const text = await response.text();
+                console.error('Non-PDF response:', text);
+                throw new Error('Server không trả về file PDF hợp lệ');
+            }
+
+            const blob = await response.blob();
+            
+            // Validate blob size
+            if (blob.size === 0) {
+                throw new Error('PDF file rỗng');
+            }
+            
+            return blob;
+            
+        } catch (error) {
+            console.error('Error getting invoice PDF:', error);
+            throw error;
         }
-
-        return response.blob();
     }
 
     async getMonthlyRevenuePDF(year, month) {
@@ -660,6 +694,24 @@ class APIClient {
         }
 
         return response.blob();
+    }
+
+    // Email Methods
+    async sendBookingInvoiceEmail(bookingId) {
+        return this.request(`/bookings/${bookingId}/send-invoice`, {
+            method: 'POST'
+        });
+    }
+
+    async sendCustomEmail(bookingId, emailData) {
+        return this.request(`/bookings/${bookingId}/send-custom-email`, {
+            method: 'POST',
+            body: JSON.stringify(emailData),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`,
+            }
+        });
     }
 
     // Utility Methods
@@ -858,6 +910,93 @@ class APIClient {
             method: 'PUT',
             body: JSON.stringify({ status }),
         });
+    }
+
+    // Test PDF generation endpoint
+    async testPDFGeneration(bookingId) {
+        try {
+            const response = await fetch(`${this.baseURL}/pdf/admin/invoice/${bookingId}/test`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.token}`,
+                },
+            });
+
+            const result = await response.json();
+            return result;
+            
+        } catch (error) {
+            console.error('Error testing PDF generation:', error);
+            throw error;
+        }
+    }
+
+    async googleSignIn(credential) {
+        try {
+            const response = await this.request('/auth/google', {
+                method: 'POST',
+                body: JSON.stringify({ credential }),
+                auth: false,
+            });
+
+            if (response.token) {
+                this.token = response.token;
+                this.refreshToken = response.refreshToken;
+                localStorage.setItem('authToken', this.token);
+                localStorage.setItem('refreshToken', this.refreshToken);
+                
+                // Tạo user object từ response
+                const user = {
+                    id: response.id,
+                    username: response.username,
+                    email: response.email,
+                    fullName: response.fullName,
+                    roles: response.roles,
+                    role: response.roles && response.roles.length > 0 ? response.roles[0].replace('ROLE_', '') : 'USER',
+                    avatar: response.avatar
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+
+            return { success: true, ...response };
+        } catch (error) {
+            console.error('Google sign-in error:', error);
+            return { success: false, message: error.message };
+        }
+    }
+    
+    async googleSignUp(credential) {
+        try {
+            const response = await this.request('/auth/google/signup', {
+                method: 'POST',
+                body: JSON.stringify({ credential }),
+                auth: false,
+            });
+
+            if (response.token) {
+                this.token = response.token;
+                this.refreshToken = response.refreshToken;
+                localStorage.setItem('authToken', this.token);
+                localStorage.setItem('refreshToken', this.refreshToken);
+                
+                // Tạo user object từ response
+                const user = {
+                    id: response.id,
+                    username: response.username,
+                    email: response.email,
+                    fullName: response.fullName,
+                    roles: response.roles,
+                    role: response.roles && response.roles.length > 0 ? response.roles[0].replace('ROLE_', '') : 'USER',
+                    avatar: response.avatar
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+
+            return { success: true, ...response };
+        } catch (error) {
+            console.error('Google sign-up error:', error);
+            return { success: false, message: error.message };
+        }
     }
 }
 

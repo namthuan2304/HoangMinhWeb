@@ -52,6 +52,20 @@ class IndexUtils {
         element.style.pointerEvents = 'auto';
     }
 
+    // Get full avatar URL with server base URL
+    static getFullAvatarUrl(avatarUrl) {
+        if (!avatarUrl) return null;
+        
+        // Nếu đã là URL đầy đủ thì return luôn
+        if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+            return avatarUrl;
+        }
+        
+        // Nếu là đường dẫn tương đối, thêm base URL
+        const baseUrl = window.location.protocol + '//' + window.location.hostname + ':8080';
+        return baseUrl + (avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl);
+    }
+
     // Create loading spinner
     static createSpinner() {
         const spinner = document.createElement('div');

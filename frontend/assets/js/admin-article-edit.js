@@ -505,6 +505,10 @@ class AdminArticleEdit {
         }
     }
 
+    previewArticle() {
+        this.showToast('Chức năng xem trước đang được phát triển', 'info');
+    }
+
     goBack() {
         if (this.isFormDirty) {
             if (!confirm('Bạn có thay đổi chưa được lưu. Bạn có chắc chắn muốn thoát?')) {

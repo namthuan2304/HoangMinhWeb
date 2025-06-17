@@ -312,12 +312,11 @@ class ProfileManager {    constructor() {
         try {
             // Show loading
             this.setButtonLoading(changeBtn, btnText, btnLoading, true);
-            this.clearFormErrors();
-
-            // Change password
+            this.clearFormErrors();            // Change password
             await apiClient.changePassword({
                 currentPassword: passwordData.currentPassword,
-                newPassword: passwordData.newPassword
+                newPassword: passwordData.newPassword,
+                confirmPassword: passwordData.confirmNewPassword
             });
 
             // Reset form

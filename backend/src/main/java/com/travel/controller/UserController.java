@@ -182,9 +182,7 @@ public class UserController {
             @Valid @RequestBody UpdateProfileRequest request) {
         UserResponse updatedUser = userService.updateProfile(authentication.getName(), request);
         return ResponseEntity.ok(updatedUser);
-    }
-
-    /**
+    }    /**
      * Đổi mật khẩu
      */
     @PostMapping("/change-password")
@@ -193,13 +191,28 @@ public class UserController {
             Authentication authentication,
             @Valid @RequestBody ChangePasswordRequest request) {
         
-        if (!request.isPasswordMatching()) {
-            return ResponseEntity.badRequest()
-                .body(new MessageResponse("Mật khẩu mới và xác nhận mật khẩu không khớp"));
+        try {
+            System.out.println("Change password request received for user: " + authentication.getName());
+            System.out.println("Request data - currentPassword: " + (request.getCurrentPassword() != null ? "[PROVIDED]" : "null"));
+            System.out.println("Request data - newPassword: " + (request.getNewPassword() != null ? "[PROVIDED]" : "null"));
+            System.out.println("Request data - confirmPassword: " + (request.getConfirmPassword() != null ? "[PROVIDED]" : "null"));
+            
+            if (!request.isPasswordMatching()) {
+                System.out.println("Password matching validation failed");
+                return ResponseEntity.badRequest()
+                    .body(new MessageResponse("Mật khẩu mới và xác nhận mật khẩu không khớp"));
+            }
+            
+            userService.changePassword(authentication.getName(), request);
+            System.out.println("Password changed successfully for user: " + authentication.getName());
+            return ResponseEntity.ok(new MessageResponse("Đổi mật khẩu thành công"));
+            
+        } catch (Exception e) {
+            System.err.println("Change password error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new MessageResponse("Có lỗi xảy ra khi đổi mật khẩu: " + e.getMessage()));
         }
-        
-        userService.changePassword(authentication.getName(), request);
-        return ResponseEntity.ok(new MessageResponse("Đổi mật khẩu thành công"));
     }
 
     /**
