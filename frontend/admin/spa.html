@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Travel Booking System</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-common.css">
+    <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
+    <link rel="stylesheet" href="../assets/css/admin-tours.css">
+    <link rel="stylesheet" href="../assets/css/admin-users.css">
+    <link rel="stylesheet" href="../assets/css/admin-bookings.css">
+    <link rel="stylesheet" href="../assets/css/admin-articles.css">
+    <link rel="stylesheet" href="../assets/css/admin-reports.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Ion Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <span>Đang tải...</span>
+    </div>
+
+    <!-- Admin Layout -->
+    <div class="admin-layout" id="adminLayout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>Travel Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link" data-route="dashboard">
+                            <ion-icon name="grid-outline"></ion-icon>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Tour Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="tours">
+                            <ion-icon name="map-outline"></ion-icon>
+                            <span>Quản lý Tours</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="tours-submenu">
+                            <li><a href="#tours" class="submenu-link" data-route="tours">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Tours</span>
+                            </a></li>
+                            <li><a href="#tours/create" class="submenu-link" data-route="tours/create">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Tour Mới</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Booking Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="bookings">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>Quản lý Đặt Tour</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="bookings-submenu">
+                            <li><a href="#bookings" class="submenu-link" data-route="bookings">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Đặt Tour</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- User Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="users">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <span>Quản lý Người dùng</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="users-submenu">
+                            <li><a href="#users" class="submenu-link" data-route="users">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Người dùng</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Article Management -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="articles">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <span>Quản lý Bài viết</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="articles-submenu">
+                            <li><a href="#articles" class="submenu-link" data-route="articles">
+                                <ion-icon name="list-outline"></ion-icon>
+                                <span>Danh sách Bài viết</span>
+                            </a></li>
+                            <li><a href="#articles/create" class="submenu-link" data-route="articles/create">
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                <span>Thêm Bài viết</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Comments -->
+                    <li class="nav-item">
+                        <a href="#comments" class="nav-link" data-route="comments">
+                            <ion-icon name="chatbubbles-outline"></ion-icon>
+                            <span>Quản lý Bình luận</span>
+                        </a>
+                    </li>
+
+                    <!-- Reports -->
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" data-submenu="reports">
+                            <ion-icon name="bar-chart-outline"></ion-icon>
+                            <span>Báo cáo</span>
+                            <ion-icon name="chevron-down-outline" class="submenu-arrow"></ion-icon>
+                        </a>
+                        <ul class="submenu" id="reports-submenu">
+                            <li><a href="#reports/revenue" class="submenu-link" data-route="reports/revenue">
+                                <ion-icon name="cash-outline"></ion-icon>
+                                <span>Báo cáo Doanh thu</span>
+                            </a></li>
+                            <li><a href="#reports/tours" class="submenu-link" data-route="reports/tours">
+                                <ion-icon name="analytics-outline"></ion-icon>
+                                <span>Báo cáo Tours</span>
+                            </a></li>
+                            <li><a href="#reports/users" class="submenu-link" data-route="reports/users">
+                                <ion-icon name="people-outline"></ion-icon>
+                                <span>Báo cáo Người dùng</span>
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="../assets/images/default-avatar.png" alt="Admin Avatar" id="adminAvatar">
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="adminName">Admin</span>
+                        <span class="user-role">Quản trị viên</span>
+                    </div>
+                    <div class="user-actions">
+                        <button class="user-menu-btn" id="userMenuBtn">
+                            <ion-icon name="chevron-up-outline"></ion-icon>
+                        </button>
+                        <div class="user-menu" id="userMenu">
+                            <a href="../profile.html" class="menu-item">
+                                <ion-icon name="person-outline"></ion-icon>
+                                <span>Hồ sơ</span>
+                            </a>
+                            <a href="../index.html" class="menu-item">
+                                <ion-icon name="home-outline"></ion-icon>
+                                <span>Trang chủ</span>
+                            </a>
+                            <a href="#" class="menu-item" id="logoutBtn">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <div class="breadcrumb">
+                        <span id="currentPageTitle">Dashboard</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button class="action-btn" id="notificationBtn">
+                            <ion-icon name="notifications-outline"></ion-icon>
+                            <span class="badge" id="notificationBadge">0</span>
+                        </button>
+                        <button class="action-btn" id="refreshBtn">
+                            <ion-icon name="refresh-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="admin-content" id="adminContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/toast.js"></script>
+    <script src="../assets/js/admin-spa-router.js"></script>
+    <script src="../assets/js/admin-spa-core.js"></script>
+    <script src="../assets/js/admin-spa-components.js"></script>
+    <script src="../assets/js/admin-spa-main.js"></script>
+</body>
+</html>
