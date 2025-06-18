@@ -630,7 +630,8 @@ class APIClient {
         }
 
         return response.blob();
-    }    async getAdminInvoicePDF(bookingId) {
+    }   
+     async getAdminInvoicePDF(bookingId) {
         try {
             const response = await fetch(`${this.baseURL}/pdf/admin/invoice/${bookingId}`, {
                 method: 'GET',

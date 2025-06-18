@@ -217,7 +217,8 @@ class AdminBookings {
         
         // Bind event listeners for action buttons
         this.bindActionButtons();
-    }    bindActionButtons() {
+    }    
+    bindActionButtons() {
         // Remove existing event listeners to prevent duplicate bindings
         document.querySelectorAll('.view-booking-btn, .edit-booking-btn, .print-invoice-btn').forEach(btn => {
             btn.replaceWith(btn.cloneNode(true));
@@ -253,7 +254,8 @@ class AdminBookings {
                 this.printInvoice(bookingId);
             });
         });
-    }renderBookingRow(booking) {
+    }
+    renderBookingRow(booking) {
         return `
             <tr>
                 <td>
@@ -488,7 +490,8 @@ class AdminBookings {
         } finally {
             this.showLoading(false);
         }
-    }    async printInvoice(bookingId) {
+    }    
+    async printInvoice(bookingId) {
         try {
             const booking = this.bookings.find(b => b.id === bookingId);
             if (!booking) {
@@ -718,7 +721,8 @@ class AdminBookings {
         } finally {
             this.showLoading(false);
         }
-    }    async printInvoiceDirect(bookingId) {
+    }    
+    async printInvoiceDirect(bookingId) {
         try {
             this.showLoading(true);
             const blob = await apiClient.getAdminInvoicePDF(bookingId);
