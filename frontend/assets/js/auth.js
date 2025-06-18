@@ -16,7 +16,8 @@ class AuthManager {
         this.initializeForgotPasswordForm();
         this.initializeResetPasswordForm();
         this.initializePasswordToggle();
-    }    redirectIfAuthenticated() {
+    }    
+    redirectIfAuthenticated() {
         const currentPage = window.location.pathname;
         const authPages = ['/login.html', '/register.html', '/forgot-password.html'];
         
@@ -112,7 +113,8 @@ class AuthManager {
                 this.validatePasswordMatchRealTime(newPassword, confirmPassword);
             });
         }
-    }    initializePasswordToggle() {
+    }    
+    initializePasswordToggle() {
         const toggleButtons = document.querySelectorAll('.password-toggle');
         console.log('Found password toggle buttons:', toggleButtons.length);
         

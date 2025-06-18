@@ -5,9 +5,14 @@ class APIClient {
         this.serverURL = 'http://localhost:8080'; // Base server URL for static resources
         this.token = localStorage.getItem('authToken');
         this.refreshToken = localStorage.getItem('refreshToken');
-    }
-
-    // Helper method để tạo headers
+        
+        // Khởi tạo việc kiểm tra token
+        this.initializeTokenCheck();
+    }    // Khởi tạo kiểm tra token
+    async initializeTokenCheck() {
+        await this.checkAndRefreshToken();
+        this.setupTokenWatcher();
+    }// Helper method để tạo headers
     getHeaders(includeAuth = true) {
         const headers = {
             'Content-Type': 'application/json',
@@ -18,7 +23,49 @@ class APIClient {
         }
 
         return headers;
-    }    // Helper method để xử lý response
+    }
+
+    // Kiểm tra và tự động làm mới token nếu cần
+    async checkAndRefreshToken() {
+        // Kiểm tra xem authToken có bị xóa không nhưng vẫn còn refreshToken
+        const currentAuthToken = localStorage.getItem('authToken');
+        const currentRefreshToken = localStorage.getItem('refreshToken');
+        
+        if (!currentAuthToken && currentRefreshToken) {
+            console.log('AuthToken bị xóa nhưng vẫn còn refreshToken, đang làm mới token...');
+            this.refreshToken = currentRefreshToken;
+            const refreshSuccess = await this.refreshAuthToken();
+            
+            if (refreshSuccess) {
+                console.log('Token được làm mới thành công');
+            } else {
+                console.log('Làm mới token thất bại');
+                this.handleTokenExpired();
+            }
+        } else if (currentAuthToken && !this.token) {
+            // Đồng bộ token từ localStorage nếu có
+            this.token = currentAuthToken;
+        }
+        
+        if (currentRefreshToken && !this.refreshToken) {
+            this.refreshToken = currentRefreshToken;
+        }
+    }
+
+    // Xử lý khi token hết hạn
+    handleTokenExpired() {
+        console.log('Token đã hết hạn, đang chuyển về trang đăng nhập...');
+        this.token = null;
+        this.refreshToken = null;
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        
+        // Chỉ chuyển hướng nếu không phải đang ở trang login
+        if (!window.location.pathname.includes('login.html')) {
+            window.location.href = '/frontend/login.html';
+        }
+    }// Helper method để xử lý response
     async handleResponse(response) {
         if (!response.ok) {
             let errorMessage = 'Đã xảy ra lỗi';
@@ -53,6 +100,9 @@ class APIClient {
         }
     }    // Generic request method
     async request(endpoint, options = {}) {
+        // Kiểm tra và tự động làm mới token nếu cần
+        await this.checkAndRefreshToken();
+        
         const url = `${this.baseURL}${endpoint}`;
         const config = {
             method: options.method || 'GET',
@@ -69,6 +119,29 @@ class APIClient {
         }        try {
             console.log(`API ${config.method} Request:`, url, options.body);
             const response = await fetch(url, config);
+            
+            // Nếu response trả về 401 (Unauthorized), thử làm mới token
+            if (response.status === 401 && this.refreshToken && !endpoint.includes('/auth/')) {
+                console.log('Token expired, attempting to refresh...');
+                const refreshSuccess = await this.refreshAuthToken();
+                
+                if (refreshSuccess) {
+                    // Thử lại request với token mới
+                    config.headers = {
+                        ...config.headers,
+                        'Authorization': `Bearer ${this.token}`
+                    };
+                    const retryResponse = await fetch(url, config);
+                    const retryResult = await this.handleResponse(retryResponse);
+                    console.log(`API ${config.method} Retry Response:`, retryResult);
+                    return retryResult;
+                } else {
+                    // Nếu refresh token thất bại, chuyển về trang login
+                    this.handleTokenExpired();
+                    throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                }
+            }
+            
             const result = await this.handleResponse(response);
             console.log(`API ${config.method} Response:`, result);
             return result;
@@ -125,27 +198,44 @@ class APIClient {
         } catch (error) {
             throw new Error('Đăng ký thất bại: ' + error.message);
         }
-    }    
-    async refreshAuthToken() {
-        if (!this.refreshToken) return false;
-
-        try {
-            const response = await this.request(`/auth/refresh-token?refreshToken=${this.refreshToken}`, {
-                method: 'POST',
-                auth: false,
-            });
-
-            if (response.success && response.data && response.data.token) {
-                this.token = response.data.token;
-                this.refreshToken = response.data.refreshToken;
-                localStorage.setItem('authToken', this.token);
-                localStorage.setItem('refreshToken', this.refreshToken);
-                return true;
-            }
-        } catch (error) {
-            console.error('Token refresh failed:', error);
+    }      async refreshAuthToken() {
+        if (!this.refreshToken) {
+            console.log('Không có refresh token để làm mới');
+            return false;
         }
 
+        try {
+            console.log('Đang làm mới token...');
+            const response = await fetch(`${this.baseURL}/auth/refresh-token?refreshToken=${this.refreshToken}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                
+                if (result.success && result.data && result.data.token) {
+                    this.token = result.data.token;
+                    this.refreshToken = result.data.refreshToken || this.refreshToken;
+                    localStorage.setItem('authToken', this.token);
+                    localStorage.setItem('refreshToken', this.refreshToken);
+                    console.log('Làm mới token thành công');
+                    return true;
+                } else {
+                    console.error('Refresh token response không hợp lệ:', result);
+                }
+            } else {
+                console.error('Refresh token request thất bại:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi khi làm mới token:', error);
+        }
+
+        // Nếu refresh thất bại, xóa refresh token
+        this.refreshToken = null;
+        localStorage.removeItem('refreshToken');
         return false;
     }
 
@@ -1000,6 +1090,22 @@ class APIClient {
             console.error('Google sign-up error:', error);
             return { success: false, message: error.message };
         }
+    }
+
+    // Thiết lập kiểm tra token định kỳ
+    setupTokenWatcher() {
+        // Kiểm tra token mỗi 30 giây
+        setInterval(async () => {
+            await this.checkAndRefreshToken();
+        }, 30000);
+        
+        // Lắng nghe sự kiện storage để phát hiện khi token bị xóa từ tab khác
+        window.addEventListener('storage', async (event) => {
+            if (event.key === 'authToken' || event.key === 'refreshToken') {
+                console.log('Token thay đổi từ tab khác, đang kiểm tra...');
+                await this.checkAndRefreshToken();
+            }
+        });
     }
 }
 

@@ -149,7 +149,7 @@ class AdminDashboard {
     }
 
     updateStats(stats) {
-        // ...existing code...
+
         if (this.statsElements.totalUsers) {
             this.statsElements.totalUsers.textContent = this.formatNumber(stats.totalUsers || 0);
         }
